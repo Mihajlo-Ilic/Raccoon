@@ -1,0 +1,29 @@
+<RCC>
+    <qresource prefix="/res">
+        <file>Resources/Node_icons/filter.svg</file>
+        <file>Resources/Node_icons/cat_to_num.svg</file>
+        <file>Resources/Node_icons/aproximation.svg</file>
+        <file>Resources/Node_icons/standardization.svg</file>
+        <file>Resources/Node_icons/normalization.svg</file>
+        <file>Resources/Node_icons/knn.svg</file>
+        <file>Resources/Node_icons/remove_na.svg</file>
+        <file>Resources/Node_icons/binning.svg</file>
+        <file>Resources/Node_icons/partition.svg</file>
+        <file>Resources/Node_icons/csv_icon.png</file>
+        <file>Resources/style.qss</file>
+        <file>Resources/Action_icons/un_merge.svg</file>
+        <file>Resources/Action_icons/merge.svg</file>
+        <file>Resources/Action_icons/delete.svg</file>
+        <file>Resources/Action_icons/start_opt.svg</file>
+        <file>Resources/Action_icons/start.svg</file>
+        <file>Resources/Action_icons/warning.svg</file>
+        <file>Resources/Node_icons/table_output.svg</file>
+        <file>Resources/Node_icons/plot.svg</file>
+        <file>Resources/Node_icons/stats.svg</file>
+        <file>Resources/Node_icons/bayes.svg</file>
+        <file>Resources/Node_icons/aglo.svg</file>
+        <file>Resources/Node_icons/k_means.svg</file>
+        <file>Resources/Node_icons/tree.svg</file>
+        <file>Resources/Node_icons/dbscan.svg</file>
+    </qresource>
+</RCC>

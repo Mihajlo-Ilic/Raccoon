@@ -43,23 +43,24 @@ raccoon_scene::raccoon_scene(int width,int height):QGraphicsScene(){
 }
 //IF DRAG N DROP WITH TAG LINE IS ACTIVE THEN UPDATE ONE END OF THE LINE TO PRESENT WHAT CONNECTORS ARE BEING PAIRED
 void raccoon_scene::dragMoveEvent(QGraphicsSceneDragDropEvent *event){
-    QGraphicsScene::dragMoveEvent(event);
+
     if(event->mimeData()->text()=="line"){
         connector_line.setLine(connector_line.line().p1().x(),connector_line.line().p1().y()
                                ,event->scenePos().x(),event->scenePos().y());
-    }
-    event->accept();
+        QGraphicsScene::dragMoveEvent(event);
+    } else event->accept();
 }
 void raccoon_scene::dragLeaveEvent(QGraphicsSceneDragDropEvent *event){
     QGraphicsScene::dragLeaveEvent(event);
 }
 void raccoon_scene::dragEnterEvent(QGraphicsSceneDragDropEvent *event){
-    QGraphicsScene::dragEnterEvent(event);
+
     if(event->mimeData()->text()=="line"){
         connector_line.setLine(event->scenePos().x(),event->scenePos().y()
                                ,event->scenePos().x(),event->scenePos().y());
-    }
-    event->accept();
+        QGraphicsScene::dragEnterEvent(event);
+    } else event->accept();
+
 }
 //LONG AND UGLY FUNCTION TLDR; DEPENDING ON THE TAG OF DRAG N DROP EVENT CREATES APROPRIATE NODE :)
 void raccoon_scene::dropEvent(QGraphicsSceneDragDropEvent *event){
