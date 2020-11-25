@@ -8,6 +8,10 @@
 #include <QObject>
 #include <QDoubleSpinBox>
 #include <QSpinBox>
+#include <QGraphicsView>
+#include <QGraphicsScene>
+
+
 #include "../agglo_cluster.hpp"
 class aglo_node : public node
 {
@@ -16,6 +20,8 @@ public:
     aglo_node(int width,int height);
     void on_input_changed() override;
     void run() override;
+    void preview() override;
+    void make_dendogram(QGraphicsScene &scene);
 private:
     QComboBox combo_func;
     QLabel label_func;
@@ -27,6 +33,23 @@ private:
     QLabel label_num;
     QPushButton preview_button;
 
+    //dendogram axis
+    QGraphicsLineItem x_axis;
+    QGraphicsLineItem y_axis;
+
+    //dendogram texts
+    std::vector<QGraphicsSimpleTextItem*> x_texts;
+    std::vector<QGraphicsSimpleTextItem*> y_texts;
+
+    //dendogram rects
+    std::vector<QGraphicsPathItem*> dend_rects;
+
+
+    QGraphicsView tab_gview;
+    QGraphicsScene tab_gscene;
+
+    std::unordered_map<std::string,QColor> cluster_colors;
+
     agglo_cluster model;
 public slots:
     void preview_b();
@@ -34,6 +57,8 @@ public slots:
     void combo_clust_changed(QString str);
     void dist_changed(double v);
     void num_changed(int v);
+
+    void scene_changed(const QList<QRectF> &region);
 };
 
 #endif

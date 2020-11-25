@@ -46,11 +46,7 @@ table dbscan::fit(const table& t) {
               adj[neighbor_idx].second = true;
        }
    }
-   for(int n:neighbors[5])
-       std::cout << n << ' ';
-   std::cout << std::endl;
 
-   std::cout << metric(train[0], train[1]) << std::endl;
 
 
    train.push("cluster");

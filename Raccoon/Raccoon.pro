@@ -5,17 +5,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 CONFIG += c++17
 
 RESOURCES += \
-    resources.qrc \
-    resources.qrc \
-    resources.qrc \
-    resources.qrc \
-    resources.qrc \
-    resources.qrc \
-    resources.qrc \
-    resources.qrc \
-    resources.qrc \
-    resources.qrc \
-    resources.qrc \
     resources.qrc
 
 FORMS += \
@@ -53,7 +42,6 @@ DISTFILES += \
 HEADERS += \
     Includes/agglo_cluster.hpp \
     Includes/dbscan.hpp \
-    Includes/dbscan_node.hpp \
     Includes/decision_tree.hpp \
     Includes/entry.hpp \
     Includes/file_reader.hpp \
@@ -62,7 +50,6 @@ HEADERS += \
     Includes/gui/binning_node.hpp \
     Includes/gui/categoricaltobinnary_node.hpp \
     Includes/gui/csv_node.hpp \
-    Includes/gui/dbscan.hpp \
     Includes/gui/dbscan_node.hpp \
     Includes/gui/decision_tree_node.hpp \
     Includes/gui/delete_na.hpp \
