@@ -33,20 +33,14 @@ void delete_na::preview_b() {
 }
 
 void delete_na::on_input_changed(){
-    t=inputs[0]->get_table();
-    remove_na_rows(t);
-
-    outputs[0]->send_data(t);
-
-    n_deleted.setText(
-                QString::fromStdString( std::to_string(inputs[0]->get_table().row_n()
-                -t.row_n())));
-    n_rows.setText(QString::fromStdString(std::to_string(t.row_n())));
-
-    needs_update=false;
+    packet msg = inputs[0]->get_packet();
+    needs_update = false;
+    outputs[0]->send_packet(msg);
 }
 
 void delete_na::run()
 {
-
+    t=inputs[0]->get_table();
+    remove_na_rows(t);
+    outputs[0]->send_data(t);
 }

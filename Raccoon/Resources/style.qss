@@ -141,3 +141,7 @@ QFrame[frameShape="5"]
     background-color: white;
 }
 
+:disabled{
+color:red;
+}
+

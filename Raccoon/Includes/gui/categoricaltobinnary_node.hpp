@@ -14,12 +14,13 @@ public:
     categoricalToBinnary_node(int width,int height);
     void on_input_changed() override;
     void run() override;
+    packet get_msg() override;
 private:
     QLabel selectLabel;
     QListWidget listWidget;
     QPushButton previewBtn;
 public slots:
-    void list_changed();
+    void list_changed(QListWidgetItem *item);
     void preview_b();
 };
 

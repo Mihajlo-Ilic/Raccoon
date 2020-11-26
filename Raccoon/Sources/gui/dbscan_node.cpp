@@ -48,13 +48,21 @@ void dbscan_node::on_input_changed()
     needs_update=false;
 }
 
+packet dbscan_node::get_msg()
+{
+    packet msg=inputs[0]->get_packet();
+    msg.add_column("cluster",column_role::INPUT,column_type::CONTINUOUS);
+    return msg;
+}
+
 void dbscan_node::run()
 {
-
+    table t=inputs[0]->get_table();
+    t=clasterizer.fit(t);
+    outputs[0]->send_data(t);
 }
 
 void dbscan_node::preview_b() {
-    t=clasterizer.fit(t);
     preview();
 }
 

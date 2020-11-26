@@ -72,3 +72,8 @@ void MainWindow::dropEvent(QDropEvent *event){
     event->accept();
 }
 
+
+void MainWindow::on_action_run_triggered()
+{
+    globalScene->run_graph();
+}

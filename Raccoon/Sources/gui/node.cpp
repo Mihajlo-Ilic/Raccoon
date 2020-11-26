@@ -141,12 +141,9 @@ void node::set_position(const QPointF& point){
 #include<iostream>
 void node::send_data()
 {
-    std::cout<<needs_update<<std::endl;
-    if(needs_update == false){
-        std::cout<<"saljem"<<std::endl;
         for(auto it:outputs)
-            it->send_data(t);
-    }
+            if(inputs.size()>0)
+            it->send_packet(get_msg());
 }
 
 int node::used_inputs()
@@ -156,6 +153,19 @@ int node::used_inputs()
         if(it->get_output_node()!=nullptr)
             s++;
     return s;
+}
+
+int node::used_outputs()
+{
+    int s=0;
+    for(auto it:outputs)
+        s+=it->used_outputs();
+    return s;
+}
+
+packet node::get_msg()
+{
+    return inputs[0]->get_packet();
 }
 
 QPointF node::find_input_position(int index){
@@ -225,6 +235,11 @@ void edge::set_end_pos(const QPointF& new_point){
 //USED TO PASS THE DATA BETWEEN 2 CONNECTORS
 void edge::pass_data(const table& t){
     in->recieve_data(t);
+}
+
+void edge::pass_packet(const packet &msg)
+{
+    in->recieve_packet(msg);
 }
 
 void edge::add_to_scene(QGraphicsScene *scene)
@@ -357,10 +372,23 @@ void input_connector::disconnect(edge* e){
 //WHEN DATA IS RECIEVED TROUGH INPUT CONNECTOR PARENT NODE IS NOTIFIED SO IT CAN REACT
 void input_connector::recieve_data(const table& t){
     input_table=t;
-    parent->on_input_changed();
+}
+
+void input_connector::recieve_packet(const packet &msg)
+{
+    if(recieved_packet!=msg){
+        recieved_packet=msg;
+        parent->on_input_changed();
+    }
+    recieved_packet=msg;
 }
 const table& input_connector::get_table() const{
     return input_table;
+}
+
+const packet &input_connector::get_packet() const
+{
+    return recieved_packet;
 }
 
 void output_connector::force_send()
@@ -390,7 +418,7 @@ std::vector<node *> output_connector::get_input_nodes()
 {
     std::vector<node*> res;
     for(auto it:output_edges)
-        res.push_back(it->get_input_node());
+        res.push_back(it->get_output_node());
     return res;
 }
 void output_connector::update_edge_position(const QPointF& new_point){
@@ -407,6 +435,78 @@ void output_connector::send_data(const table& t){
         if(it!=nullptr)
             it->pass_data(t);
 }
+
+void output_connector::send_packet(const packet &msg)
+{
+    for(auto it:output_edges)
+        if(it!=nullptr)
+            it->pass_packet(msg);
+}
 output_connector::~output_connector(){
 
+}
+
+packet::packet(){
+    packet_rows = 0;
+}
+
+packet::packet(const table &t){
+    auto vec = t.col_names();
+    for(const auto& it:vec)
+        add_column(t[it],it);
+    packet_rows = t.row_n();
+}
+
+bool packet::operator!=(const packet &rhs) const{
+    if(packet_columns.size()!=rhs.packet_columns.size())
+        return true;
+    for(unsigned i=0;i<packet_columns.size();i++){
+        if(packet_columns[i]!=rhs.packet_columns[i])
+            return true;
+    }
+    return false;
+}
+
+bool packet::operator==(const packet &rhs) const{
+    if(packet_columns.size()==rhs.packet_columns.size())
+        return true;
+    for(unsigned i=0;i<packet_columns.size();i++){
+        if(packet_columns[i]==rhs.packet_columns[i])
+            return true;
+    }
+    return false;
+}
+
+void packet::add_column(const collumn &col, std::string name){
+    column_data new_data;
+    new_data.name=name;
+    new_data.role=col.role;
+    new_data.type=col.type;
+    packet_columns.push_back(new_data);
+}
+
+void packet::add_column(std::string name, column_role r, column_type t){
+    column_data cd;
+    cd.name=name;
+    cd.role=r;
+    cd.type=t;
+    packet_columns.push_back(cd);
+}
+
+void packet::remove_column(std::string item){
+    int i=0;
+    for(i;i<packet_columns.size();i++){
+        if(packet_columns[i].name==item){
+            packet_columns.erase(packet_columns.begin()+i);
+            return;
+        }
+    }
+}
+
+bool column_data::operator!=(const column_data &rhs) const{
+    return name!=rhs.name && role!=rhs.role && type!=rhs.type;
+}
+
+bool column_data::operator==(const column_data &rhs) const{
+    return name==rhs.name && role==rhs.role && type==rhs.type;
 }

@@ -34,21 +34,31 @@ knn_node::knn_node(int width, int height) : node(width,height,2){
 
 void knn_node::run()
 {
-
+    table train =inputs[0]->get_table();
+    table test = inputs[0]->get_table();
+    train.pop("partition");
+    test.pop("partition");
+    test.pop(train.get_target());
+    classifier.fit(train);
+    t = classifier.predict(test);
+    outputs[0]->send_data(t);
 }
 
 void knn_node::on_input_changed()
 {
-    t=inputs[0]->get_table();
-    t.pop("partition");
+    packet msg = inputs[0]->get_packet();
+    msg.add_column("assigned",column_role::INPUT,column_type::CONTINUOUS);
+    outputs[0]->send_packet(msg);
+}
+
+packet knn_node::get_msg()
+{
+    packet msg = inputs[0]->get_packet();
+    msg.add_column("assigned",column_role::INPUT,column_type::CONTINUOUS);
+    return msg;
 }
 
 void knn_node::preview_b() {
-    classifier.fit(t);
-    table test=inputs[0]->get_table();
-    test.pop("partition");
-    test.pop(t.get_target());
-    t=classifier.predict(test);
     preview();
 }
 

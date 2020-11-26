@@ -40,22 +40,32 @@ void partition_node::preview_b() {
 }
 
 void partition_node::on_input_changed(){
-    t=inputs[0]->get_table();
-    needs_update=true;
+    packet msg = inputs[0]->get_packet();
+    msg.add_column("partition",column_role::PARTITION,column_type::NOMINAL);
+    outputs[0]->send_packet(msg);
+    outputs[1]->send_packet(msg);
+    needs_update = true;
 }
 
 void partition_node::run()
 {
-
-}
-
-void partition_node::changed(int i){
-    Q_UNUSED(i);
     t=inputs[0]->get_table();
     partition(t,(double)sb_percent.value()/100.0,sb_random.value());
 
     outputs[0]->send_data(t[t.where("partition",[](auto x){return x==entry("training");})]);
     outputs[1]->send_data(t[t.where("partition",[](auto x){return x==entry("test");})]);
     needs_update=false;
+}
+
+packet partition_node::get_msg()
+{
+    packet msg = inputs[0]->get_packet();
+    msg.add_column("partition",column_role::PARTITION,column_type::NOMINAL);
+    return msg;
+}
+
+void partition_node::changed(int i){
+    Q_UNUSED(i);
+
 }
 

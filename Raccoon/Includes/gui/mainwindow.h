@@ -23,6 +23,9 @@ public:
 
 public slots:
     void drop_action();
+private slots:
+    void on_action_run_triggered();
+
 private:
     Ui::MainWindow *ui;
 };

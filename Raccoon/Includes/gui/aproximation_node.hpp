@@ -26,6 +26,7 @@ public slots:
     void preview_b();
     void changed();
     void help_func(const QString &text);
+    void list_changed(QListWidgetItem *item);
 
 };
 

@@ -11,6 +11,7 @@ public:
     partition_node(int width, int height);
     void on_input_changed() override;
     void run() override;
+    packet get_msg() override;
 private:
     QSpinBox sb_percent;
     QSpinBox sb_random;

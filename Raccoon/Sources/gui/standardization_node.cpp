@@ -23,14 +23,30 @@ void standardization_node::preview_b() {
 void standardization_node::on_input_changed()
 {
     columns.clear();
-    for(const auto& it:inputs[0]->get_table().col_names())
-        columns.addItem(QString::fromStdString(it));
-    needs_update=true;
+    packet msg = inputs[0]->get_packet();
+    for(const auto& it:msg.packet_columns){
+        QListWidgetItem *l_item =new QListWidgetItem();
+        l_item->setText(QString::fromStdString(it.name));
+        l_item->setFlags(l_item->flags() | Qt::ItemIsUserCheckable);
+        l_item->setCheckState(Qt::Unchecked);
+        columns.addItem(l_item);
+    }
+    needs_update = true;
 }
 
 void standardization_node::run()
 {
+    t=inputs[0]->get_table();
+    for(int i=0;i<columns.count();i++){
+        if(columns.item(i)->checkState()==Qt::CheckState::Checked)
+        {
+            standardize(t,columns.item(i)->text().toStdString());
+        }
+    }
 
+    outputs[0]->send_data(t);
+
+    needs_update=false;
 }
 
 void standardization_node::list_changed()

@@ -21,6 +21,8 @@ public:
     dbscan_node(int width, int height);
     void run() override;
     void on_input_changed() override;
+    packet get_msg() override;
+
     ~dbscan_node() = default;
 public slots:
     void preview_b();

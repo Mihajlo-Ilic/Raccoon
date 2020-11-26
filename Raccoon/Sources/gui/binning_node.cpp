@@ -1,13 +1,18 @@
 #include "../../Includes/gui/binning_node.hpp"
 #include "../../Includes/transformations.hpp"
-
+#include<iostream>
 void binning_node::on_input_changed()
 {
-    t=inputs[0]->get_table();
     listWidget.clear();
-    for(const auto& it:inputs[0]->get_table().col_names())
-        listWidget.addItem(QString::fromStdString(it));
-    needs_update=true;
+    packet msg = inputs[0]->get_packet();
+    for(const auto& it:msg.packet_columns){
+        QListWidgetItem *l_item =new QListWidgetItem();
+        l_item->setText(QString::fromStdString(it.name));
+        l_item->setFlags(l_item->flags() | Qt::ItemIsUserCheckable);
+        l_item->setCheckState(Qt::Unchecked);
+        listWidget.addItem(l_item);
+    }
+    needs_update = true;
 }
 
 binning_node::binning_node(int width, int height) : node(width,height,1)
@@ -21,7 +26,7 @@ binning_node::binning_node(int width, int height) : node(width,height,1)
     binningShuffleLabel.setParent(&body);
     previewBtn.setParent(&body);
 
-    listWidget.setSelectionMode(QAbstractItemView::MultiSelection);
+    listWidget.setSelectionMode(QAbstractItemView::NoSelection);
     binningMethodLabel.setText("Method:");
     binningShuffleLabel.setText("Representation:");
     binningMethod.addItem("binning width");
@@ -40,29 +45,26 @@ binning_node::binning_node(int width, int height) : node(width,height,1)
     connect(&previewBtn,SIGNAL(clicked()),this,SLOT(preview_b()));
     connect(&binningShuffle,SIGNAL(currentTextChanged(QString )),this,SLOT(changed( QString )));
     connect(&binningMethod,SIGNAL(currentTextChanged(QString )),this,SLOT(changed( QString )));
-    connect(&listWidget,SIGNAL(itemSelectionChanged()),this,SLOT(list_changed()));
+    connect(&listWidget,SIGNAL(itemChanged(QListWidgetItem *)),this,SLOT(list_changed(QListWidgetItem *)));
 }
 
 void binning_node::run()
 {
-
-}
-
-void binning_node::list_changed()
-{
     t=inputs[0]->get_table();
-    for(const auto& it:listWidget.selectedItems()){
-
+    for(int i=0;i<listWidget.count();i++){
+        if(listWidget.item(i)->checkState()==Qt::CheckState::Checked)
+        {
         if(binningMethod.currentText()=="binning width")
-            binning_width(t,it->text().toStdString(),1);
+            binning_width(t,listWidget.item(i)->text().toStdString(),1);
         if(binningMethod.currentText()=="binning frequency")
-            binning_frequency(t,it->text().toStdString(),1);
+            binning_frequency(t,listWidget.item(i)->text().toStdString(),1);
 
 
         if(binningShuffle.currentText()=="By mean")
-            binning_mean(t,it->text().toStdString(),1);
+            binning_mean(t,listWidget.item(i)->text().toStdString(),1);
         if(binningShuffle.currentText()=="By border")
-            binning_boundry(t,it->text().toStdString(),1);
+            binning_boundry(t,listWidget.item(i)->text().toStdString(),1);
+        }
     }
 
     outputs[0]->send_data(t);
@@ -70,12 +72,34 @@ void binning_node::list_changed()
     needs_update=false;
 }
 
+packet binning_node::get_msg()
+{
+    packet msg = inputs[0]->get_packet();
+    for(int i=0;i<listWidget.count();i++)
+        if(listWidget.item(i)->checkState()==Qt::CheckState::Checked)
+        {
+            msg.add_column("bin_"+listWidget.item(i)->text().toStdString(),column_role::INPUT,column_type::CONTINUOUS);
+        }
+    return msg;
+}
+#include<iostream>
+void binning_node::list_changed(QListWidgetItem *item)
+{
+    packet msg = inputs[0]->get_packet();
+    for(int i=0;i<listWidget.count();i++)
+        if(listWidget.item(i)->checkState()==Qt::CheckState::Checked)
+        {
+            msg.add_column("bin_"+listWidget.item(i)->text().toStdString(),column_role::INPUT,column_type::CONTINUOUS);
+        }
+    outputs[0]->send_packet(msg);
+}
+
 
 
 void binning_node::changed(const QString &s)
 {
     Q_UNUSED(s);
-    list_changed();
+
 }
 
 void binning_node::preview_b() {

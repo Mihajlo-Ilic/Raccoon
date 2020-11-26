@@ -25,6 +25,7 @@ public:
     k_mean_cluster_node(int width, int height);
     void run() override;
     void on_input_changed() override;
+    packet get_msg() override;
 public slots:
     void preview_b();
     void combo_changed(QString str);

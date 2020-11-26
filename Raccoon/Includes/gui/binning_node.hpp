@@ -19,13 +19,15 @@ private:
     QLabel binningShuffleLabel;
     QPushButton previewBtn;
 public:
-    void on_input_changed();
+    void on_input_changed() override;
     binning_node(int width, int height);
     void run() override;
+
+    packet get_msg() override;
 public slots:
     void changed(const QString& s);
     void preview_b();
-    void list_changed();
+    void list_changed(QListWidgetItem *);
 
 };
 

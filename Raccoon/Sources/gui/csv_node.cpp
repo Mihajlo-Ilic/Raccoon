@@ -16,10 +16,8 @@ csv_node::csv_node(int width, int height) : node(width,height,0){
     colomns.setParent(&body);
     colomns.setGeometry(geometry().x() + 10, geometry().y() + 50, 100, 150);
     previewBtn.setParent(&body);
-    runBtn.setParent(&body);
-    previewBtn.setGeometry(geometry().x() + 140,geometry().y() + 205, 50,20);
+    previewBtn.setGeometry(geometry().x() + 170,geometry().y() + 185, 70,30);
     runBtn.setGeometry(geometry().x() + 200,geometry().y() + 205, 30,20);
-    runBtn.setText("run");
     previewBtn.setText("preview");
 
     role_box.setParent(&body);
@@ -33,8 +31,8 @@ csv_node::csv_node(int width, int height) : node(width,height,0){
     role_l.setGeometry(geometry().x() + 125, geometry().y() + 50, 100, 30);
     role_box.setGeometry(geometry().x() + 120, geometry().y() + 70, 100, 30);
 
-    type_l.setGeometry(geometry().x() + 125, geometry().y() + 130, 100, 30);
-    type_box.setGeometry(geometry().x() + 120, geometry().y() + 150, 100, 30);
+    type_l.setGeometry(geometry().x() + 125, geometry().y() + 100, 100, 30);
+    type_box.setGeometry(geometry().x() + 120, geometry().y() + 130, 100, 30);
 
 
     connect(&browseBtn,SIGNAL(clicked()),this,SLOT(browse()));
@@ -69,11 +67,10 @@ void csv_node::load() {
         colomns.addItem(QString::fromStdString(it));
 
 
-    outputs[0]->send_data(t);
+    outputs[0]->send_packet(packet(t));
 
     }
     needs_update = false;
-    std::cout<<needs_update<<std::endl;
 }
 
 void csv_node::preview_slot() {
@@ -99,6 +96,7 @@ void csv_node::type_changed(QString ty)
             t[col].type=NOMINAL;
         if(ty=="Ordinal")
             t[col].type=ORDINAL;
+        outputs[0]->send_packet(packet(t));
     }
 }
 
@@ -112,6 +110,7 @@ void csv_node::role_changed(QString rol)
             t[col].role=PARTITION;
         if(rol=="Target")
             t[col].role=TARGET;
+        outputs[0]->send_packet(packet(t));
     }
 }
 
@@ -126,11 +125,7 @@ void csv_node::browse() {
 }
 
 void csv_node::run()  {
-    if(needs_update)
-    {
-        std::string path = edit.text().toStdString();
-        t = loadFromFile(path);
-    }
+    outputs[0]->send_data(t);
 }
 
 void csv_node::on_input_changed()

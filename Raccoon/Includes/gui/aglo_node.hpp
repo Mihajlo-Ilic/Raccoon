@@ -21,6 +21,7 @@ public:
     void on_input_changed() override;
     void run() override;
     void preview() override;
+    packet get_msg() override;
     void make_dendogram(QGraphicsScene &scene);
 private:
     QComboBox combo_func;

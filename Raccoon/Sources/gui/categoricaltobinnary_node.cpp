@@ -11,32 +11,36 @@ categoricalToBinnary_node::categoricalToBinnary_node(int width,int height) : nod
 
     selectLabel.setText("Select attribute:");
     previewBtn.setText("preview");
-    listWidget.setSelectionMode(QAbstractItemView::MultiSelection);
+    listWidget.setSelectionMode(QAbstractItemView::NoSelection);
 
     selectLabel.setGeometry(geometry().x() + 10,geometry().y() + 10,100,20);
     listWidget.setGeometry(geometry().x() + 10,geometry().y() + 40,230,150);
     previewBtn.setGeometry(geometry().x() + 190,geometry().y() + 200,50,20);
 
     connect(&previewBtn,SIGNAL(clicked()),this,SLOT(preview_b()));
-    connect(&listWidget,SIGNAL(itemSelectionChanged()),this,SLOT(list_changed()));
+    connect(&listWidget,SIGNAL(itemChanged(QListWidgetItem *)),this,SLOT(list_changed(QListWidgetItem *)));
 
 }
 
 void categoricalToBinnary_node::on_input_changed()
 {
-    t=inputs[0]->get_table();
     listWidget.clear();
-    for(const auto& it:inputs[0]->get_table().col_names())
-        listWidget.addItem(QString::fromStdString(it));
-    needs_update=true;
+    packet msg = inputs[0]->get_packet();
+    for(const auto& it:msg.packet_columns){
+
+        QListWidgetItem *l_item =new QListWidgetItem();
+        l_item->setText(QString::fromStdString(it.name));
+        l_item->setFlags(l_item->flags() | Qt::ItemIsUserCheckable);
+        l_item->setCheckState(Qt::Unchecked);
+        if(it.type!=NOMINAL){
+            l_item->setFlags(l_item->flags() & ~Qt::ItemIsEnabled);
+        }
+        listWidget.addItem(l_item);
+    }
+    needs_update = true;
 }
 
 void categoricalToBinnary_node::run()
-{
-
-}
-
-void categoricalToBinnary_node::list_changed()
 {
     t=inputs[0]->get_table();
     for(const auto& it:listWidget.selectedItems())
@@ -45,6 +49,39 @@ void categoricalToBinnary_node::list_changed()
     outputs[0]->send_data(t);
 
     needs_update=false;
+
+    t=inputs[0]->get_table();
+    for(int i=0;i<listWidget.count();i++)
+        if(listWidget.item(i)->checkState()==Qt::CheckState::Checked)
+        {
+            categorical_to_binary(t,listWidget.item(i)->text().toStdString());
+        }
+
+    outputs[0]->send_data(t);
+
+    needs_update=false;
+}
+
+packet categoricalToBinnary_node::get_msg()
+{
+    packet msg = inputs[0]->get_packet();
+    for(int i=0;i<listWidget.count();i++)
+        if(listWidget.item(i)->checkState()==Qt::CheckState::Checked)
+        {
+            msg.add_column("bin_"+listWidget.item(i)->text().toStdString(),column_role::INPUT,column_type::CONTINUOUS);
+        }
+    return msg;
+}
+
+void categoricalToBinnary_node::list_changed(QListWidgetItem *item)
+{
+    packet msg = inputs[0]->get_packet();
+    for(int i=0;i<listWidget.count();i++)
+        if(listWidget.item(i)->checkState()==Qt::CheckState::Checked)
+        {
+            msg.add_column("bin_"+listWidget.item(i)->text().toStdString(),column_role::INPUT,column_type::CONTINUOUS);
+        }
+    outputs[0]->send_packet(msg);
 }
 
 

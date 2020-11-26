@@ -11,7 +11,7 @@ aproximation_node::aproximation_node(int width,int height) : node(width,height)
     previewBtn.setParent(&body);
     editAprox.setParent(&body);
 
-    columns.setSelectionMode(QAbstractItemView::MultiSelection);
+    columns.setSelectionMode(QAbstractItemView::NoSelection);
     aproximationLabel.setText("Choose method and attribute:");
     aproximationCombo.addItem("By mean");
     aproximationCombo.addItem("By user adding");
@@ -26,7 +26,7 @@ aproximation_node::aproximation_node(int width,int height) : node(width,height)
     previewBtn.setGeometry(geometry().x() + 190,geometry().y() + 200,50,20);
 
     connect(&previewBtn,SIGNAL(clicked()),this,SLOT(preview_b()));
-    connect(&columns,SIGNAL(itemSelectionChanged()),this,SLOT(changed()));
+    connect(&columns,SIGNAL(itemChanged(QListWidgetItem *)),this,SLOT(list_changed(QListWidgetItem *)));
     connect(&aproximationCombo,SIGNAL(currentTextChanged(QString )),this,SLOT(help_func( QString )));
     connect(&editAprox,SIGNAL(textChanged(QString)),this,SLOT(help_func(QString)));
 }
@@ -41,35 +41,48 @@ void aproximation_node::changed()
         editAprox.show();
     else
         editAprox.hide();
-    table curr=inputs[0]->get_table();
-    for(const auto& it:columns.selectedItems()){
-        if(aproximationCombo.currentText()=="By user adding")
-            aproximation_val(curr,it->text().toStdString(),editAprox.text().toDouble());
-    if(aproximationCombo.currentText()=="By mean")
-        aproximation_mean(curr,it->text().toStdString());
-    }
-    t=curr;
-
-    outputs[0]->send_data(t);
-
-    needs_update=false;
 }
 
 void aproximation_node::on_input_changed()
 {
     columns.clear();
-    for(const auto& it:inputs[0]->get_table().col_names())
-        columns.addItem(QString::fromStdString(it));
-    t=inputs[0]->get_table();
+    packet msg = inputs[0]->get_packet();
+    for(const auto& it:msg.packet_columns){
+        QListWidgetItem *l_item =new QListWidgetItem();
+        l_item->setText(QString::fromStdString(it.name));
+        l_item->setFlags(l_item->flags() | Qt::ItemIsUserCheckable);
+        l_item->setCheckState(Qt::Unchecked);
+        columns.addItem(l_item);
+    }
+    needs_update = true;
 }
 
 void aproximation_node::run()
 {
 
+    t=inputs[0]->get_table();
+    for(int i=0;i<columns.count();i++){
+        if(columns.item(i)->checkState()==Qt::CheckState::Checked)
+        {
+          if(aproximationCombo.currentText()=="By user adding")
+              aproximation_val(t,columns.item(i)->text().toStdString(),editAprox.text().toDouble());
+            else
+          if(aproximationCombo.currentText()=="By mean")
+              aproximation_mean(t,columns.item(i)->text().toStdString());
+        }
+    }
+    outputs[0]->send_data(t);
+    needs_update=false;
 }
 
 void aproximation_node::help_func(const QString &text){
     Q_UNUSED(text);
     changed();
+}
+
+void aproximation_node::list_changed(QListWidgetItem *item)
+{
+    packet msg = inputs[0]->get_packet();
+    outputs[0]->send_packet(msg);
 }
 

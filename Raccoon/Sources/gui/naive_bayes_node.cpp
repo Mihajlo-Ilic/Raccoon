@@ -33,20 +33,27 @@ nb_node::nb_node(int width, int height) : node(width,height,2){
 
 void nb_node::run()
 {
-
+    table train = inputs[0]->get_table();
+    table test = inputs[1]->get_table();
+    classifier.fit(train);
+    test.pop(train.get_target());
+    t=classifier.predict(test);
 }
 
 void nb_node::on_input_changed()
 {
-    t=inputs[0]->get_table();
-    t.pop("partition");
+    packet msg = inputs[0]->get_packet();
+    msg.add_column("assigned",column_role::INPUT,column_type::CONTINUOUS);
+    outputs[0]->send_packet(msg);
+}
+
+packet nb_node::get_msg()
+{
+    packet msg = inputs[0]->get_packet();
+    msg.add_column("assigned",column_role::INPUT,column_type::CONTINUOUS);
+    return msg;
 }
 
 void nb_node::preview_b() {
-    classifier.fit(t);
-    table r=inputs[1]->get_table();
-    r.pop("partition");
-    r.pop(r.get_target());
-    t=classifier.predict(r);
     preview();
 }

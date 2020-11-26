@@ -66,22 +66,93 @@ aglo_node::aglo_node(int width, int height):node(width,height,1)
 
 void aglo_node::on_input_changed()
 {
-    t=inputs[0]->get_table();
-    t.pop("partition");
-    t.pop(t.get_target());
+    auto p = inputs[0]->get_packet();
+    p.add_column("cluster",column_role::INPUT,column_type::CONTINUOUS);
+    outputs[0]->send_packet(p);
 }
-
+#include<iostream>
 void aglo_node::run()
 {
-
+    table c=inputs[0]->get_table();
+    c.pop("partition");
+    c.pop(c.get_target());
+    c.pop("cluster");
+    t = model.predict(c);
+    outputs[0]->send_data(c);
 }
 
+#include<unordered_map>
+double a(table& t,int red,table &racunanje){
+    double sum = 0.0;
+    double n = 0.0;
+    for(int i=0;i<t.row_n();i++)
+        if(i!=red && t["cluster"][i].get_string()==t["cluster"][red].get_string()){
+            sum+=euclidean_dist(racunanje[red],racunanje[i]);
+            n+=1.0;
+        }
+    if(n != 0.0)
+        return sum/n;
+    else return 0.0;
+}
+
+double b(table& t,int red,table& racunanje){
+    std::unordered_map<std::string,std::pair<double,double>> mapa;
+
+    //inicijalizujemo pomagacku memoriju napomena : ovo se moze ubrzati tako da se samo jednom po pozivu sileta koeficijent ovo radi
+    //tako sto se radi u silueta funkciji pa se prosledi mapa sa 0,0 parovima funkciji b
+
+    auto clusteri = t["cluster"].unique();
+    for(auto cluster : clusteri)
+        if(cluster.get_string() != t["cluster"][red].get_string()){
+            mapa[cluster.get_string()] = std::make_pair(0,0);
+        }
+
+    //racunamo distance i azuriramo u memoriju
+    for(int i=0;i<t.row_n();i++){
+        if(t["cluster"][i].get_string()!=t["cluster"][red].get_string()){
+            std::string naziv = t["cluster"][i].get_string();
+            mapa[naziv].first+= euclidean_dist(racunanje[i],racunanje[red]);
+            mapa[naziv].second+=1.0;
+        }
+    }
+
+    //uzimamo najmanju
+    std::string ime;
+    double m = std::numeric_limits<double>::max();
+    for(auto &it:mapa)
+        if( (it.second.first/it.second.second) < m){
+            ime = it.first;
+            m = it.second.first;
+        }
+   // std::cout<<"\nklaster " <<ime<<"je najmanja distanca sa "<<mapa[ime].first/mapa[ime].second<<std::endl;
+    return mapa[ime].first/mapa[ime].second;
+}
+
+double silueta(table& t){
+    table racunanje = t;
+    racunanje.pop("cluster");
+    double n = 0.0;
+    double sum = 0.0;
+    for(int i=0;i<t.row_n();i++){
+        double red_a = a(t,i,racunanje);
+        double red_b = b(t,i,racunanje);
+        if(red_a!=0){
+            sum +=(red_b-red_a)/(std::max(red_b,red_a));
+
+        }
+        n+=1.0;
+    }
+    return sum/n;
+}
+
+#include<iostream>
 void aglo_node::preview_b()
 {
     t.pop("partition");
     t.pop("cluster");
     t.pop(t.get_target());
     t=model.predict(t);
+    std::cout<<silueta(t)<<std::endl;
     preview();
 }
 #include<iostream>
@@ -233,6 +304,7 @@ void aglo_node::preview(){
     QTableWidget data_table;
     make_QTable(data_table,t);
 
+
     QFrame *tool_frame=new QFrame();
     QFormLayout *tool_layout=new QFormLayout();
     tool_frame->setLayout(tool_layout);
@@ -273,6 +345,11 @@ void aglo_node::preview(){
     tool_layout->addRow("text size:",&text_size_box);
     text_size_box.setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
 
+    //scene color
+    QPushButton scene_color_combo;
+    scene_color_combo.setStyleSheet("background-color:"+tab_gscene.backgroundBrush().color().name());
+    tool_layout->addRow("scene color:",&scene_color_combo);
+    scene_color_combo.setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
 
     //line color
     QPushButton line_color_combo;
@@ -295,6 +372,15 @@ void aglo_node::preview(){
     for(unsigned i=0;i<clusts.size();i++){
         int rand_number = rand();
         cluster_colors[clusts[i].get_string()] = QColor(130+rand_number%125,130+(rand_number/255)%125,130+(rand_number/(255*255))%125);
+    }
+
+    for(auto it:clusts){
+        for(auto& entry : data_table.findItems(QString::fromStdString(it.get_string()),Qt::MatchExactly)){
+                if(data_table.horizontalHeaderItem(entry->column())->text() =="cluster"){
+                    entry->setBackground(cluster_colors[it.get_string()]);
+                    entry->setForeground(QColor(0,0,0));
+                }
+        }
     }
 
     //show text
@@ -338,6 +424,12 @@ void aglo_node::preview(){
         p.setWidth(w);
         x_axis.setPen(p);
         y_axis.setPen(p);
+    });
+
+    connect(&scene_color_combo, &QPushButton::clicked, [this,&scene_color_combo]() {
+        QColor col = QColorDialog::getColor();
+        scene_color_combo.setStyleSheet("background-color:"+col.name());
+        tab_gscene.setBackgroundBrush(col);
     });
 
     connect(&x_seg_box, QOverload<int>::of(&QSpinBox::valueChanged),[=,&y_seg_box](int i){
@@ -392,19 +484,23 @@ void aglo_node::preview(){
         }
     });
 
-    connect(&reset_btn, &QPushButton::clicked, [this,&y_seg_box,&x_seg_box,&line_color_combo,&text_color_combo,&line_width_box
-            ,&check_text,&text_size_box]() {
+    connect(&reset_btn, &QPushButton::clicked, [&]() {
         y_seg_box.setValue(100);
         x_seg_box.setValue(100);
         QColor col{255,255,255};
         line_color_combo.setStyleSheet("background-color:"+col.name());
         text_color_combo.setStyleSheet("background-color:"+col.name());
 
+
+
         QPen p{col};
         p.setWidth(2);
         x_axis.setPen(p);
         y_axis.setPen(p);
 
+        scene_color_combo.setStyleSheet("background-color:"+QColor(0,0,0).name());
+        tab_gscene.setBackgroundBrush(QBrush());
+        tab_gview.setStyleSheet("QGraphicsView { background : qlineargradient(spread:pad, x1:0.524092, y1:1, x2:0.518, y2:0, stop:0 rgba(60, 60, 60, 255), stop:1 rgba(73, 73, 73, 255)) }");
         for(auto it:x_texts)
             it->setBrush(QColor(col));
         for(auto it:y_texts)
@@ -422,6 +518,13 @@ void aglo_node::preview(){
     });
 
     tablePreview->exec();
+}
+
+packet aglo_node::get_msg()
+{
+    packet msg=inputs[0]->get_packet();
+    msg.add_column("cluster",column_role::INPUT,column_type::CONTINUOUS);
+    return msg;
 }
 
 

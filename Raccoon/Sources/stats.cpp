@@ -89,7 +89,7 @@ double manhattan_dist(const row &r1, const row &r2) {
     }
     return sum;
 }
-
+#include<iostream>
 double euclidean_dist(const row &r1, const row &r2) {
     double sum = 0;
     for(auto it1 = r1.begin(), it2 = r2.begin(); it1 != r1.end() && it2 != r2.end(); ++it1, ++it2) {

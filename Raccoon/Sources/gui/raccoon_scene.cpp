@@ -188,7 +188,7 @@ void raccoon_scene::dropEvent(QGraphicsSceneDragDropEvent *event){
     if(selected_input && selected_output){
         edge * e = new edge((input_connector*)selected_input,
                             (output_connector*)selected_output);
-        if(has_cycle(scene_nodes))
+        if(has_cycle(scene_nodes)==false)
             e->add_to_scene(this);
         else
             delete e;
@@ -205,7 +205,7 @@ raccoon_scene* raccoon_scene::get_instance(int width,int height){
     }
     return nullptr;
 }
-
+#include<iostream>
 //TOP SORT FOR RUNNING THE SCENE
 void raccoon_scene::run_graph(){
     std::map<node*, int> helper;
@@ -222,7 +222,9 @@ void raccoon_scene::run_graph(){
             auto curr = q.front();
             q.pop();
             curr->run();
-            for(auto it:curr->get_output_nodes()) {
+            if(curr->used_outputs() ==0)
+                curr->preview();
+            for(auto& it:curr->get_output_nodes()) {
                 helper[it]--;
                 if(helper[it] == 0)
                     q.push(it);

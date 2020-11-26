@@ -35,17 +35,28 @@ k_mean_cluster_node::k_mean_cluster_node(int width,int height) : node(width,heig
 
 void k_mean_cluster_node::run()
 {
-
+    t=inputs[0]->get_table();
+    model.fit(t);
+    t=model.predict(t,0);
+    outputs[0]->send_data(t);
 }
 
 void k_mean_cluster_node::on_input_changed()
 {
-    t=inputs[0]->get_table();
-    model.fit(t);
+    packet msg = inputs[0]->get_packet();
+    msg.add_column("cluster",column_role::INPUT,column_type::CONTINUOUS);
+    outputs[0]->send_packet(msg);
 }
 
+packet k_mean_cluster_node::get_msg()
+{
+    packet msg=inputs[0]->get_packet();
+    msg.add_column("cluster",column_role::INPUT,column_type::CONTINUOUS);
+    return msg;
+}
+
+
 void k_mean_cluster_node::preview_b() {
-    t=model.predict(t,0);
     preview();
 }
 

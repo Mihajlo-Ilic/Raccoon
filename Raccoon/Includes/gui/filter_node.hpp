@@ -13,9 +13,10 @@ public:
     filter_node(int width, int height);
     void on_input_changed() override;
     void run() override;
+    packet get_msg() override;
 public slots:
     void preview_b();
-    void list_changed();
+    void list_changed(QListWidgetItem *);
 private:
       QLabel columns_lbl;
       QListWidget columns;

@@ -10,42 +10,64 @@ filter_node::filter_node(int width, int height) : node(width, height, 1)
 
     columns.setParent(&body);
     columns.setGeometry(10, 30, 230, 140);
-    columns.setSelectionMode(QAbstractItemView::MultiSelection);
+    columns.setSelectionMode(QAbstractItemView::NoSelection);
 
     preview_btn.setParent(&body);
     preview_btn.setGeometry(180, 180, 60, 30);
     preview_btn.setText("preview");
 
     connect(&preview_btn, SIGNAL(clicked()), this, SLOT(preview_b()));
-    connect(&columns,SIGNAL(itemSelectionChanged()),this,SLOT(list_changed()));
+    connect(&columns,SIGNAL(itemChanged(QListWidgetItem *)),this,SLOT(list_changed(QListWidgetItem *)));
 }
 
 void filter_node::on_input_changed()
 {
-    t=inputs[0]->get_table();
     columns.clear();
-    for(const auto& it:inputs[0]->get_table().col_names())
-        columns.addItem(QString::fromStdString(it));
-    needs_update=true;
+    packet msg = inputs[0]->get_packet();
+    for(const auto& it:msg.packet_columns){
+        QListWidgetItem *l_item =new QListWidgetItem();
+        l_item->setText(QString::fromStdString(it.name));
+        l_item->setFlags(l_item->flags() | Qt::ItemIsUserCheckable);
+        l_item->setCheckState(Qt::Unchecked);
+        columns.addItem(l_item);
+    }
+    needs_update = true;
 }
 
 void filter_node::run()
 {
+    t=inputs[0]->get_table();
+    for(int i=0;i<columns.count();i++)
+        if(columns.item(i)->checkState()==Qt::CheckState::Checked)
+        {
+            t.pop(columns.item(i)->text().toStdString());
+        }
+    outputs[0]->send_data(t);
+    needs_update=false;
+}
 
+packet filter_node::get_msg()
+{
+    packet msg = inputs[0]->get_packet();
+    for(int i=0;i<columns.count();i++)
+        if(columns.item(i)->checkState()==Qt::CheckState::Checked)
+        {
+            msg.remove_column(columns.item(i)->text().toStdString());
+        }
+    return msg;
 }
 
 void filter_node::preview_b() {
     preview();
 }
 
-void filter_node::list_changed()
+void filter_node::list_changed(QListWidgetItem *)
 {
-    table curr=inputs[0]->get_table();
-    for(const auto& it:columns.selectedItems())
-        curr.pop(it->text().toStdString());
-    t=curr;
-
-    outputs[0]->send_data(t);
-
-    needs_update=false;
+    packet msg = inputs[0]->get_packet();
+    for(int i=0;i<columns.count();i++)
+        if(columns.item(i)->checkState()==Qt::CheckState::Checked)
+        {
+            msg.remove_column(columns.item(i)->text().toStdString());
+        }
+    outputs[0]->send_packet(msg);
 }

@@ -22,7 +22,42 @@ class output_connector;
 //helper function makes QTableWidget out of table
 void make_QTable(QTableWidget& qTable,const table &t);
 
+//structs used for representing packets being sent between nodes
+
+struct column_data{
+    bool operator!=(const column_data& rhs) const;
+
+    bool operator==(const column_data& rhs) const;
+
+    std::string name;
+    column_role role;
+    column_type type;
+};
+
+struct packet{
+
+    packet();
+
+    packet(const table& t);
+
+    bool operator!=(const packet& rhs) const;
+
+    bool operator==(const packet& rhs) const;
+
+    void add_column(const collumn& col,std::string name);
+
+    void add_column(std::string name,column_role r,column_type t);
+
+    void remove_column(std::string item);
+
+    std::vector<column_data> packet_columns;
+    int packet_rows;
+
+};
+
+
 //INTERFACE USED TO REPRESENT NODE IN SCENE
+
 
 class node : public QWidget{
     public:
@@ -47,8 +82,11 @@ class node : public QWidget{
 
         void send_data();
 
-    //NEEDED FOR TOPS SORT TO KNOW IN DEGREE
+    //NEEDED FOR TOPS SORT TO KNOW IN DEGREE AND SHOULD IT BE PREVIEWED
         int used_inputs();
+        int used_outputs();
+
+        virtual packet get_msg();
 
         virtual ~node();
     protected:
@@ -65,6 +103,8 @@ class node : public QWidget{
         bool needs_update;
 
         table t;
+
+
 
     private:
         bool dragged;
@@ -84,6 +124,7 @@ class edge : public QGraphicsLineItem{
         void set_end_pos(const QPointF& new_point);
 
         void pass_data(const table& t);
+        void pass_packet(const packet& msg);
         void add_to_scene(QGraphicsScene *scene);
 
         node* get_input_node();
@@ -134,7 +175,10 @@ class input_connector : public connector{
         void disconnect(edge* e) override;
 
         void recieve_data(const table& t);
+        void recieve_packet(const packet& msg);
+
         const table& get_table() const;
+        const packet& get_packet() const;
 
         void add_edge(edge *e) override;
         node* get_output_node();
@@ -144,6 +188,7 @@ class input_connector : public connector{
         input_connector(node *p);
         edge* input_edge;
         table input_table;
+        packet recieved_packet;
     friend class node;
 };
 
@@ -154,11 +199,19 @@ class output_connector : public connector {
         void disconnect(edge* e) override;
 
         void send_data(const table& t);
+        void send_packet(const packet& msg);
 
         void force_send();
 
         void add_edge(edge *e) override;
         std::vector<node *> get_input_nodes();
+        int used_outputs() const{
+            int s=0;
+            for(auto it:output_edges)
+                if(it!=nullptr)
+                    s++;
+            return s;
+        }
 
         ~output_connector();
     private:

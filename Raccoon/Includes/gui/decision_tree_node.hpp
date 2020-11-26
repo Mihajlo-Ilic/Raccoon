@@ -31,6 +31,7 @@ public:
     decision_tree_node(int width, int height);
     void on_input_changed() override;
     void run() override;
+    packet get_msg() override;
 
 };
 
