@@ -22,6 +22,7 @@
 #include"../../Includes/gui/decision_tree_node.hpp"
 #include"../../Includes/gui/dbscan_node.hpp"
 #include"../../Includes/gui/aglo_node.hpp"
+#include"../../Includes/gui/plot_node.hpp"
 
 //instance for singleton pattern
 raccoon_scene *raccoon_scene::instance = nullptr;
@@ -143,7 +144,7 @@ void raccoon_scene::dropEvent(QGraphicsSceneDragDropEvent *event){
         scene_nodes.push_back(n);
     }
     if(event->mimeData()->text()=="table_output_button"){
-        outputTable_node* n=new outputTable_node(250,250);
+        plot_node* n=new plot_node(250,250);
         addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());

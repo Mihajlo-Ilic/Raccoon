@@ -105,7 +105,7 @@ void csv_node::role_changed(QString rol)
     if(colomns.selectedItems().size()>0){
         std::string col = colomns.selectedItems()[0]->text().toStdString();
         if(rol=="Input")
-            t[col].role=INPUT;
+            t[col].role=INPUT_COLUMN;
         if(rol=="Partition")
             t[col].role=PARTITION;
         if(rol=="Target")

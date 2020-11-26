@@ -172,7 +172,7 @@ void row::set_name(const std::string& n_name) {
 
 collumn::collumn():name(""){
     type = CONTINUOUS;
-    role = INPUT;
+    role = INPUT_COLUMN;
 }
 
 collumn::collumn(const std::string& col_name):name(col_name){

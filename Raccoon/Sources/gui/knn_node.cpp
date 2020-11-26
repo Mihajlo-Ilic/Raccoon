@@ -47,14 +47,14 @@ void knn_node::run()
 void knn_node::on_input_changed()
 {
     packet msg = inputs[0]->get_packet();
-    msg.add_column("assigned",column_role::INPUT,column_type::CONTINUOUS);
+    msg.add_column("assigned",column_role::INPUT_COLUMN,column_type::CONTINUOUS);
     outputs[0]->send_packet(msg);
 }
 
 packet knn_node::get_msg()
 {
     packet msg = inputs[0]->get_packet();
-    msg.add_column("assigned",column_role::INPUT,column_type::CONTINUOUS);
+    msg.add_column("assigned",column_role::INPUT_COLUMN,column_type::CONTINUOUS);
     return msg;
 }
 

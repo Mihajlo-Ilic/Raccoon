@@ -49,7 +49,7 @@ decision_tree_node::decision_tree_node(int width, int height) : node(width, heig
 void decision_tree_node::on_input_changed()
 {
     packet msg = inputs[0]->get_packet();
-    msg.add_column("assigned",column_role::INPUT,column_type::CONTINUOUS);
+    msg.add_column("assigned",column_role::INPUT_COLUMN,column_type::CONTINUOUS);
     outputs[0]->send_packet(msg);
 }
 #include<iostream>
@@ -71,7 +71,7 @@ void decision_tree_node::run()
 packet decision_tree_node::get_msg()
 {
     packet msg = inputs[0]->get_packet();
-    msg.add_column("assigned",column_role::INPUT,column_type::CONTINUOUS);
+    msg.add_column("assigned",column_role::INPUT_COLUMN,column_type::CONTINUOUS);
     return msg;
 }
 

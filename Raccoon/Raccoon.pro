@@ -1,4 +1,6 @@
-QT += core gui
+QT += core gui \
+      core gui charts \
+      datavisualization
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -62,6 +64,7 @@ HEADERS += \
     Includes/gui/normalization_node.hpp \
     Includes/gui/outputtable_node.hpp \
     Includes/gui/partition_node.hpp \
+    Includes/gui/plot_node.hpp \
     Includes/gui/raccoon_scene.hpp \
     Includes/gui/standardization_node.hpp \
     Includes/gui/stats_node.hpp \
@@ -95,6 +98,7 @@ SOURCES += \
     Sources/gui/normalization_node.cpp \
     Sources/gui/outputtable_node.cpp \
     Sources/gui/partition_node.cpp \
+    Sources/gui/plot_node.cpp \
     Sources/gui/raccoon_scene.cpp \
     Sources/gui/standardization_node.cpp \
     Sources/gui/stats_node.cpp \

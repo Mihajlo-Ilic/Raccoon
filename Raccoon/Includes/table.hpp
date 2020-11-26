@@ -10,7 +10,7 @@
 class table;
 
 enum column_type{NOMINAL,ORDINAL,CONTINUOUS};
-enum column_role{INPUT,TARGET,PARTITION};
+enum column_role{INPUT_COLUMN,TARGET,PARTITION};
 
 class collumn{
 public:

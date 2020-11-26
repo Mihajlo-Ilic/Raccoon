@@ -67,7 +67,7 @@ aglo_node::aglo_node(int width, int height):node(width,height,1)
 void aglo_node::on_input_changed()
 {
     auto p = inputs[0]->get_packet();
-    p.add_column("cluster",column_role::INPUT,column_type::CONTINUOUS);
+    p.add_column("cluster",column_role::INPUT_COLUMN,column_type::CONTINUOUS);
     outputs[0]->send_packet(p);
 }
 #include<iostream>
@@ -523,7 +523,7 @@ void aglo_node::preview(){
 packet aglo_node::get_msg()
 {
     packet msg=inputs[0]->get_packet();
-    msg.add_column("cluster",column_role::INPUT,column_type::CONTINUOUS);
+    msg.add_column("cluster",column_role::INPUT_COLUMN,column_type::CONTINUOUS);
     return msg;
 }
 

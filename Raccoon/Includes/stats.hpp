@@ -44,5 +44,10 @@ double recall(const table &data, const table &classified, std::string target);
 
 table confusion_matrix(const table &data, const table &classified, std::string target);
 
+double a_function(table& t,int red,table& racunanje);
+
+double b_function(table& t,int red,table& racunanje);
+
+double siluette_coef(table& t);
 
 #endif // STATS_HPP

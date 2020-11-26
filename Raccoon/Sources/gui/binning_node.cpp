@@ -78,7 +78,7 @@ packet binning_node::get_msg()
     for(int i=0;i<listWidget.count();i++)
         if(listWidget.item(i)->checkState()==Qt::CheckState::Checked)
         {
-            msg.add_column("bin_"+listWidget.item(i)->text().toStdString(),column_role::INPUT,column_type::CONTINUOUS);
+            msg.add_column("bin_"+listWidget.item(i)->text().toStdString(),column_role::INPUT_COLUMN,column_type::CONTINUOUS);
         }
     return msg;
 }
@@ -89,7 +89,7 @@ void binning_node::list_changed(QListWidgetItem *item)
     for(int i=0;i<listWidget.count();i++)
         if(listWidget.item(i)->checkState()==Qt::CheckState::Checked)
         {
-            msg.add_column("bin_"+listWidget.item(i)->text().toStdString(),column_role::INPUT,column_type::CONTINUOUS);
+            msg.add_column("bin_"+listWidget.item(i)->text().toStdString(),column_role::INPUT_COLUMN,column_type::CONTINUOUS);
         }
     outputs[0]->send_packet(msg);
 }
