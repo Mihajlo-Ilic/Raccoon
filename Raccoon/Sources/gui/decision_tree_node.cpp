@@ -82,6 +82,7 @@ void decision_tree_node::preview_b() {
 #include <QFormLayout>
 #include <QColorDialog>
 void decision_tree_node::preview() {
+    tab_gscene.clear();
     QDialog *tablePreview=new QDialog();
     tablePreview->setGeometry(400,400,500,500);
     tablePreview->setModal(true);

@@ -217,6 +217,9 @@ std::unordered_map<int, int> max_depth;
 void tree_node::draw_node(QGraphicsScene *scene, int x, int y, int & child_x) {
     QGraphicsRectItem *rect_item = new QGraphicsRectItem(0, 0, NODE_WIDTH, NODE_HEIGHT);
 
+    if(depth == 0)
+        max_depth.clear();
+
     rect_item->setPos(x, y);
     if(max_depth.find(depth) == max_depth.end())
         max_depth[depth] = x + NODE_WIDTH;
