@@ -25,5 +25,6 @@
         <file>Resources/Node_icons/k_means.svg</file>
         <file>Resources/Node_icons/tree.svg</file>
         <file>Resources/Node_icons/dbscan.svg</file>
+        <file>Resources/Node_icons/trash_panda.svg</file>
     </qresource>
 </RCC>

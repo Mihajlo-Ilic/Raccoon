@@ -40,10 +40,10 @@
        inkscape:collect="always"
        xlink:href="#linearGradient3304"
        id="linearGradient3306"
-       x1="99.957375"
-       y1="102.62659"
+       x1="98.890648"
+       y1="94.503983"
        x2="99.881638"
-       y2="35.627239"
+       y2="43.159782"
        gradientUnits="userSpaceOnUse" />
     <inkscape:perspective
        sodipodi:type="inkscape:persp3d"
@@ -70,8 +70,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.98994949"
-     inkscape:cx="198.25869"
-     inkscape:cy="307.84652"
+     inkscape:cx="194.21808"
+     inkscape:cy="105.81601"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
@@ -79,7 +79,7 @@
      units="px"
      inkscape:window-width="1678"
      inkscape:window-height="906"
-     inkscape:window-x="230"
+     inkscape:window-x="218"
      inkscape:window-y="70"
      inkscape:window-maximized="0" />
   <metadata
@@ -90,7 +90,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -103,50 +103,50 @@
        id="g3286"
        style="fill:url(#linearGradient3306);fill-opacity:1;stroke:#000000;stroke-width:1.32292;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke;stop-color:#000000"
        inkscape:perspectiveID="#perspective3284"
-       inkscape:corner0="-0.077560527 : 0.052442968 : 0 : 1"
-       inkscape:corner7="-0.36490168 : 0.0039713353 : 0.75322448 : 1">
+       inkscape:corner0="-0.077560527 : 0.04814613 : 0 : 1"
+       inkscape:corner7="-0.36827837 : 0.0039713353 : 0.75322448 : 1">
       <path
          sodipodi:type="inkscape:box3dside"
          id="path3298"
          style="fill:url(#linearGradient3306);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.32292;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          inkscape:box3dsidetype="11"
-         d="M 102.09602,50.64413 126.7185,50.387898 V 85.301703 L 102.09602,79.570951 Z"
-         points="126.7185,50.387898 126.7185,85.301703 102.09602,79.570951 102.09602,50.64413 " />
+         d="m 102.09602,53.20839 24.97257,0.278396 v 31.896399 l -24.97257,-5.812234 z"
+         points="127.06859,53.486786 127.06859,85.383185 102.09602,79.570951 102.09602,53.20839 " />
       <path
          sodipodi:type="inkscape:box3dside"
          id="path3288"
          style="fill:url(#linearGradient3306);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.32292;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          inkscape:box3dsidetype="6"
-         d="m 74.846982,36.68982 v 52.547221 l 27.249038,-9.66609 V 50.64413 Z"
-         points="74.846982,89.237041 102.09602,79.570951 102.09602,50.64413 74.846982,36.68982 " />
+         d="m 74.846982,41.347944 v 47.889097 l 27.249038,-9.66609 V 53.20839 Z"
+         points="74.846982,89.237041 102.09602,79.570951 102.09602,53.20839 74.846982,41.347944 " />
       <path
          sodipodi:type="inkscape:box3dside"
          id="path3296"
          style="fill:url(#linearGradient3306);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.32292;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          inkscape:box3dsidetype="13"
-         d="M 74.846982,89.237041 116.3432,106.13773 126.7185,85.301703 102.09602,79.570951 Z"
-         points="116.3432,106.13773 126.7185,85.301703 102.09602,79.570951 74.846982,89.237041 " />
+         d="M 74.846982,89.237041 117.05526,106.42774 127.06859,85.383185 102.09602,79.570951 Z"
+         points="117.05526,106.42774 127.06859,85.383185 102.09602,79.570951 74.846982,89.237041 " />
       <path
          sodipodi:type="inkscape:box3dside"
          id="path3290"
          style="fill:url(#linearGradient3306);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.32292;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          inkscape:box3dsidetype="5"
-         d="M 74.846982,36.68982 116.3432,29.816271 126.7185,50.387898 102.09602,50.64413 Z"
-         points="116.3432,29.816271 126.7185,50.387898 102.09602,50.64413 74.846982,36.68982 " />
+         d="m 74.846982,41.347944 42.208278,-4.84783 10.01333,16.986672 -24.97257,-0.278396 z"
+         points="117.05526,36.500114 127.06859,53.486786 102.09602,53.20839 74.846982,41.347944 " />
       <path
          sodipodi:type="inkscape:box3dside"
          id="path3294"
          style="fill:url(#linearGradient3306);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.32292;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          inkscape:box3dsidetype="14"
-         d="M 116.3432,29.816271 V 106.13773 L 126.7185,85.301703 V 50.387898 Z"
-         points="116.3432,106.13773 126.7185,85.301703 126.7185,50.387898 116.3432,29.816271 " />
+         d="M 117.05526,36.500114 V 106.42774 L 127.06859,85.383185 V 53.486786 Z"
+         points="117.05526,106.42774 127.06859,85.383185 127.06859,53.486786 117.05526,36.500114 " />
       <path
          sodipodi:type="inkscape:box3dside"
          id="path3292"
          style="fill:url(#linearGradient3306);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.32292;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          inkscape:box3dsidetype="3"
-         d="M 74.846982,36.68982 116.3432,29.816271 V 106.13773 L 74.846982,89.237041 Z"
-         points="116.3432,29.816271 116.3432,106.13773 74.846982,89.237041 74.846982,36.68982 " />
+         d="m 74.846982,41.347944 42.208278,-4.84783 V 106.42774 L 74.846982,89.237041 Z"
+         points="117.05526,36.500114 117.05526,106.42774 74.846982,89.237041 74.846982,41.347944 " />
     </g>
     <ellipse
        style="fill:#e9e9e9;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke;stop-color:#000000"

@@ -23,10 +23,17 @@
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>Raccon</string>
+   <string>Raccoon</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/res/Resources/Node_icons/trash_panda.svg</normaloff>:/res/Resources/Node_icons/trash_panda.svg</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
+  </property>
+  <property name="toolButtonStyle">
+   <enum>Qt::ToolButtonTextUnderIcon</enum>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="mouseTracking">
@@ -224,9 +231,9 @@ color:red
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-24</y>
-          <width>124</width>
-          <height>1573</height>
+          <y>0</y>
+          <width>174</width>
+          <height>1596</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">

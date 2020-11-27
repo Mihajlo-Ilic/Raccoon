@@ -36,6 +36,7 @@ DISTFILES += \
     Resources/Node_icons/standardization.svg \
     Resources/Node_icons/stats.svg \
     Resources/Node_icons/table_output.svg \
+    Resources/Node_icons/trash_panda.svg \
     Resources/Node_icons/tree.svg \
     Resources/iris.csv \
     Resources/style.qss \

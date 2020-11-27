@@ -49,7 +49,7 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
         }
         Q3DScatter *scatter = new Q3DScatter();
         scatter->setFlags(scatter->flags() ^ Qt::FramelessWindowHint);
-        int b=0;
+        int br=0;
         for(auto it : classInRGB) {
 
             QScatter3DSeries *series = new QScatter3DSeries;
@@ -84,8 +84,8 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
             scatter->addSeries(series);
             float R = it.second%255;
             float G = (it.second/255)%255;
-            float B = it.second/(255*255);
-            scatter->seriesList().at(0)->setBaseColor(QColor::fromRgb(R,G,B));
+            float B = it.second/(255*255)%255;
+            scatter->seriesList().at(br++)->setBaseColor(QColor::fromRgb(R,G,B));
             scatter->setShadowQuality(scatter->ShadowQualityNone);
         }
         scatter->resize(800,600);
@@ -133,7 +133,7 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
             }
             float R = it.second%255;
             float G = (it.second/255)%255;
-            float B = it.second/(255*255);
+            float B = it.second/(255*255)%255;
             scatter->setColor(QColor::fromRgb(R,G,B));
             c->chart()->addSeries(scatter);
             c->chart()->createDefaultAxes();
