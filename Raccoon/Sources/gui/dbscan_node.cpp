@@ -63,31 +63,72 @@ void dbscan_node::run()
 }
 
 void dbscan_node::preview_b() {
+<<<<<<< Updated upstream
+=======
+    t=clusterizer.fit(t);
+>>>>>>> Stashed changes
     preview();
+}
+#include <QDialog>
+#include <QHBoxLayout>
+#include <random>
+void dbscan_node::preview() {
+    QDialog *tablePreview=new QDialog();
+    tablePreview->setGeometry(400,400,500,500);
+    tablePreview->setModal(true);
+
+    QHBoxLayout *dialog_layout=new QHBoxLayout();
+    tablePreview->setLayout(dialog_layout);
+
+    QTabWidget *tabs=new QTabWidget;
+    dialog_layout->addWidget(tabs);
+
+    QTableWidget data_table;
+    make_QTable(data_table,t);
+
+    cluster_colors.clear();
+    auto clusts = t["cluster"].unique();
+    srand(time(NULL));
+    for(unsigned i = 0; i<clusts.size(); i++) {
+        int random_nr = rand();
+        cluster_colors[clusts[i].get_string()] = QColor(130+random_nr%125,130+(random_nr/255)%125,130+(random_nr/(255*255))%125);
+    }
+
+    for(auto it:clusts) {
+        for(auto& entry : data_table.findItems(QString::fromStdString(it.get_string()),Qt::MatchExactly)){
+                        if(data_table.horizontalHeaderItem(entry->column())->text() =="cluster"){
+                            entry->setBackground(cluster_colors[it.get_string()]);
+                            entry->setForeground(QColor(0,0,0));
+                        }
+                }
+    }
+
+    tabs->addTab(&data_table, "Table");
+    tablePreview->exec();
 }
 
 void dbscan_node::metric_change(QString str)
 {
    if(str=="Euclidean")
-       clasterizer.set_metric(euclidean_dist);
+       clusterizer.set_metric(euclidean_dist);
    if(str=="Hamming")
-       clasterizer.set_metric(hamming_dist);
+       clusterizer.set_metric(hamming_dist);
    if(str=="Manhattan")
-       clasterizer.set_metric(manhattan_dist);
+       clusterizer.set_metric(manhattan_dist);
    if(str=="SMC")
-       clasterizer.set_metric(smc_dist);
+       clusterizer.set_metric(smc_dist);
    if(str=="Jaccard")
-       clasterizer.set_metric(zakard_dist);
+       clusterizer.set_metric(zakard_dist);
    if(str=="Cosine")
-       clasterizer.set_metric(cos_dist);
+       clusterizer.set_metric(cos_dist);
 }
 
 void dbscan_node::eps_change(double eps)
 {
-    clasterizer.set_eps(eps);
+    clusterizer.set_eps(eps);
 }
 
 void dbscan_node::num_change(int n)
 {
-    clasterizer.set_n_neighbors(n);
+    clusterizer.set_n_neighbors(n);
 }

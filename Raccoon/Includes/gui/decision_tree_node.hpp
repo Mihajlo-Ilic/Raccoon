@@ -6,6 +6,7 @@
 #include <QSpinBox>
 #include <QDoubleSpinBox>
 #include <QComboBox>
+#include <QGraphicsView>
 
 class decision_tree_node : public node
 {
@@ -20,6 +21,9 @@ private:
     QDoubleSpinBox min_clean_sb;
     QComboBox clean_func;
     QLabel clean_func_lbl;
+
+    QGraphicsView tab_gview;
+    QGraphicsScene tab_gscene;
     decision_tree tree;
 public slots:
     void preview_b();
@@ -31,7 +35,11 @@ public:
     decision_tree_node(int width, int height);
     void on_input_changed() override;
     void run() override;
+<<<<<<< Updated upstream
     packet get_msg() override;
+=======
+    void preview() override;
+>>>>>>> Stashed changes
 
 };
 

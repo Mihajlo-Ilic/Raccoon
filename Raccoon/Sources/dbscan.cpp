@@ -9,6 +9,7 @@ dbscan::dbscan()
     //criterion for core point
     n_neighbors = 4;
     metric = euclidean_dist;
+
 }
 
 void dbscan::set_eps(double eps_) {
@@ -23,7 +24,50 @@ void dbscan::set_metric(std::function<double (row, row)> func) {
     metric = func;
 }
 
-table dbscan::fit(const table& t) {
+std::set<int> dbscan::range_query(int i, const table &t) {
+    std::set<int> neighbors;
+    for(int j = 0; j<t.row_n(); j++) {
+        if(metric(t[i], t[j]) < eps) {
+            neighbors.insert(j);
+        }
+    }
+    return neighbors;
+}
+
+table dbscan::fit(const table &t)
+{
+    table train = t;
+    std::vector<std::set<int>> eps_okolina(t.row_n());
+    for(int i = 0; i<t.row_n(); i++) {
+       eps_okolina[i] = range_query(i, t);
+    }
+
+    train.push("cluster");
+    train["cluster"] = entry(-1); //undefined label
+    int cluster_ctr = 0;
+    for(int i = 0; i<t.row_n(); i++) {
+        if(train["cluster"][i] != entry(-1)) //already clustered
+            continue;
+        if(eps_okolina[i].size() < n_neighbors) {
+            train["cluster"][i] = entry("NOISE");
+            continue;
+        }
+
+        cluster_ctr++;
+        train["cluster"][i] = entry(cluster_ctr);
+        eps_okolina[i].erase(i);
+        for(int v: eps_okolina[i]) {
+            if(train["cluster"][v] == entry("NOISE") || train["cluster"][v] == entry(-1)) //if it's classified as noise or not classified yet, it belongs to current cluster
+                train["cluster"][v] = entry(cluster_ctr);
+            if(eps_okolina[v].size() >= n_neighbors)
+                eps_okolina[i].insert(eps_okolina[v].begin(), eps_okolina[v].end());
+        }
+    }
+
+    return train;
+}
+//Not working; fix later
+table dbscan::fit_alt(const table& t) {
     table train = t;
 
    //int = how many reachable points from point i

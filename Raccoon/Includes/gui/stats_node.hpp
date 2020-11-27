@@ -10,11 +10,13 @@ class stats_node : public node
     Q_OBJECT
 public:
     stats_node(int width, int height);
+    void preview() override;
     void on_input_changed() override;
     void run() override;
 public slots:
     void preview_b();
 private:
+    table stat_table;
     QLabel stats_lbl;
     QListWidget stats;
     QPushButton preview_btn;

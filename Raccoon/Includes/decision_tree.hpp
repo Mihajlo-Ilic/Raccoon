@@ -3,7 +3,7 @@
 #include "../Includes/entry.hpp"
 #include "../Includes/table.hpp"
 #include <unordered_map>
-
+#include <QGraphicsScene>
 double entropy(table t);
 double gini(table t);
 
@@ -17,7 +17,7 @@ public:
     rule();
     std::string get_colname();
     virtual int get_child(entry e) = 0;
-    virtual std::string get_string() = 0;
+    virtual std::vector<std::string> get_string() = 0;
     virtual void add_value(entry val) = 0;
     virtual ~rule() = default;
 
@@ -29,7 +29,7 @@ private:
 public:
     rule_continuous(std::string column, entry val);
     int get_child(entry e) override;
-    std::string get_string() override;
+    std::vector<std::string> get_string() override;
     void add_value(entry val) override;
 };
 
@@ -40,7 +40,7 @@ private:
 public:
     rule_categorical(std::string column);
     int get_child(entry e) override;
-    std::string get_string() override;
+    std::vector<std::string> get_string() override;
     void add_value(entry val) override;
 };
 
@@ -51,6 +51,8 @@ class tree_node {
 private:
     decision_tree * parent;
     unsigned depth;
+    std::unordered_map<std::string, int> n_classes;
+    double score;
     table t;
     rule * split_rule;
     std::vector<tree_node*> children;
@@ -63,7 +65,7 @@ private:
 public:
     friend class decision_tree;
     tree_node(table t, std::function<double(table)> metric, unsigned depth,decision_tree* p);
-    void draw_tree();
+    void draw_node(QGraphicsScene *scene, int x, int y, int & child_x);
     entry classify(row r);
     ~tree_node();
 };
@@ -78,8 +80,10 @@ class decision_tree
     table training_table;
 public:
     decision_tree();
+    std::unordered_map<int, int> levels;
     void set_stop_conditions(unsigned max_depth, int min_rows, double min_clean);
     void set_func(std::function<double(table)> metric);
+    void draw_tree(QGraphicsScene *scene);
     void set_max_depth(int v){
         max_depth=v;
     }

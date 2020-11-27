@@ -16,17 +16,18 @@ private:
     QDoubleSpinBox eps_sb;
     QComboBox metric_cb;
     QLabel metric_lbl;
-    dbscan clasterizer;
+    std::unordered_map<std::string, QColor> cluster_colors;
+    dbscan clusterizer;
 public:
     dbscan_node(int width, int height);
     void run() override;
+    void preview() override;
     void on_input_changed() override;
     packet get_msg() override;
 
     ~dbscan_node() = default;
 public slots:
-    void preview_b();
-
+    void preview_b(); 
     void metric_change(QString str);
     void eps_change(double eps);
     void num_change(int n);

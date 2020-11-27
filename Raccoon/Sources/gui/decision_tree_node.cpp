@@ -1,6 +1,11 @@
 #include "../../Includes/gui/decision_tree_node.hpp"
+<<<<<<< Updated upstream
 #include <chrono>
 
+=======
+#include <QDialog>
+#include <QHBoxLayout>
+>>>>>>> Stashed changes
 decision_tree_node::decision_tree_node(int width, int height) : node(width, height, 2) {
     header_text.setText("DECISION TREE");
 
@@ -78,6 +83,141 @@ packet decision_tree_node::get_msg()
 void decision_tree_node::preview_b() {
     preview();
 }
+#include <QFormLayout>
+#include <QColorDialog>
+void decision_tree_node::preview() {
+    QDialog *tablePreview=new QDialog();
+    tablePreview->setGeometry(400,400,500,500);
+    tablePreview->setModal(true);
+
+    QHBoxLayout *dialog_layout=new QHBoxLayout();
+    tablePreview->setLayout(dialog_layout);
+
+    QTabWidget *tabs=new QTabWidget;
+    dialog_layout->addWidget(tabs);
+
+    QFrame *tree_frame=new QFrame();
+    QHBoxLayout *tree_layout=new QHBoxLayout();
+    tree_frame->setLayout(tree_layout);
+
+    tree_layout->addWidget(&tab_gview);
+    tab_gscene.setSceneRect(0,0,2000,2000);
+    tab_gview.setScene(&tab_gscene);
+
+    tree.draw_tree(&tab_gscene);
+    QRectF rect = tab_gscene.itemsBoundingRect();
+    tab_gscene.setSceneRect(rect);
+
+    QTableWidget data_table;
+    make_QTable(data_table,t);
+
+    QFrame *frame = new QFrame();
+    tree_layout->addWidget(frame);
+    QFormLayout *forma = new QFormLayout();
+    frame->setLayout(forma);
+
+    //X-SCALE
+    QSpinBox *x_scale = new QSpinBox();
+    x_scale->setMinimum(1);
+    x_scale->setMaximum(300);
+    x_scale->setValue(100);
+    x_scale->setSuffix("%");
+    forma->addRow("x_scale:", x_scale);
+
+    //Y-SCALE
+    QSpinBox *y_scale = new QSpinBox();
+    y_scale->setMinimum(1);
+    y_scale->setMaximum(300);
+    y_scale->setValue(100);
+    y_scale->setSuffix("%");
+    forma->addRow("y_scale:", y_scale);
+
+    //LINE SIZE
+    QSpinBox *line_size = new QSpinBox();
+    line_size->setMinimum(1);
+    line_size->setMaximum(100);
+    line_size->setValue(1);
+    forma->addRow("line size:", line_size);
+
+    //TEXT SCALE
+    QSpinBox *text_scale = new QSpinBox();
+    text_scale->setMinimum(1);
+    text_scale->setMaximum(300);
+    text_scale->setValue(100);
+    text_scale->setSuffix("%");
+    forma->addRow("text_scale:", text_scale);
+
+    //COLOR SETTERS
+    QPushButton *text_color = new QPushButton();
+    forma->addRow("text color:",text_color);
+
+    QPushButton *background_color = new QPushButton();
+    forma->addRow("background color:",background_color);
+
+    QPushButton *line_color = new QPushButton();
+    forma->addRow("line color:",line_color);
+
+    connect(x_scale, QOverload<int>::of(&QSpinBox::valueChanged),[=](int i){
+        tab_gview.resetTransform();
+        tab_gview.scale((double)i/100.0, (double)y_scale->value()/100.0);
+    });
+
+    connect(y_scale, QOverload<int>::of(&QSpinBox::valueChanged),[=](int i){
+        tab_gview.resetTransform();
+        tab_gview.scale((double)x_scale->value()/100.0, (double)i/100.0);
+    });
+
+    connect(line_size, QOverload<int>::of(&QSpinBox::valueChanged),[=](int i){
+        for(auto it : tab_gscene.items())
+        {
+            if(it->type() == QGraphicsLineItem::Type) {
+                QPen pen = ((QGraphicsLineItem*)(it))->pen();
+                pen.setWidth(i);
+                ((QGraphicsLineItem*)(it))->setPen(pen);
+            }
+        }
+    });
+
+    connect(text_scale, QOverload<int>::of(&QSpinBox::valueChanged),[=](int i){
+        for(auto it : tab_gscene.items())
+        {
+            if(it->type() == QGraphicsSimpleTextItem::Type) {
+                ((QGraphicsSimpleTextItem*)(it))->setScale((double)i/100.0);
+            }
+        }
+    });
+
+    connect(text_color, &QPushButton::clicked, [&]() {
+        auto col = QColorDialog::getColor();
+        for(auto it : tab_gscene.items())
+        {
+            if(it->type() == QGraphicsSimpleTextItem::Type) {
+                ((QGraphicsSimpleTextItem*)(it))->setBrush(col);
+            }
+        }
+    });
+
+    connect(line_color, &QPushButton::clicked, [&]() {
+        auto col = QColorDialog::getColor();
+        for(auto it : tab_gscene.items())
+        {
+            if(it->type() == QGraphicsLineItem::Type) {
+                ((QGraphicsLineItem*)(it))->setPen(col);
+            }
+        }
+    });
+
+    connect(background_color, &QPushButton::clicked, [&]() {
+        tab_gscene.setBackgroundBrush(QColorDialog::getColor());
+    });
+
+
+
+    tabs->addTab(&data_table,"Table");
+    tabs->addTab(tree_frame, "Tree");
+
+    tablePreview->exec();
+}
 
 void decision_tree_node::combo_changed(QString str)
 {
@@ -101,4 +241,6 @@ void decision_tree_node::row_changed(int v)
 {
     tree.set_min_row(v);
 }
+
+
 
