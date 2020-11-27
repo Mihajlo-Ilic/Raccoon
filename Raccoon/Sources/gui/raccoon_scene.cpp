@@ -143,7 +143,7 @@ void raccoon_scene::dropEvent(QGraphicsSceneDragDropEvent *event){
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
     }
-    if(event->mimeData()->text()=="table_output_button"){
+    if(event->mimeData()->text()=="plot_button"){
         plot_node* n=new plot_node(250,250);
         addWidget(n);
         n->add_to_scene(this);

@@ -1,11 +1,7 @@
 #include "../../Includes/gui/decision_tree_node.hpp"
-<<<<<<< Updated upstream
 #include <chrono>
-
-=======
 #include <QDialog>
 #include <QHBoxLayout>
->>>>>>> Stashed changes
 decision_tree_node::decision_tree_node(int width, int height) : node(width, height, 2) {
     header_text.setText("DECISION TREE");
 

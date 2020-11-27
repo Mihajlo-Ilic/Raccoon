@@ -35,7 +35,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->dec_tree_button,SIGNAL(released()),this,SLOT(drop_action()));
     connect(ui->dbscan_button,SIGNAL(released()),this,SLOT(drop_action()));
     connect(ui->aglo_button,SIGNAL(released()),this,SLOT(drop_action()));
-
+    connect(ui->plot_button,SIGNAL(released()),this,SLOT(drop_action()));
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {

@@ -3,7 +3,7 @@
 
 
 
-#include "..\table.hpp"
+#include "../table.hpp"
 #include "node.hpp"
 #include <Q3DScatter>
 #include <QPushButton>

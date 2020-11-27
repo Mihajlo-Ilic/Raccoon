@@ -44,8 +44,9 @@ dbscan_node::dbscan_node(int width, int height) : node(width, height, 1)
 
 void dbscan_node::on_input_changed()
 {
-    t=inputs[0]->get_table();
-    needs_update=false;
+    auto p = inputs[0]->get_packet();
+    p.add_column("cluster",column_role::INPUT_COLUMN,column_type::CONTINUOUS);
+    outputs[0]->send_packet(p);
 }
 
 packet dbscan_node::get_msg()
@@ -57,16 +58,12 @@ packet dbscan_node::get_msg()
 
 void dbscan_node::run()
 {
-    table t=inputs[0]->get_table();
-    t=clasterizer.fit(t);
+    table r=inputs[0]->get_table();
+    t=clusterizer.fit(r);
     outputs[0]->send_data(t);
 }
 
 void dbscan_node::preview_b() {
-<<<<<<< Updated upstream
-=======
-    t=clusterizer.fit(t);
->>>>>>> Stashed changes
     preview();
 }
 #include <QDialog>

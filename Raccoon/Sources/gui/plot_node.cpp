@@ -49,7 +49,7 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
         }
         Q3DScatter *scatter = new Q3DScatter();
         scatter->setFlags(scatter->flags() ^ Qt::FramelessWindowHint);
-
+        int b=0;
         for(auto it : classInRGB) {
 
             QScatter3DSeries *series = new QScatter3DSeries;
@@ -85,7 +85,7 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
             float R = it.second%255;
             float G = (it.second/255)%255;
             float B = it.second/(255*255);
-            scatter->seriesList().at(0)->setBaseColor(RGB(R,G,B));
+            scatter->seriesList().at(0)->setBaseColor(QColor::fromRgb(R,G,B));
             scatter->setShadowQuality(scatter->ShadowQualityNone);
         }
         scatter->resize(800,600);
@@ -159,14 +159,14 @@ void plot_node::preview()
 
 void plot_node::on_input_changed()
 {
-    t = inputs[0]->get_table();
-    std::vector<std::string> attributesName = this->t.col_names();
-    combo_box.clear();
     list_widget.clear();
-    for(auto it : inputs[0]->get_packet().packet_columns) {
+    combo_box.clear();
+    packet msg = inputs[0]->get_packet();
+    for(const auto& it:msg.packet_columns){
         list_widget.addItem(QString::fromStdString(it.name));
         combo_box.addItem(QString::fromStdString(it.name));
     }
+    needs_update = true;
 }
 
 void plot_node::preview_b() {

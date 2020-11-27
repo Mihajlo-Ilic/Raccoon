@@ -35,11 +35,10 @@ void stats_node::on_input_changed()
 
 void stats_node::run()
 {
-
+    t = inputs[0]->get_table();
 }
 
 void stats_node::preview_b() {
-    t = inputs[0]->get_table();
     preview();
 }
 #include <set>
