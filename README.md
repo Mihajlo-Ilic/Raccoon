@@ -1,5 +1,7 @@
 # Project 11-Raccoon
 
+<img src ="Raccoon/Resources/Node_icons/trash_panda.svg" width="150" heigth="150">
+
 Alat za graficko modelovanje radnog toka za istrazivanje podataka
 
 ## Developers
