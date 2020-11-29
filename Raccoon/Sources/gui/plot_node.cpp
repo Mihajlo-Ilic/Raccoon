@@ -54,6 +54,10 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
         scatter->setShadowQuality(QAbstract3DGraph::ShadowQualitySoftLow);
         scatter->scene()->activeCamera()->setCameraPreset(Q3DCamera::CameraPresetFront);
 
+        scatter->axisX()->setTitle("X");
+        scatter->axisY()->setTitle("Y");
+        scatter->axisZ()->setTitle("Z");
+
         QScatterDataProxy *proxy = new QScatterDataProxy;
         QScatter3DSeries *series = new QScatter3DSeries(proxy);
         series->setItemLabelFormat(QStringLiteral("@xTitle: @xLabel @yTitle: @yLabel @zTitle: @zLabel"));
@@ -61,14 +65,12 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
         scatter->addSeries(series);
 
 
+        vLayout->addWidget(new QLabel(QStringLiteral("Geometry: ")),0,Qt::AlignTop);
+        QComboBox *geometryComboBox = new QComboBox();
+        geometryComboBox->addItem("Sphere");
+        geometryComboBox->addItem("Point");
+        vLayout->addWidget(geometryComboBox,1,Qt::AlignTop);
 
-        scatter->axisX()->setTitle("X");
-        scatter->axisY()->setTitle("Y");
-        scatter->axisZ()->setTitle("Z");
-
-        vLayout->addWidget(new QLabel(QStringLiteral("Change point size: ")),0,Qt::AlignTop);
-        QSpinBox *size_of_points_SpinBox2 = new QSpinBox();
-        vLayout->addWidget(size_of_points_SpinBox2,1,Qt::AlignTop);
 
         std::unordered_map<std::string,double> uniqueToInt;
         for(auto it : attributes) {
@@ -121,6 +123,15 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
             scatter->setShadowQuality(scatter->ShadowQualityNone);
         }
 
+        connect(geometryComboBox, QOverload<const QString &>::of(&QComboBox::currentTextChanged),[&](const QString & s){
+            for(int j = 0; j < scatter->seriesList().count(); j++) {
+                if(s == "Sphere")
+                    scatter->seriesList().at(0)->setMesh(QAbstract3DSeries::MeshSphere);
+                else
+                    scatter->seriesList().at(0)->setMesh(QAbstract3DSeries::MeshPoint);
+            }
+        });
+
         widget->resize(800,600);
         widget->show();
 
@@ -134,7 +145,22 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
 
         QFormLayout *frameLayout = new QFormLayout;
         QFrame *frame = new QFrame();
-        frame->setLayout(frameLayout);
+        QVBoxLayout *vBox = new QVBoxLayout;
+
+        frame->setLayout(vBox);
+
+        QListWidget *listWidget = new QListWidget();
+
+        vBox->addLayout(frameLayout);
+        vBox->addWidget(listWidget);
+        listWidget->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
+        for(auto it : t[label].unique()) {
+            QListWidgetItem *l_item =new QListWidgetItem();
+            l_item->setText(QString::fromStdString(it.get_string()));
+            l_item->setFlags(l_item->flags() | Qt::ItemIsUserCheckable);
+            l_item->setCheckState(Qt::Checked);
+            listWidget->addItem(l_item);
+        }
         QChartView *c = new QChartView();
         hBox->addWidget(c);
         hBox->addWidget(frame);
@@ -145,6 +171,14 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
 
         QSpinBox *size_of_axis_SpinBox = new QSpinBox();
         frameLayout->addRow("Axis size: ",size_of_axis_SpinBox);
+
+        QPushButton *backgroundColor = new QPushButton();
+        frameLayout->addRow("Background color: ", backgroundColor);
+        backgroundColor->setStyleSheet("background-color : " + c->chart()->backgroundBrush().color().name());
+
+
+
+
 
         c->chart();
         c->setRenderHint(QPainter::Antialiasing);
@@ -223,6 +257,19 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
             labelsFont.setPixelSize(i+0.0);
             c->chart()->axes(Qt::Horizontal).first()->setLabelsFont(labelsFont);
             c->chart()->axes(Qt::Vertical).first()->setLabelsFont(labelsFont);
+        });
+        connect(backgroundColor, (&QPushButton::clicked),[&](){
+            QColor col = QColorDialog::getColor();
+            c->chart()->setBackgroundBrush(col);
+            backgroundColor->setStyleSheet("background-color : " + c->chart()->backgroundBrush().color().name());
+        });
+        connect(listWidget,QOverload<QListWidgetItem *>::of(&QListWidget::itemChanged),[&](QListWidgetItem *item){
+             for(int j =0 ; j < listWidget->count();j++) {
+                 if(listWidget->item(j)->checkState() == Qt::Checked)
+                     c->chart()->series().at(j)->setVisible(true);
+                 else
+                     c->chart()->series().at(j)->setVisible(false);
+             }
         });
         dialog->resize(800,600);
         dialog->exec();
