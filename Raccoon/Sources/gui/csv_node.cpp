@@ -76,6 +76,9 @@ void csv_node::load() {
 void csv_node::preview_slot() {
     preview();
 }
+packet csv_node::get_msg() {
+    return packet(t);
+}
 
 void csv_node::list_changed()
 {

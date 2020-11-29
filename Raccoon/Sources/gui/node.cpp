@@ -142,7 +142,6 @@ void node::set_position(const QPointF& point){
 void node::send_data()
 {
         for(auto it:outputs)
-            if(inputs.size()>0)
             it->send_packet(get_msg());
 }
 

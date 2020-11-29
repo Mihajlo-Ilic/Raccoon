@@ -27,6 +27,7 @@ private:
 public:
     csv_node(int width, int height);
     void run() override;
+    packet get_msg() override;
     virtual void on_input_changed() override;
 public slots:
     void load();
