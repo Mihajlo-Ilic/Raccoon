@@ -1,6 +1,7 @@
 #include "../../Includes/gui/plot_node.hpp"
 #include <unordered_map>
 #include<iostream>
+#include<numeric>
 using namespace QtDataVisualization;
 
 plot_node::plot_node(int width, int height) : node(width,height,1) {
@@ -31,12 +32,43 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
     std::vector<entry> classes = t[label].unique();
     std::vector<std::pair<entry,long>> classInRGB;
     srand(time(NULL));
-    for(auto it:t[label].unique()){
+    for(auto it:classes){
         classInRGB.push_back(std::make_pair(it,rand()));
     }
 
-    // ISCRTAVANJE 3D
+    // ISCRTAVANJE 3D -> Q3DSCATTER
     if(attributes.size() == 3) {
+
+        Q3DScatter *scatter = new Q3DScatter();
+        QWidget *container = QWidget::createWindowContainer(scatter);
+
+        QWidget *widget = new QWidget;
+        QHBoxLayout *hLayout = new QHBoxLayout(widget);
+        QVBoxLayout *vLayout = new QVBoxLayout();
+        hLayout->addWidget(container, 1);
+        hLayout->addLayout(vLayout);
+
+        QFont font = scatter->activeTheme()->font();
+        font.setPointSize(3);
+        scatter->activeTheme()->setFont(font);
+        scatter->setShadowQuality(QAbstract3DGraph::ShadowQualitySoftLow);
+        scatter->scene()->activeCamera()->setCameraPreset(Q3DCamera::CameraPresetFront);
+
+        QScatterDataProxy *proxy = new QScatterDataProxy;
+        QScatter3DSeries *series = new QScatter3DSeries(proxy);
+        series->setItemLabelFormat(QStringLiteral("@xTitle: @xLabel @yTitle: @yLabel @zTitle: @zLabel"));
+        series->setMeshSmooth(true);
+        scatter->addSeries(series);
+
+
+
+        scatter->axisX()->setTitle("X");
+        scatter->axisY()->setTitle("Y");
+        scatter->axisZ()->setTitle("Z");
+
+        vLayout->addWidget(new QLabel(QStringLiteral("Change point size: ")),0,Qt::AlignTop);
+        QSpinBox *size_of_points_SpinBox2 = new QSpinBox();
+        vLayout->addWidget(size_of_points_SpinBox2,1,Qt::AlignTop);
 
         std::unordered_map<std::string,double> uniqueToInt;
         for(auto it : attributes) {
@@ -47,15 +79,14 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
                 }
             }
         }
-        Q3DScatter *scatter = new Q3DScatter();
         scatter->setFlags(scatter->flags() ^ Qt::FramelessWindowHint);
         int br=0;
         for(auto it : classInRGB) {
-
+            std::cout << "Element: "<< it.first << " - " << it.second  << std::endl;
             QScatter3DSeries *series = new QScatter3DSeries;
             QScatterDataArray data;
             for(int j = 0; j < t.row_n(); j++) {
-                if(it.first == t[label][j]) {
+                if(it.first.get_string() == t[label][j].get_string()) {
                     QVector3D point;
 
                     if(t[attributes[0]].type == NOMINAL) {
@@ -86,14 +117,35 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
             float G = (it.second/255)%255;
             float B = it.second/(255*255)%255;
             scatter->seriesList().at(br++)->setBaseColor(QColor::fromRgb(R,G,B));
+            scatter->scene()->activeCamera()->setCameraPreset(Q3DCamera::CameraPresetFront);
             scatter->setShadowQuality(scatter->ShadowQualityNone);
         }
-        scatter->resize(800,600);
-        scatter->show();
+
+        widget->resize(800,600);
+        widget->show();
 
     }
+
+    // 2D -> QCHART
     else {
+        QDialog *dialog = new QDialog;
+        QHBoxLayout *hBox = new QHBoxLayout;
+        dialog->setLayout(hBox);
+
+        QFormLayout *frameLayout = new QFormLayout;
+        QFrame *frame = new QFrame();
+        frame->setLayout(frameLayout);
         QChartView *c = new QChartView();
+        hBox->addWidget(c);
+        hBox->addWidget(frame);
+
+
+        QSpinBox *size_of_points_SpinBox = new QSpinBox();
+        frameLayout->addRow("Marker size: ", size_of_points_SpinBox);
+
+        QSpinBox *size_of_axis_SpinBox = new QSpinBox();
+        frameLayout->addRow("Axis size: ",size_of_axis_SpinBox);
+
         c->chart();
         c->setRenderHint(QPainter::Antialiasing);
 
@@ -107,26 +159,46 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
             }
         }
 
+        double maxX = std::numeric_limits<double>::min();
+        double maxY = std::numeric_limits<double>::min();;
+        double minX = std::numeric_limits<double>::max();;
+        double minY = std::numeric_limits<double>::max();;
         for(auto it : classInRGB) {
-            QScatterSeries *scatter = new QScatterSeries();
+            QScatterSeries *scatter = new QScatterSeries;
             std::string labelName = it.first.get_string();
             scatter->setName(QString::fromStdString(labelName));
-            for(int j = 0; j < t.row_n(); j++) {
-                if(it.first == t[label][j]) {
 
+            for(int j = 0; j < t.row_n(); j++) {
+                if(it.first.get_string() == t[label][j].get_string()) {
                     QPointF point(50,50);
 
                     if(t[attributes[0]].type == NOMINAL) {
                         point.setX((double)uniqueToInt[t[attributes[0]][j].get_string()]);
+                        if((double)uniqueToInt[t[attributes[0]][j].get_string()] > maxX)
+                            maxX = (double)uniqueToInt[t[attributes[0]][j].get_string()];
+                        if((double)uniqueToInt[t[attributes[0]][j].get_string()] < minX)
+                            minX = (double)uniqueToInt[t[attributes[0]][j].get_string()];
                     }
                     else {
                         point.setX(t[attributes[0]][j].get_double());
+                        if(t[attributes[0]][j].get_double() > maxX)
+                            maxX = t[attributes[0]][j].get_double();
+                        if(t[attributes[0]][j].get_double() < minX)
+                            minX = t[attributes[0]][j].get_double();
                     }
                     if(t[attributes[1]].type == NOMINAL) {
                         point.setY((double)uniqueToInt[t[attributes[1]][j].get_string()]);
+                        if((double)uniqueToInt[t[attributes[1]][j].get_string()] > maxY)
+                            maxY = (double)uniqueToInt[t[attributes[1]][j].get_string()];
+                        if((double)uniqueToInt[t[attributes[1]][j].get_string()] < minY)
+                            minY = (double)uniqueToInt[t[attributes[1]][j].get_string()];
                     }
                     else {
                         point.setY(t[attributes[1]][j].get_double());
+                        if(t[attributes[1]][j].get_double() > maxY)
+                            maxY = t[attributes[1]][j].get_double();
+                        if(t[attributes[1]][j].get_double() < minY)
+                            minY = t[attributes[1]][j].get_double();
                     }
                     *scatter << point;
                 }
@@ -136,10 +208,26 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
             float B = it.second/(255*255)%255;
             scatter->setColor(QColor::fromRgb(R,G,B));
             c->chart()->addSeries(scatter);
-            c->chart()->createDefaultAxes();
+
         }
-        c->resize(800,600);
-        c->show();
+        c->chart()->createDefaultAxes();
+        c->chart()->axes(Qt::Horizontal).first()->setRange(minX-0.3, maxX + 0.3);
+        c->chart()->axes(Qt::Vertical).first()->setRange(minY - 0.3, maxY + 0.3);
+
+        connect(size_of_points_SpinBox, QOverload<int>::of(&QSpinBox::valueChanged),[&](int i){
+            for(auto it:c->chart()->series())
+                ((QScatterSeries *)it)->setMarkerSize(i);
+        });
+        connect(size_of_axis_SpinBox, QOverload<int>::of(&QSpinBox::valueChanged),[&](int i){
+            QFont labelsFont;
+            labelsFont.setPixelSize(i+0.0);
+            c->chart()->axes(Qt::Horizontal).first()->setLabelsFont(labelsFont);
+            c->chart()->axes(Qt::Vertical).first()->setLabelsFont(labelsFont);
+        });
+        dialog->resize(800,600);
+        dialog->exec();
+
+
     }
 }
 void plot_node::run()
