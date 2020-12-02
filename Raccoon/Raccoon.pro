@@ -69,6 +69,7 @@ HEADERS += \
     Includes/gui/raccoon_scene.hpp \
     Includes/gui/standardization_node.hpp \
     Includes/gui/stats_node.hpp \
+    Includes/gui/tf_idf_node.hpp \
     Includes/k_mean_cluster.hpp \
     Includes/knn.hpp \
     Includes/naive_bayes.hpp \
@@ -103,6 +104,7 @@ SOURCES += \
     Sources/gui/raccoon_scene.cpp \
     Sources/gui/standardization_node.cpp \
     Sources/gui/stats_node.cpp \
+    Sources/gui/tf_idf_node.cpp \
     Sources/k_mean_cluster.cpp \
     Sources/knn.cpp \
     Sources/naive_bayes.cpp \

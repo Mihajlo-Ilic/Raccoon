@@ -17,4 +17,6 @@ void binning_boundry(table &data,std::string attribute,int sets);
 // aproksimacija n/a vrednosti,stavljenje 0, medijane itd.
 void aproximation_val(table &data,std::string attribute,double value);
 void aproximation_mean(table &data,std::string attribute);
+std::vector<double> idf(const table &t, std::string term);
+void tf_idf(table &t);
 #endif // TRANSFORMATIONS_HPP

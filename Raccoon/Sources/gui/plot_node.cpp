@@ -42,6 +42,12 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
         Q3DScatter *scatter = new Q3DScatter();
         QWidget *container = QWidget::createWindowContainer(scatter);
 
+        QSize screenSize = scatter->screen()->size();
+        container->setMinimumSize(QSize(screenSize.width() / 2, screenSize.height() / 1.5));
+        container->setMaximumSize(screenSize);
+        container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        container->setFocusPolicy(Qt::StrongFocus);
+
         QWidget *widget = new QWidget;
         QHBoxLayout *hLayout = new QHBoxLayout(widget);
         QVBoxLayout *vLayout = new QVBoxLayout();
@@ -54,22 +60,22 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
         scatter->setShadowQuality(QAbstract3DGraph::ShadowQualitySoftLow);
         scatter->scene()->activeCamera()->setCameraPreset(Q3DCamera::CameraPresetFront);
 
-        scatter->axisX()->setTitle("X");
-        scatter->axisY()->setTitle("Y");
-        scatter->axisZ()->setTitle("Z");
-
         QScatterDataProxy *proxy = new QScatterDataProxy;
         QScatter3DSeries *series = new QScatter3DSeries(proxy);
         series->setItemLabelFormat(QStringLiteral("@xTitle: @xLabel @yTitle: @yLabel @zTitle: @zLabel"));
         series->setMeshSmooth(true);
         scatter->addSeries(series);
 
-
         vLayout->addWidget(new QLabel(QStringLiteral("Geometry: ")),0,Qt::AlignTop);
         QComboBox *geometryComboBox = new QComboBox();
         geometryComboBox->addItem("Sphere");
         geometryComboBox->addItem("Point");
         vLayout->addWidget(geometryComboBox,1,Qt::AlignTop);
+
+        vLayout->addWidget(new QLabel(QStringLiteral("Grid settup: ")),1,Qt::AlignTop);
+        QPushButton *gridButton = new QPushButton();
+        gridButton->setText("Dissable grid");
+        vLayout->addWidget(gridButton,2,Qt::AlignTop);
 
 
         std::unordered_map<std::string,double> uniqueToInt;
@@ -89,48 +95,77 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
             QScatterDataArray data;
             for(int j = 0; j < t.row_n(); j++) {
                 if(it.first.get_string() == t[label][j].get_string()) {
-                    QVector3D point;
+                    QVector3D *point = new QVector3D;
 
                     if(t[attributes[0]].type == NOMINAL) {
-                        point.setX((double)uniqueToInt[t[attributes[0]][j].get_string()]);
+                        point->setX((double)uniqueToInt[t[attributes[0]][j].get_string()]);
                     }
                     else {
-                        point.setX(t[attributes[0]][j].get_double());
+                        point->setX(t[attributes[0]][j].get_double());
                     }
                     if(t[attributes[1]].type == NOMINAL) {
-                        point.setY((double)uniqueToInt[t[attributes[1]][j].get_string()]);
+                        point->setY((double)uniqueToInt[t[attributes[1]][j].get_string()]);
                     }
                     else {
-                        point.setY(t[attributes[1]][j].get_double());
+                        point->setY(t[attributes[1]][j].get_double());
                     }
                     if(t[attributes[2]].type == NOMINAL) {
-                        point.setY((double)uniqueToInt[t[attributes[2]][j].get_string()]);
+                        point->setZ((double)uniqueToInt[t[attributes[2]][j].get_string()]);
                     }
                     else {
-                        point.setY(t[attributes[2]][j].get_double());
+                        point->setZ(t[attributes[2]][j].get_double());
                     }
 
-                    data << point;
+                    data << *point;
                 }
             }
             series->dataProxy()->addItems(data);
             scatter->addSeries(series);
             float R = it.second%255;
-            float G = (it.second/255)%255;
-            float B = it.second/(255*255)%255;
+            float G = (it.second/255)%255 + 10;
+            float B = it.second/(255*255)%255 + 10;
             scatter->seriesList().at(br++)->setBaseColor(QColor::fromRgb(R,G,B));
             scatter->scene()->activeCamera()->setCameraPreset(Q3DCamera::CameraPresetFront);
             scatter->setShadowQuality(scatter->ShadowQualityNone);
         }
 
-        connect(geometryComboBox, QOverload<const QString &>::of(&QComboBox::currentTextChanged),[&](const QString & s){
+        connect(geometryComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            [=](int index){
             for(int j = 0; j < scatter->seriesList().count(); j++) {
-                if(s == "Sphere")
-                    scatter->seriesList().at(0)->setMesh(QAbstract3DSeries::MeshSphere);
-                else
-                    scatter->seriesList().at(0)->setMesh(QAbstract3DSeries::MeshPoint);
+                if(index == 0) {
+                    QScatter3DSeries *ser = scatter->seriesList().at(j);
+                    QAbstract3DSeries::Mesh m_style = QAbstract3DSeries::Mesh(QAbstract3DSeries::MeshSphere);
+                    ser->setMesh(m_style);
+                }
+                else {
+                    QScatter3DSeries *ser = scatter->seriesList().at(j);
+                    QAbstract3DSeries::Mesh m_style = QAbstract3DSeries::Mesh(QAbstract3DSeries::MeshPoint);
+                    ser->setMesh(m_style);
+                }
+            } 
+        });
+
+        int indicatorPushButtonGrid = 1;
+        scatter->activeTheme()->setGridEnabled(true);
+        connect(gridButton, &QPushButton::clicked, [this,&scatter,&gridButton,&indicatorPushButtonGrid]() {
+            if(indicatorPushButtonGrid == 1) {
+                scatter->activeTheme()->setGridEnabled(false);
+                gridButton->setText("Enable grid");
+                indicatorPushButtonGrid *= -1;
+            } else {
+                scatter->activeTheme()->setGridEnabled(true);
+                gridButton->setText("Dissable grid");
+                indicatorPushButtonGrid *= -1;
             }
         });
+
+        for(int i = 0; i < scatter->seriesList().count();i++) {
+            QScatter3DSeries *ser = scatter->seriesList().at(i);
+            ser->setMeshSmooth(true);
+        }
+        scatter->activeTheme()->setLabelBackgroundEnabled(true);
+        Q3DTheme *currentTheme = scatter->activeTheme();
+        currentTheme->setType(Q3DTheme::Theme(3));
 
         widget->resize(800,600);
         widget->show();
@@ -238,8 +273,8 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
                 }
             }
             float R = it.second%255;
-            float G = (it.second/255)%255;
-            float B = it.second/(255*255)%255;
+            float G = (it.second/255)%255 + 10;
+            float B = it.second/(255*255)%255 + 10;
             scatter->setColor(QColor::fromRgb(R,G,B));
             c->chart()->addSeries(scatter);
 
