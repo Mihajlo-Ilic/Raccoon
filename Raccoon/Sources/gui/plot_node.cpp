@@ -50,9 +50,10 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
 
         QWidget *widget = new QWidget;
         QHBoxLayout *hLayout = new QHBoxLayout(widget);
-        QVBoxLayout *vLayout = new QVBoxLayout();
+        QFormLayout *formLayout = new QFormLayout;
+        // QVBoxLayout *vLayout = new QVBoxLayout();
         hLayout->addWidget(container, 1);
-        hLayout->addLayout(vLayout);
+        hLayout->addLayout(formLayout);
 
         QFont font = scatter->activeTheme()->font();
         font.setPointSize(3);
@@ -66,17 +67,31 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
         series->setMeshSmooth(true);
         scatter->addSeries(series);
 
-        vLayout->addWidget(new QLabel(QStringLiteral("Geometry: ")),0,Qt::AlignTop);
+        formLayout->addRow(new QLabel(QStringLiteral("Geometry: ")));
         QComboBox *geometryComboBox = new QComboBox();
         geometryComboBox->addItem("Sphere");
         geometryComboBox->addItem("Point");
-        vLayout->addWidget(geometryComboBox,1,Qt::AlignTop);
+        formLayout->addRow(geometryComboBox);
 
-        vLayout->addWidget(new QLabel(QStringLiteral("Grid settup: ")),1,Qt::AlignTop);
+        /*
+        formLayout->addRow(new QLabel(QStringLiteral("Grid settup: ")));
         QPushButton *gridButton = new QPushButton();
         gridButton->setText("Dissable grid");
-        vLayout->addWidget(gridButton,2,Qt::AlignTop);
+        formLayout->addRow(gridButton);
+        */
 
+        QComboBox *themeList = new QComboBox(widget);
+        themeList->addItem(QStringLiteral("Qt"));
+        themeList->addItem(QStringLiteral("Primary Colors"));
+        themeList->addItem(QStringLiteral("Digia"));
+        themeList->addItem(QStringLiteral("Stone Moss"));
+        themeList->addItem(QStringLiteral("Army Blue"));
+        themeList->addItem(QStringLiteral("Retro"));
+        themeList->addItem(QStringLiteral("Ebony"));
+        themeList->addItem(QStringLiteral("Isabelle"));
+        themeList->setCurrentIndex(0);
+        formLayout->addRow(new QLabel(QStringLiteral("Graph theme: ")));
+        formLayout->addRow(themeList);
 
         std::unordered_map<std::string,double> uniqueToInt;
         for(auto it : attributes) {
@@ -89,8 +104,10 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
         }
         scatter->setFlags(scatter->flags() ^ Qt::FramelessWindowHint);
         int br=0;
+
+        scatter->activeTheme()->setLabelBackgroundEnabled(true);
+
         for(auto it : classInRGB) {
-            std::cout << "Element: "<< it.first << " - " << it.second  << std::endl;
             QScatter3DSeries *series = new QScatter3DSeries;
             QScatterDataArray data;
             for(int j = 0; j < t.row_n(); j++) {
@@ -146,26 +163,39 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
         });
 
         int indicatorPushButtonGrid = 1;
-        scatter->activeTheme()->setGridEnabled(true);
-        connect(gridButton, &QPushButton::clicked, [this,&scatter,&gridButton,&indicatorPushButtonGrid]() {
+        /*
+        connect(gridButton, &QPushButton::clicked, [&]() {
+            std::cout << "*" << std::endl;
             if(indicatorPushButtonGrid == 1) {
-                scatter->activeTheme()->setGridEnabled(false);
+                Q3DTheme *theme = scatter->activeTheme();
+                std::cout << "*" << std::endl;
+                theme->setGridEnabled(false);
+                std::cout << "*" << std::endl;
                 gridButton->setText("Enable grid");
                 indicatorPushButtonGrid *= -1;
+                std::cout << "*" << std::endl;
             } else {
-                scatter->activeTheme()->setGridEnabled(true);
+                std::cout << "*" << std::endl;
+                Q3DTheme *theme = scatter->activeTheme();
+                theme->setGridEnabled(true);
+                scatter->setActiveTheme(theme);
                 gridButton->setText("Dissable grid");
                 indicatorPushButtonGrid *= -1;
+                std::cout << "*" << std::endl;
             }
+        });
+        */
+
+        connect(themeList, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            [=](int index){
+            Q3DTheme *currentTheme = scatter->activeTheme();
+            currentTheme->setType(Q3DTheme::Theme(index));
         });
 
         for(int i = 0; i < scatter->seriesList().count();i++) {
             QScatter3DSeries *ser = scatter->seriesList().at(i);
             ser->setMeshSmooth(true);
         }
-        scatter->activeTheme()->setLabelBackgroundEnabled(true);
-        Q3DTheme *currentTheme = scatter->activeTheme();
-        currentTheme->setType(Q3DTheme::Theme(3));
 
         widget->resize(800,600);
         widget->show();
