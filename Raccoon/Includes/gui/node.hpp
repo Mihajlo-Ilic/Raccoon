@@ -220,4 +220,6 @@ class output_connector : public connector {
     friend class node;
 };
 
+void make_siluete(QLabel& lab,double d);
+
 #endif

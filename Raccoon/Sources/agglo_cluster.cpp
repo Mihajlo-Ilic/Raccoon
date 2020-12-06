@@ -27,79 +27,6 @@ agglo_cluster::agglo_cluster() {
     cluster_metric=min_linkage;
 }
 
-table agglo_cluster::fit(const table& t){
-    training=t;
-    cluster_n = training.row_n();
-
-   training.push("cluster");
-   for(int i=0;i<training.row_n();i++){
-       training["cluster"][i] = entry(i);
-       training[i].set_name(std::to_string(i));
-   }
-
-   while(true){
-
-       auto cluster_vals = training["cluster"].unique();
-       std::vector<table> clusters;
-
-        if(cluster_vals.size() == num_clusters)
-            break;
-
-       for(auto it:cluster_vals)
-             clusters.push_back(training[training.where("cluster",[it](auto x){
-                    return it.get_string()==x.get_string();
-             })]);
-
-        double dist = std::numeric_limits<double>::max();
-        std::pair<int,int> merge_clusters=std::make_pair(-1,-1);
-
-        for(int i=0;i<clusters.size();i++){
-            for(int j=i+1;j<clusters.size();j++){
-                double d=0;
-                //old metric
-                //double d=cluster_metric(clusters[i],clusters[j],instance_metric);
-                if(d<dist){
-                    dist=d;
-                    merge_clusters=std::make_pair(i,j);
-                }
-            }
-        }
-        if(merge_clusters == std::make_pair(-1,-1))
-            break;
-        if(dist<distance)
-            dendogram.push_back(std::make_pair(merge_clusters,dist));
-        
-        for(int j=0;j<clusters[merge_clusters.first].row_n();j++){
-            std::string name = clusters[merge_clusters.first][j].r_name();
-            int index = training.row_by_name(name);
-            training["cluster"][index]=clusters[merge_clusters.second]["cluster"][0];
-        }
-
-   }
-    //mapping clusters to 0,1,..n TODO
-    auto cluster_vals = training["cluster"].unique();
-    for(int i=0;i<cluster_vals.size();i++){
-        std::vector<int> n = training.where("cluster",[i,&cluster_vals](auto x){ return x.get_string()==cluster_vals[i].get_string();});
-        for(auto it:n)
-            training["cluster"][it]=entry(i);
-    }
-    return training;
-}
-struct  hash_pair{
-    size_t operator()(const std::pair<int,int> &p){
-        auto hash1 = std::hash<int>{}(p.first);
-        auto hash2 = std::hash<int>{}(p.second);
-        return hash1 ^ hash2;
-    }
-};
-
-typedef std::pair<std::pair<int*,int*>,double> pr;
-
-struct  mcmp{
-    bool operator()(const pr& l ,const pr& r){
-        return l.second < r.second;
-    }
-};
 
 table agglo_cluster::predict(const table& t){
     dendogram.clear();
@@ -115,10 +42,10 @@ table agglo_cluster::predict(const table& t){
     }
 
     while(true){
-        if(labels.size()==num_clusters) break;
+        if((int)labels.size()==num_clusters) break;
 
-        int cl_i;
-        int cl_j;
+        int cl_i=0;
+        int cl_j=0;
         double cl_min = std::numeric_limits<double>::max();
 
         for(auto it:labels)
@@ -146,7 +73,7 @@ table agglo_cluster::predict(const table& t){
         r_table.push_back(i);
 
     for(int i=0;i<t.row_n();i++)
-    for(int j=0;j<r_table.size();j++)
+    for(unsigned j=0;j<r_table.size();j++)
         if(r_table[j]==dendogram[i].first.first)
             r_table[j]=dendogram[i].first.second;
 

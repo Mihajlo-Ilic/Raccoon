@@ -48,7 +48,7 @@ table dbscan::fit(const table &t)
     for(int i = 0; i<t.row_n(); i++) {
         if(train["cluster"][i] != entry(-1)) //already clustered
             continue;
-        if(eps_okolina[i].size() < n_neighbors) {
+        if(eps_okolina[i].size() < (unsigned)n_neighbors) {
             train["cluster"][i] = entry("NOISE");
             continue;
         }
@@ -59,7 +59,7 @@ table dbscan::fit(const table &t)
         for(int v: eps_okolina[i]) {
             if(train["cluster"][v] == entry("NOISE") || train["cluster"][v] == entry(-1)) //if it's classified as noise or not classified yet, it belongs to current cluster
                 train["cluster"][v] = entry(cluster_ctr);
-            if(eps_okolina[v].size() >= n_neighbors)
+            if((int)eps_okolina[v].size() >= n_neighbors)
                 eps_okolina[i].insert(eps_okolina[v].begin(), eps_okolina[v].end());
         }
     }

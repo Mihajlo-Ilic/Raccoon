@@ -57,28 +57,28 @@ void stats_node::preview() {
    }
 
    //Fill the table
-   for(auto stat : stat_table.col_names()) {
+   for(const auto &stat : stat_table.col_names()) {
         if(stat == "min. element") {
-            for(auto col : t.col_names()) {
+            for(const auto &col : t.col_names()) {
                        auto min = std::min_element(t[col].cbegin(), t[col].cend());
                        stat_table[stat][stat_table.row_by_name(col)] = *min;
                 }
         }
         else if(stat == "max. element") {
-            for(auto col : t.col_names()) {
+            for(const auto &col : t.col_names()) {
                        auto max = std::max_element(t[col].cbegin(), t[col].cend());
                        stat_table[stat][stat_table.row_by_name(col)] = *max;
                 }
         }
         else if(stat == "range") {
-            for(auto col : t.col_names()) {
+            for(const auto &col : t.col_names()) {
                 auto min = std::min_element(t[col].cbegin(), t[col].cend());
                 auto max = std::max_element(t[col].cbegin(), t[col].cend());
                 stat_table[stat][stat_table.row_by_name(col)] = entry("[" + min->get_string() + " - " + max->get_string() + "]");
             }
         }
         else if(stat == "sum") {
-            for(auto col: t.col_names()) {
+            for(const auto &col: t.col_names()) {
                 if(t[col].type == NOMINAL)
                     continue;
                 auto sum = std::accumulate(t[col].cbegin(), t[col].cend(), entry(0.0));
@@ -86,7 +86,7 @@ void stats_node::preview() {
             }
         }
         else if(stat == "mean") {
-            for(auto col: t.col_names()) {
+            for(const auto &col: t.col_names()) {
                 if(t[col].type == NOMINAL)
                     continue;
 
@@ -94,7 +94,7 @@ void stats_node::preview() {
             }
         }
         else if(stat == "standard deviation") {
-           for(auto col : t.col_names()) {
+           for(const auto &col : t.col_names()) {
                if(t[col].type == NOMINAL)
                    continue;
 
@@ -102,7 +102,7 @@ void stats_node::preview() {
            }
         }
         else if(stat == "variance") {
-            for(auto col : t.col_names()) {
+            for(const auto &col : t.col_names()) {
                 if(t[col].type == NOMINAL)
                     continue;
 
@@ -110,12 +110,12 @@ void stats_node::preview() {
             }
         }
         else if(stat == "unique") {
-            for(auto col : t.col_names()) {
+            for(const auto &col : t.col_names()) {
                 stat_table[stat][stat_table.row_by_name(col)] = entry(t[col].unique().size());
             }
         }
         else if(stat == "valid") {
-            for(auto col : t.col_names()) {
+            for(const auto &col : t.col_names()) {
                 stat_table[stat][stat_table.row_by_name(col)] = entry(t.where(col, [] (auto e) { return e.get_string() != "n/a";}).size());
             }
         }

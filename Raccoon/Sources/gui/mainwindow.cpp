@@ -19,22 +19,6 @@ MainWindow::MainWindow(QWidget *parent)
     globalScene = raccoon_scene::get_instance(1920,1080);
     ui->agraphicsView->setAcceptDrops(true);
     ui->agraphicsView->setScene(globalScene);
-    /*
-    table t;
-    std::vector<std::string> term = {"peking","kina","dzeki"};
-    t.push(term);
-    std::vector<entry> red1 = {4,5,0};
-    t.push_row(red1);
-    red1 = {1,2,3};
-    t.push_row(red1);
-    red1 = {7,0,9};
-    t.push_row(red1);
-
-    tf_idf(t);
-
-    std::cout << t << std::endl;
-    */
-
 
     connect(ui->csv_button,SIGNAL(released()),this,SLOT(drop_action()));
     connect(ui->approximate_button,SIGNAL(released()),this,SLOT(drop_action()));
@@ -54,6 +38,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->dbscan_button,SIGNAL(released()),this,SLOT(drop_action()));
     connect(ui->aglo_button,SIGNAL(released()),this,SLOT(drop_action()));
     connect(ui->plot_button,SIGNAL(released()),this,SLOT(drop_action()));
+    connect(ui->doc_button,SIGNAL(released()),this,SLOT(drop_action()));
+    connect(ui->tf_idf_button,SIGNAL(released()),this,SLOT(drop_action()));
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {

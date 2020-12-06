@@ -82,6 +82,7 @@ void aproximation_node::help_func(const QString &text){
 
 void aproximation_node::list_changed(QListWidgetItem *item)
 {
+    (void)item;
     packet msg = inputs[0]->get_packet();
     outputs[0]->send_packet(msg);
 }

@@ -7,7 +7,7 @@ class k_mean_cluster {
 public:
     k_mean_cluster();
     void fit(const table& data);
-    table predict(const table& data, int indicator);
+    table predict(const table& data);
 
     void set_metric(std::function<double( const row &, const row &)> func){
         metrics = func;

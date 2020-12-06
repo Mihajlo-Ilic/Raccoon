@@ -1,4 +1,6 @@
 #include "../../Includes/gui/knn_node.hpp"
+#include<QDialog>
+#include<QVBoxLayout>
 
 knn_node::knn_node(int width, int height) : node(width,height,2){
     header_text.setText("KNN NODE");
@@ -56,6 +58,38 @@ packet knn_node::get_msg()
     packet msg = inputs[0]->get_packet();
     msg.add_column("assigned",column_role::INPUT_COLUMN,column_type::CONTINUOUS);
     return msg;
+}
+
+void knn_node::preview()
+{
+    QDialog dial;
+    QTableWidget tab;
+    make_QTable(tab,t);
+
+    QVBoxLayout vb;
+    dial.setLayout(&vb);
+
+    vb.addWidget(&tab);
+
+    vb.addSpacing(20);
+
+    table train = inputs[0]->get_table();
+    train.pop(train.get_target());
+
+    classifier.fit(inputs[0]->get_table());
+    table train_res = classifier.predict(train);
+    double train_acc = accuracy_score(inputs[0]->get_table(),train_res,inputs[0]->get_table().get_target());
+
+    QLabel train_lab;
+    train_lab.setText("Train accuracy : "+QString::number(train_acc));
+
+    table conf_train = confusion_matrix(inputs[0]->get_table(),train_res,inputs[0]->get_table().get_target());
+    QTableWidget q_conf_train;
+    make_QTable(q_conf_train,conf_train);
+
+    vb.addWidget(&train_lab);
+    vb.addWidget(&q_conf_train);
+    dial.exec();
 }
 
 void knn_node::preview_b() {

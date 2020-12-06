@@ -203,7 +203,7 @@ std::vector<double> idf(table &t){
     int documents_number = t.row_n();
     std::vector<double> idf_vector(t.col_n());
     int i = 0;
-    for(auto at : att) {
+    for(const auto &at : att) {
         double number_of_files = 0.0;
         std::for_each(t[at].begin(),t[at].end(),[&number_of_files](auto &x){
             if(x.get_double() > 0)
@@ -221,7 +221,7 @@ void tf_idf(table &t) {
    for(int i = 0; i < t.row_n(); i++) {
        std::vector<std::string> att = t.col_names();
        int j = 0;
-       for(auto at : att)
+       for(const auto &at : att)
            t[i][at] = entry(t[i][at].get_double() * idf_vector[j++]);
    }
 }

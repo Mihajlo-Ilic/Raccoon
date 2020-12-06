@@ -1,4 +1,6 @@
 #include "../../Includes/gui/k_mean_cluster_node.hpp"
+#include<QDialog>
+#include<QVBoxLayout>
 
 k_mean_cluster_node::k_mean_cluster_node(int width,int height) : node(width,height,1)
 {
@@ -37,7 +39,7 @@ void k_mean_cluster_node::run()
 {
     t=inputs[0]->get_table();
     model.fit(t);
-    t=model.predict(t,0);
+    t=model.predict(t);
     outputs[0]->send_data(t);
 }
 
@@ -53,6 +55,52 @@ packet k_mean_cluster_node::get_msg()
     packet msg=inputs[0]->get_packet();
     msg.add_column("cluster",column_role::INPUT_COLUMN,column_type::CONTINUOUS);
     return msg;
+}
+
+void k_mean_cluster_node::preview()
+{
+    QDialog *tablePreview=new QDialog();
+    tablePreview->setGeometry(400,400,500,500);
+    tablePreview->setModal(true);
+
+
+    QTableWidget data_table;
+    make_QTable(data_table,t);
+
+    cluster_colors.clear();
+    auto clusts = t["cluster"].unique();
+    srand(time(NULL));
+    for(unsigned i = 0; i<clusts.size(); i++) {
+        int random_nr = rand();
+        cluster_colors[clusts[i].get_string()] = QColor(130+random_nr%125,130+(random_nr/255)%125,130+(random_nr/(255*255))%125);
+    }
+
+    for(const auto &it:clusts) {
+        for(auto& entry : data_table.findItems(QString::fromStdString(it.get_string()),Qt::MatchExactly)){
+                        if(data_table.horizontalHeaderItem(entry->column())->text() =="cluster"){
+                            entry->setBackground(cluster_colors[it.get_string()]);
+                            entry->setForeground(QColor(0,0,0));
+                        }
+                }
+    }
+
+    QVBoxLayout vbox;
+    tablePreview->setLayout(&vbox);
+
+    vbox.addWidget(&data_table);
+
+    double d = siluette_coef(t);
+
+    vbox.addSpacing(20);
+    QLabel sil_l;
+    make_siluete(sil_l,d);
+
+    QLabel lab;
+    lab.setText("Siluete score: "+QString::number(d));
+    vbox.addWidget(&lab);
+    vbox.addWidget(&sil_l);
+
+    tablePreview->exec();
 }
 
 

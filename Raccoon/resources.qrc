@@ -28,5 +28,7 @@
         <file>Resources/Node_icons/trash_panda.svg</file>
         <file>Resources/Action_icons/add_file.svg</file>
         <file>Resources/Action_icons/stop_sign.svg</file>
+        <file>Resources/Node_icons/doc_reader.svg</file>
+        <file>Resources/Node_icons/tf_idf.svg</file>
     </qresource>
 </RCC>

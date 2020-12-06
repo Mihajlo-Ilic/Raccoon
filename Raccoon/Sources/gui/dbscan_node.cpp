@@ -74,11 +74,6 @@ void dbscan_node::preview() {
     tablePreview->setGeometry(400,400,500,500);
     tablePreview->setModal(true);
 
-    QHBoxLayout *dialog_layout=new QHBoxLayout();
-    tablePreview->setLayout(dialog_layout);
-
-    QTabWidget *tabs=new QTabWidget;
-    dialog_layout->addWidget(tabs);
 
     QTableWidget data_table;
     make_QTable(data_table,t);
@@ -91,7 +86,7 @@ void dbscan_node::preview() {
         cluster_colors[clusts[i].get_string()] = QColor(130+random_nr%125,130+(random_nr/255)%125,130+(random_nr/(255*255))%125);
     }
 
-    for(auto it:clusts) {
+    for(const auto &it:clusts) {
         for(auto& entry : data_table.findItems(QString::fromStdString(it.get_string()),Qt::MatchExactly)){
                         if(data_table.horizontalHeaderItem(entry->column())->text() =="cluster"){
                             entry->setBackground(cluster_colors[it.get_string()]);
@@ -100,7 +95,22 @@ void dbscan_node::preview() {
                 }
     }
 
-    tabs->addTab(&data_table, "Table");
+    QVBoxLayout vbox;
+    tablePreview->setLayout(&vbox);
+
+    vbox.addWidget(&data_table);
+
+    double d = siluette_coef(t);
+
+    vbox.addSpacing(20);
+    QLabel sil_l;
+    make_siluete(sil_l,d);
+
+    QLabel lab;
+    lab.setText("Siluete score: "+QString::number(d));
+    vbox.addWidget(&lab);
+    vbox.addWidget(&sil_l);
+
     tablePreview->exec();
 }
 

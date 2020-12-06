@@ -30,8 +30,8 @@ void naive_bayes::fit(const table &t)
         class_chances[it.get_string()]= (double)target_cache[it.get_string()].row_n()/(double)training.row_n();
     }
 
-    for(auto class_name : unique_targets)
-        for(auto column_name : training.col_names())
+    for(const auto &class_name : unique_targets)
+        for(const auto &column_name : training.col_names())
             if(column_name != target_name){
                 if(training[column_name].type == NOMINAL)
                     calculate_nominal(column_name,class_name.get_string(),target_cache[class_name.get_string()]);
@@ -58,7 +58,7 @@ table naive_bayes::predict(const table &t)
 void naive_bayes::calculate_nominal(std::string column_name,std::string class_name,table& t)
 {
     auto unique_vals = training[column_name].unique();
-    for(auto val : unique_vals){
+    for(const auto &val : unique_vals){
         int num_occurence = t.where(column_name,[val](auto x){ return x.get_string()==val.get_string(); }).size();
         int num = t.row_n();
         categorical_cache[std::make_pair(column_name+" = "+val.get_string(),class_name)] =
@@ -79,7 +79,7 @@ entry naive_bayes::predict_row(const table &t, int index)
     double best_p = 0;
     entry best_e = entry("n/a");
 
-    for(auto class_name : class_chances){
+    for(const auto &class_name : class_chances){
         //foreach class calculate chance row belongs to it
         double chance = 1;
         for(auto col_name : t.col_names()){
@@ -116,40 +116,40 @@ table naive_bayes::get_table()
 {
     table res;
     std::set<std::string> uniq;
-    for(auto it:categorical_cache)
+    for(const auto &it:categorical_cache)
         uniq.insert(it.first.second);
-    for(auto it:continuous_cache)
+    for(const auto &it:continuous_cache)
         uniq.insert(it.first.second);
 
     //creating unique columns
     std::vector<std::string> unique_classes;
-    for(auto it:uniq)
+    for(const auto &it:uniq)
         unique_classes.push_back("P("+it+")");
     res.push(unique_classes);
 
     //creating unique rows
     uniq.clear();
-    for(auto it:categorical_cache)
+    for(const auto &it:categorical_cache)
         uniq.insert(it.first.first);
-    for(auto it:continuous_cache)
+    for(const auto &it:continuous_cache)
         uniq.insert(it.first.first);
     unique_classes.clear();
-    for(auto it:uniq)
+    for(const auto &it:uniq)
         unique_classes.push_back(it);
 
-    for(auto it:unique_classes){
+    for(const auto &it:unique_classes){
         res.push_row();
         res[res.row_n()-1].set_name(it);
     }
 
     //seting values in cells
-     for(auto it:categorical_cache){
+     for(const auto &it:categorical_cache){
          int index=res.row_by_name(it.first.first);
          if(index != -1){
             res["P("+it.first.second+")"][index] = entry(it.second);
          }
      }
-     for(auto it:continuous_cache){
+     for(const auto &it:continuous_cache){
          int index=res.row_by_name(it.first.first);
          if(index != -1){
             res["P("+it.first.second+")"][index] = entry("m="+std::to_string(it.second.first)+" std="+std::to_string(it.second.second));

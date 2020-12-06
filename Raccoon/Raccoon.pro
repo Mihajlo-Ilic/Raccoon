@@ -13,10 +13,12 @@ FORMS += \
     mainwindow.ui
 
 DISTFILES += \
+    Resources/Action_icons/add_file.svg \
     Resources/Action_icons/delete.svg \
     Resources/Action_icons/merge.svg \
     Resources/Action_icons/start.svg \
     Resources/Action_icons/start_opt.svg \
+    Resources/Action_icons/stop_sign.svg \
     Resources/Action_icons/un_merge.svg \
     Resources/Action_icons/warning.svg \
     Resources/Node_icons/aglo.svg \
@@ -26,6 +28,7 @@ DISTFILES += \
     Resources/Node_icons/cat_to_num.svg \
     Resources/Node_icons/csv_icon.png \
     Resources/Node_icons/dbscan.svg \
+    Resources/Node_icons/doc_reader.svg \
     Resources/Node_icons/filter.svg \
     Resources/Node_icons/k_means.svg \
     Resources/Node_icons/knn.svg \
@@ -36,6 +39,7 @@ DISTFILES += \
     Resources/Node_icons/standardization.svg \
     Resources/Node_icons/stats.svg \
     Resources/Node_icons/table_output.svg \
+    Resources/Node_icons/tf_idf.svg \
     Resources/Node_icons/trash_panda.svg \
     Resources/Node_icons/tree.svg \
     Resources/iris.csv \
@@ -56,6 +60,7 @@ HEADERS += \
     Includes/gui/dbscan_node.hpp \
     Includes/gui/decision_tree_node.hpp \
     Includes/gui/delete_na.hpp \
+    Includes/gui/doc_reader_node.hpp \
     Includes/gui/filter_node.hpp \
     Includes/gui/k_mean_cluster_node.hpp \
     Includes/gui/knn_node.hpp \
@@ -91,6 +96,7 @@ SOURCES += \
     Sources/gui/dbscan_node.cpp \
     Sources/gui/decision_tree_node.cpp \
     Sources/gui/delete_na.cpp \
+    Sources/gui/doc_reader_node.cpp \
     Sources/gui/filter_node.cpp \
     Sources/gui/k_mean_cluster_node.cpp \
     Sources/gui/knn_node.cpp \

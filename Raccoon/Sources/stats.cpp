@@ -227,7 +227,7 @@ double b_function(table& t,int red,table& racunanje){
     //tako sto se radi u silueta funkciji pa se prosledi mapa sa 0,0 parovima funkciji b
 
     auto clusteri = t["cluster"].unique();
-    for(auto cluster : clusteri)
+    for(const auto &cluster : clusteri)
         if(cluster.get_string() != t["cluster"][red].get_string()){
             mapa[cluster.get_string()] = std::make_pair(0,0);
         }

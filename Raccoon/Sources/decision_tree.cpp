@@ -40,7 +40,7 @@ int rule_categorical::get_child(entry e){
 std::vector<std::string> rule_categorical::get_string()
 {
     std::vector<std::string> res;
-    for(auto it:vals) {
+    for(const auto &it:vals) {
         res.push_back(get_colname() + ": " + it.first);
     }
     return res;
@@ -75,7 +75,7 @@ tree_node::tree_node(table t, std::function<double(table)> metric, unsigned dept
     else
         this->parent->levels[depth]++;
 
-    for(auto it : t[t.get_target()].unique()) {
+    for(const auto &it : t[t.get_target()].unique()) {
          n_classes[it.get_string()] = t.where(t.get_target(), [it] (auto x) {return x.get_string() == it.get_string();}).size();
     }
 
@@ -87,7 +87,7 @@ tree_node::tree_node(table t, std::function<double(table)> metric, unsigned dept
         auto classes = t[t.get_target()].unique();
         int max = 0;
         entry cl_freq;
-        for(auto cl : classes) {
+        for(const auto &cl : classes) {
             int tmp = t.where(t.get_target(), [cl](auto e){return e == cl;}).size();
             if(tmp > max) {
                 max = tmp;
@@ -148,7 +148,7 @@ void tree_node::split() {
     }
     if(t[split_col_optimal].type == NOMINAL) {
         split_rule = new rule_categorical(split_col_optimal);
-        for(auto u : t[split_col_optimal].unique()) {
+        for(const auto &u : t[split_col_optimal].unique()) {
             split_rule->add_value(u);
             table t_i = t[t.where(split_col_optimal, [u] (auto e) {return u == e;})];
             t_i.pop(split_col_optimal);
@@ -167,7 +167,7 @@ double tree_node::split_categorical(std::string col_name) {
     auto unique_vals = t[col_name].unique();
     double gain_sum = 0;
     double split_info = 0;
-    for(auto val : unique_vals) {
+    for(const auto &val : unique_vals) {
         table t_i = t[t.where(col_name, [val] (auto e) {return val == e;})];
         int n_i = t_i.row_n();
         gain_sum += ((double)n_i/n)*clean_metric(t_i);
@@ -283,7 +283,7 @@ void tree_node::draw_node(QGraphicsScene *scene, int x, int y, int & child_x) {
     }
 
     int i = 0;
-    for(auto it:n_classes) {
+    for(const auto &it:n_classes) {
         QGraphicsSimpleTextItem *n_klasa = new QGraphicsSimpleTextItem();
         scene->addItem(n_klasa);
         n_klasa->setText(QString::fromStdString(it.first + ": " + std::to_string(it.second)));
@@ -320,7 +320,7 @@ double entropy(table t) {
       auto target_classes = t[t.get_target()].unique();
       double e = 0;
       double j_freq = 0;
-      for(auto j : target_classes) {
+      for(const auto &j : target_classes) {
           j_freq = ((double)t.where(t.get_target(), [j](auto ent) {return ent == j;}).size())/t.row_n();
           e -= j_freq*log2(j_freq);
       }
@@ -331,7 +331,7 @@ double gini(table t) {
     auto target_classes = t[t.get_target()].unique();
     double g = 1;
     double j_freq = 0;
-    for(auto j : target_classes) {
+    for(const auto &j : target_classes) {
         j_freq = ((double)t.where(t.get_target(), [j](auto ent) {return ent == j;}).size())/t.row_n();
         g -= j_freq*j_freq;
     }

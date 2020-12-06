@@ -70,7 +70,7 @@ void aglo_node::on_input_changed()
     p.add_column("cluster",column_role::INPUT_COLUMN,column_type::CONTINUOUS);
     outputs[0]->send_packet(p);
 }
-#include<iostream>
+
 void aglo_node::run()
 {
     table c=inputs[0]->get_table();
@@ -81,81 +81,15 @@ void aglo_node::run()
     outputs[0]->send_data(c);
 }
 
-#include<unordered_map>
-double a(table& t,int red,table &racunanje){
-    double sum = 0.0;
-    double n = 0.0;
-    for(int i=0;i<t.row_n();i++)
-        if(i!=red && t["cluster"][i].get_string()==t["cluster"][red].get_string()){
-            sum+=euclidean_dist(racunanje[red],racunanje[i]);
-            n+=1.0;
-        }
-    if(n != 0.0)
-        return sum/n;
-    else return 0.0;
-}
 
-double b(table& t,int red,table& racunanje){
-    std::unordered_map<std::string,std::pair<double,double>> mapa;
-
-    //inicijalizujemo pomagacku memoriju napomena : ovo se moze ubrzati tako da se samo jednom po pozivu sileta koeficijent ovo radi
-    //tako sto se radi u silueta funkciji pa se prosledi mapa sa 0,0 parovima funkciji b
-
-    auto clusteri = t["cluster"].unique();
-    for(auto cluster : clusteri)
-        if(cluster.get_string() != t["cluster"][red].get_string()){
-            mapa[cluster.get_string()] = std::make_pair(0,0);
-        }
-
-    //racunamo distance i azuriramo u memoriju
-    for(int i=0;i<t.row_n();i++){
-        if(t["cluster"][i].get_string()!=t["cluster"][red].get_string()){
-            std::string naziv = t["cluster"][i].get_string();
-            mapa[naziv].first+= euclidean_dist(racunanje[i],racunanje[red]);
-            mapa[naziv].second+=1.0;
-        }
-    }
-
-    //uzimamo najmanju
-    std::string ime;
-    double m = std::numeric_limits<double>::max();
-    for(auto &it:mapa)
-        if( (it.second.first/it.second.second) < m){
-            ime = it.first;
-            m = it.second.first;
-        }
-   // std::cout<<"\nklaster " <<ime<<"je najmanja distanca sa "<<mapa[ime].first/mapa[ime].second<<std::endl;
-    return mapa[ime].first/mapa[ime].second;
-}
-
-double silueta(table& t){
-    table racunanje = t;
-    racunanje.pop("cluster");
-    double n = 0.0;
-    double sum = 0.0;
-    for(int i=0;i<t.row_n();i++){
-        double red_a = a(t,i,racunanje);
-        double red_b = b(t,i,racunanje);
-        if(red_a!=0){
-            sum +=(red_b-red_a)/(std::max(red_b,red_a));
-
-        }
-        n+=1.0;
-    }
-    return sum/n;
-}
-
-#include<iostream>
 void aglo_node::preview_b()
 {
     t.pop("partition");
     t.pop("cluster");
     t.pop(t.get_target());
     t=model.predict(t);
-    std::cout<<silueta(t)<<std::endl;
     preview();
 }
-#include<iostream>
 
 void dent_sort(std::vector<int> &res,const std::vector<std::pair<std::pair<int, int>, double>> & arr,int index,std::unordered_set<int>& used){
     if(index<0)
@@ -202,7 +136,6 @@ void aglo_node::make_dendogram(QGraphicsScene &scene){
     scene.addItem(&y_axis);
     y_axis.setZValue(-0.5);
 
-    int x=70;
     int y=510;
     std::unordered_map<int,QPointF> cluster_centers;
 
@@ -374,7 +307,7 @@ void aglo_node::preview(){
         cluster_colors[clusts[i].get_string()] = QColor(130+rand_number%125,130+(rand_number/255)%125,130+(rand_number/(255*255))%125);
     }
 
-    for(auto it:clusts){
+    for(const auto &it:clusts){
         for(auto& entry : data_table.findItems(QString::fromStdString(it.get_string()),Qt::MatchExactly)){
                 if(data_table.horizontalHeaderItem(entry->column())->text() =="cluster"){
                     entry->setBackground(cluster_colors[it.get_string()]);
@@ -402,8 +335,25 @@ void aglo_node::preview(){
     tab_gview.setScene(&tab_gscene);
     make_dendogram(tab_gscene);
 
+    QFrame v_fr;
+    QVBoxLayout vbox;
+    v_fr.setLayout(&vbox);
 
-    tabs->addTab(&data_table,"Table");
+    vbox.addWidget(&data_table);
+
+    double d = siluette_coef(t);
+
+    vbox.addSpacing(20);
+    QLabel sil_l;
+    make_siluete(sil_l,d);
+
+    QLabel lab;
+    lab.setText("Siluete score: "+QString::number(d));
+    vbox.addWidget(&lab);
+
+    vbox.addWidget(&sil_l);
+
+    tabs->addTab(&v_fr,"Table");
     tabs->addTab(dend_frame,"Dendogram");
     //event methods
 
@@ -564,6 +514,7 @@ void aglo_node::num_changed(int v)
 
 void aglo_node::scene_changed(const QList<QRectF> &region)
 {
+    (void)region;
     QRectF rect = tab_gscene.itemsBoundingRect();
     tab_gscene.setSceneRect(rect);
 }

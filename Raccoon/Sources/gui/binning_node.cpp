@@ -85,6 +85,7 @@ packet binning_node::get_msg()
 #include<iostream>
 void binning_node::list_changed(QListWidgetItem *item)
 {
+    (void)item;
     packet msg = inputs[0]->get_packet();
     for(int i=0;i<listWidget.count();i++)
         if(listWidget.item(i)->checkState()==Qt::CheckState::Checked)

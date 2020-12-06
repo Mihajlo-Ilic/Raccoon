@@ -16,6 +16,8 @@
 
 #include<cmath>
 
+extern std::vector<node*> scene_nodes;
+
 void make_QTable(QTableWidget& qTable,const table &t)
 {
     auto colomns = t.col_names();
@@ -85,6 +87,10 @@ node::node(int width,int height,int n_inputs,int n_outputs){
         outputs[i] = new output_connector(this);
         outputs[i]->set_position(find_output_position(i));
     }
+
+    connect(&exit_btn, &QPushButton::clicked, [&]() {
+        delete this;
+    });
 }
 
 //NEEDED TO ADD ALL QGRAPHICSITEMS INSIDE NODE TO SCENE
@@ -164,7 +170,9 @@ int node::used_outputs()
 
 packet node::get_msg()
 {
-    return inputs[0]->get_packet();
+    if(inputs.size()>1)
+        return inputs[0]->get_packet();
+    else return packet();
 }
 
 QPointF node::find_input_position(int index){
@@ -191,7 +199,17 @@ void node::preview(){
 }
 
 node::~node(){
-
+    auto it=std::find(scene_nodes.begin(),scene_nodes.end(),this);
+    if(it!=scene_nodes.end()){
+        scene_nodes.erase(it);
+        packet p;
+        for(auto i:outputs)
+            i->send_packet(p);
+    }
+    for(auto i:inputs)
+        delete i;
+    for(auto i:outputs)
+        delete i;
 }
 
 
@@ -396,7 +414,7 @@ void output_connector::force_send()
 }
 
 input_connector::~input_connector(){
-
+    delete input_edge;
 }
 
 //OUTPUT CONECTOR METHOD DEFINITIONS
@@ -442,7 +460,8 @@ void output_connector::send_packet(const packet &msg)
             it->pass_packet(msg);
 }
 output_connector::~output_connector(){
-
+    for(auto i:output_edges)
+        delete i;
 }
 
 packet::packet(){
@@ -493,8 +512,7 @@ void packet::add_column(std::string name, column_role r, column_type t){
 }
 
 void packet::remove_column(std::string item){
-    int i=0;
-    for(i;i<packet_columns.size();i++){
+    for(unsigned i=0;i<packet_columns.size();i++){
         if(packet_columns[i].name==item){
             packet_columns.erase(packet_columns.begin()+i);
             return;
@@ -508,4 +526,12 @@ bool column_data::operator!=(const column_data &rhs) const{
 
 bool column_data::operator==(const column_data &rhs) const{
     return name==rhs.name && role==rhs.role && type==rhs.type;
+}
+
+void make_siluete(QLabel &lab, double d)
+{
+    QString left = "stop:"+QString::number(d-0.01) +" rgba(0, 0, 0, 0),";
+    QString center = "stop:"+QString::number(d) +" rgba(0, 0, 170, 255),";
+    QString right = "stop:"+QString::number(d+0.01) +" rgba(0, 0, 0, 0),";
+    lab.setStyleSheet("background-color: qlineargradient(spread:repeat, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(255, 0, 0, 255),"+left+center+right+ "stop:0.5 rgba(255, 183, 0, 255), stop:1 rgba(0, 255, 126, 255));");
 }

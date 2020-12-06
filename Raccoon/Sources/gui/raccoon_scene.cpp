@@ -24,12 +24,15 @@
 #include"../../Includes/gui/aglo_node.hpp"
 #include"../../Includes/gui/plot_node.hpp"
 #include "../../Includes/gui/doc_reader_node.hpp"
+#include "../../Includes/gui/tf_idf_node.hpp"
 
 //instance for singleton pattern
 raccoon_scene *raccoon_scene::instance = nullptr;
 //used to communicate with node.cpp for creating edges between 2 selected connectors kinda ugly :(
 connector* raccoon_scene::selected_input = nullptr;
 connector* raccoon_scene::selected_output = nullptr;
+
+std::vector<node*> scene_nodes;
 
 raccoon_scene::raccoon_scene(int width,int height):QGraphicsScene(){
     selected_input = nullptr;
@@ -181,6 +184,20 @@ void raccoon_scene::dropEvent(QGraphicsSceneDragDropEvent *event){
     }
     if(event->mimeData()->text()=="aglo_button"){
         aglo_node* n=new aglo_node(250,250);
+        addWidget(n);
+        n->add_to_scene(this);
+        n->set_position(event->scenePos());
+        scene_nodes.push_back(n);
+    }
+    if(event->mimeData()->text()=="doc_button"){
+        doc_reader_node* n=new doc_reader_node(250,250);
+        addWidget(n);
+        n->add_to_scene(this);
+        n->set_position(event->scenePos());
+        scene_nodes.push_back(n);
+    }
+    if(event->mimeData()->text()=="tf_idf_button"){
+        tf_idf_node* n=new tf_idf_node(250,250);
         addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());

@@ -14,7 +14,6 @@ class agglo_cluster{
 public:
     agglo_cluster();
 
-    table fit(const table& t);
     table predict(const table& t);
 
     //metric used between 2 instances for their distance ex:euclidean

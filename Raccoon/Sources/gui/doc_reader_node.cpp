@@ -87,7 +87,7 @@ void doc_reader_node::check_table()
     min_freq = set_min->value();
     max_freq = set_max->value();
     //eliminate words with less than min_freq and more than max_freq appearances
-    for(auto col : t.col_names()) {
+    for(const auto &col : t.col_names()) {
         entry col_sum = std::accumulate(t[col].begin(), t[col].end(), entry(0.0));
         if(col_sum.get_double() < min_freq || col_sum.get_double() > max_freq)
             t.pop(col);
@@ -154,7 +154,7 @@ void doc_reader_node::add() {
 
 void doc_reader_node::run()
 {
-    check_table();
+    //check_table();
     outputs[0]->send_data(t);
 }
 
@@ -194,7 +194,7 @@ void doc_reader_node::loadTextFromDir() {
     QFileInfoList filetree = fsmodel->rootDirectory().entryInfoList();
     delete fsmodel;
     std::stack<QFileInfo> st;
-    for(auto it:filetree)
+    for(const auto &it:filetree)
         st.push(it);
 
     //begin file tree walk
@@ -203,7 +203,7 @@ void doc_reader_node::loadTextFromDir() {
         st.pop();
         //add contents of directory to DFS stack
         if(cur.isDir()) {
-            for(auto e : QDir(cur.filePath()).entryInfoList())
+            for(const auto &e : QDir(cur.filePath()).entryInfoList())
                 if(e.fileName() != QString(".") && e.fileName() != QString(".."))
                     st.push(e);
         }

@@ -1,7 +1,10 @@
 #include "../../Includes/gui/plot_node.hpp"
-#include <unordered_map>
-#include<iostream>
-#include<numeric>
+
+
+#include <Q3DScatter>
+#include <QtCharts>
+#include <Q3DScatter>
+
 using namespace QtDataVisualization;
 
 plot_node::plot_node(int width, int height) : node(width,height,1) {
@@ -10,7 +13,6 @@ plot_node::plot_node(int width, int height) : node(width,height,1) {
     previewBtn.setText("preview");
     label.setText("Choose and atribute for label");
     label2.setText("Choose axis:");
-
 
     combo_box.setParent(&body);
     list_widget.setParent(&body);
@@ -86,10 +88,10 @@ void plot_node::plot_3D(std::vector<std::string> attributes, std::string label,s
     formLayout->addRow(themeList);
 
     std::unordered_map<std::string,double> uniqueToInt;
-    for(auto it : attributes) {
+    for(const auto &it : attributes) {
         double br = 1;
         if(t[it].type == NOMINAL) {
-            for(auto un : t[it].unique()) {
+            for(const auto &un : t[it].unique()) {
                 uniqueToInt[un.get_string()] = br++;
             }
         }
@@ -111,7 +113,7 @@ void plot_node::plot_3D(std::vector<std::string> attributes, std::string label,s
     scatter->axisY()->setTitle(QString::fromStdString(attributes[1]));
     scatter->axisZ()->setTitle(QString::fromStdString(attributes[2]));
 
-    for(auto it : classInRGB) {
+    for(const auto &it : classInRGB) {
         QScatter3DSeries *series = new QScatter3DSeries;
         QScatterDataArray data;
         for(int j = 0; j < t.row_n(); j++) {
@@ -196,7 +198,7 @@ void plot_node::plot_2D(std::vector<std::string> attributes, std::string label,s
     vBox->addLayout(frameLayout);
     vBox->addWidget(listWidget);
     listWidget->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
-    for(auto it : t[label].unique()) {
+    for(const auto &it : t[label].unique()) {
         QListWidgetItem *l_item =new QListWidgetItem();
         l_item->setText(QString::fromStdString(it.get_string()));
         l_item->setFlags(l_item->flags() | Qt::ItemIsUserCheckable);
@@ -226,10 +228,10 @@ void plot_node::plot_2D(std::vector<std::string> attributes, std::string label,s
     c->setRenderHint(QPainter::Antialiasing);
 
     std::unordered_map<std::string,double> uniqueToInt;
-    for(auto it : attributes) {
+    for(const auto &it : attributes) {
         double br = 1;
         if(t[it].type == NOMINAL) {
-            for(auto un : t[it].unique()) {
+            for(const auto &un : t[it].unique()) {
                 uniqueToInt[un.get_string()] = br++;
             }
         }
@@ -239,7 +241,7 @@ void plot_node::plot_2D(std::vector<std::string> attributes, std::string label,s
     double maxY = std::numeric_limits<double>::min();;
     double minX = std::numeric_limits<double>::max();;
     double minY = std::numeric_limits<double>::max();;
-    for(auto it : classInRGB) {
+    for(const auto &it : classInRGB) {
         QScatterSeries *scatter = new QScatterSeries;
         std::string labelName = it.first.get_string();
         scatter->setName(QString::fromStdString(labelName));
@@ -306,7 +308,8 @@ void plot_node::plot_2D(std::vector<std::string> attributes, std::string label,s
         backgroundColor->setStyleSheet("background-color : " + c->chart()->backgroundBrush().color().name());
     });
     connect(listWidget,QOverload<QListWidgetItem *>::of(&QListWidget::itemChanged),[&](QListWidgetItem *item){
-         for(int j =0 ; j < listWidget->count();j++) {
+         (void)item;
+        for(int j =0 ; j < listWidget->count();j++) {
              if(listWidget->item(j)->checkState() == Qt::Checked)
                  c->chart()->series().at(j)->setVisible(true);
              else

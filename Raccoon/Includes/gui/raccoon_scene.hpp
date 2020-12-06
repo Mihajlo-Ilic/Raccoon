@@ -32,7 +32,6 @@ private:
 
     QGraphicsLineItem connector_line;
 
-    std::vector<node*> scene_nodes;
     static raccoon_scene* instance;
 };
 

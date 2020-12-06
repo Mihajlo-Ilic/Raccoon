@@ -10,6 +10,7 @@
 //std::function<std::vector<int>(const table& t,int k, std::function<double( const row &, const row &)> metrics )>
 
 std::vector<int> k_first(const table& t,int k, std::function<double( const row &, const row &)> metrics ) {
+    (void) metrics;
     std::vector<int> returnVector(t.row_n(),-1);
     for(int i = 0; i < k; i++)
         returnVector[i]=i;
@@ -17,6 +18,7 @@ std::vector<int> k_first(const table& t,int k, std::function<double( const row &
 }
 
 std::vector<int> init_random(const table& t,int k, std::function<double( const row &, const row &)> metrics ) {
+    (void)metrics;
     std::vector<int> returnVector(t.row_n(),-1);
     int i = 0;
     std::srand(time(NULL));
@@ -144,7 +146,7 @@ void k_mean_cluster::fit(const table& data) {
     training_table = data;
 }
 
-table k_mean_cluster::predict(const table& data,int indicator) {
+table k_mean_cluster::predict(const table& data) {
     table centroids;
     centroids.push(training_table.col_names());
     table data_copy = data;

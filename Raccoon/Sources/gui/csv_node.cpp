@@ -63,7 +63,7 @@ void csv_node::load() {
 
 
     colomns.clear();
-    for(auto it:t.col_names())
+    for(const auto &it:t.col_names())
         colomns.addItem(QString::fromStdString(it));
 
 

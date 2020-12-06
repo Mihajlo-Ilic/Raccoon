@@ -1,6 +1,6 @@
 #include "../../Includes/gui/tf_idf_node.hpp"
 
-tf_idf_node::tf_idf_node(int width,int height) : node(width,height,1,0)
+tf_idf_node::tf_idf_node(int width,int height) : node(width,height,1,1)
 {
     header_text.setText("TF-IDF NODE");
 
@@ -12,10 +12,11 @@ tf_idf_node::tf_idf_node(int width,int height) : node(width,height,1,0)
 }
 
 void tf_idf_node::on_input_changed() {
-    t = inputs[0]->get_table();
 }
 
 void tf_idf_node::run() {
+    t=inputs[0]->get_table();
+    tf_idf(t);
     outputs[0]->send_data(t);
 }
 

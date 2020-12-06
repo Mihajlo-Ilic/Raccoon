@@ -336,7 +336,7 @@ std::vector<entry> collumn::unique()
     std::vector<entry> res;
     for(const auto& it:entries)
         s.insert(it.get_string());
-    for(auto it:s)
+    for(const auto &it:s)
         res.push_back(entry(it));
     return res;
 }

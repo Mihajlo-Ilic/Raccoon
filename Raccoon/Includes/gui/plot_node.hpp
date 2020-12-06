@@ -5,23 +5,9 @@
 
 #include "../table.hpp"
 #include "node.hpp"
-#include <Q3DScatter>
-#include <QPushButton>
+
 #include <QListWidget>
-#include <QLabel>
 #include <QComboBox>
-#include <QGraphicsView>
-#include <QGraphicsScene>
-#include <QPointF>
-#include <QVector>
-#include <QFile>
-#include <QColor>
-#include <QGraphicsSimpleTextItem>
-#include <ctime>
-#include <random>
-#include <algorithm>
-#include <QtCharts>
-#include <Q3DScatter>
 
 class plot_node : public node
 {

@@ -152,7 +152,7 @@ void loadTextFromDir(std::string &path_string, std::unordered_set<std::string> &
     QFileInfoList filetree = fsmodel->rootDirectory().entryInfoList();
     delete fsmodel;
     std::stack<QFileInfo> st;
-    for(auto it:filetree)
+    for(const auto &it:filetree)
         st.push(it);
 
     //begin file tree walk
@@ -161,7 +161,7 @@ void loadTextFromDir(std::string &path_string, std::unordered_set<std::string> &
         st.pop();
         //add contents of directory to DFS stack
         if(cur.isDir()) {
-            for(auto e : QDir(cur.filePath()).entryInfoList())
+            for(const auto &e : QDir(cur.filePath()).entryInfoList())
                 if(e.fileName() != QString(".") && e.fileName() != QString(".."))
                     st.push(e);
         }
