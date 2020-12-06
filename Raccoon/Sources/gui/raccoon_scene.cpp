@@ -23,6 +23,7 @@
 #include"../../Includes/gui/dbscan_node.hpp"
 #include"../../Includes/gui/aglo_node.hpp"
 #include"../../Includes/gui/plot_node.hpp"
+#include "../../Includes/gui/doc_reader_node.hpp"
 
 //instance for singleton pattern
 raccoon_scene *raccoon_scene::instance = nullptr;
