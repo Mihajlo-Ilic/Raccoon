@@ -6,6 +6,8 @@
 #include <QDragEnterEvent>
 
 #include"../../Includes/gui/raccoon_scene.hpp"
+#include"../../Includes/transformations.hpp"
+#include<iostream>
 
 raccoon_scene *globalScene;
 
@@ -17,6 +19,22 @@ MainWindow::MainWindow(QWidget *parent)
     globalScene = raccoon_scene::get_instance(1920,1080);
     ui->agraphicsView->setAcceptDrops(true);
     ui->agraphicsView->setScene(globalScene);
+    /*
+    table t;
+    std::vector<std::string> term = {"peking","kina","dzeki"};
+    t.push(term);
+    std::vector<entry> red1 = {4,5,0};
+    t.push_row(red1);
+    red1 = {1,2,3};
+    t.push_row(red1);
+    red1 = {7,0,9};
+    t.push_row(red1);
+
+    tf_idf(t);
+
+    std::cout << t << std::endl;
+    */
+
 
     connect(ui->csv_button,SIGNAL(released()),this,SLOT(drop_action()));
     connect(ui->approximate_button,SIGNAL(released()),this,SLOT(drop_action()));

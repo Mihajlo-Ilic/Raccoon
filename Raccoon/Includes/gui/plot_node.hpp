@@ -35,6 +35,8 @@ private:
 public:
     plot_node(int width, int height);
     void plot_function(std::vector<std::string> atributes, std::string label);
+    void plot_3D(std::vector<std::string> atributes, std::string label,std::vector<std::pair<entry,long>> classInRGB);
+    void plot_2D(std::vector<std::string> atributes, std::string label,std::vector<std::pair<entry,long>> classInRGB);
     void run() override;
     void preview() override;
     void on_input_changed() override;

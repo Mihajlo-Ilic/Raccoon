@@ -200,8 +200,8 @@ void aproximation_mean(table &data,std::string attribute) {
 
 std::vector<double> idf(table &t){
     std::vector<std::string> att = t.col_names();
-    int documents_number = t.col_n();
-    std::vector<double> idf_vector(documents_number);
+    int documents_number = t.row_n();
+    std::vector<double> idf_vector(t.col_n());
     int i = 0;
     for(auto at : att) {
         double number_of_files = 0.0;
@@ -209,13 +209,15 @@ std::vector<double> idf(table &t){
             if(x.get_double() > 0)
                 number_of_files += 1;
         });
-        idf_vector[i] = log(((double)documents_number)/number_of_files) + 1;
+        idf_vector[i++] = log(((double)documents_number)/number_of_files) + 1;
     }
     return idf_vector;
 }
 
 void tf_idf(table &t) {
    std::vector<double> idf_vector = idf(t);
+
+   std::cout << std::endl;
    for(int i = 0; i < t.row_n(); i++) {
        std::vector<std::string> att = t.col_names();
        int j = 0;
