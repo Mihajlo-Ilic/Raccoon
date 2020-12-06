@@ -16,6 +16,9 @@ int main(int argc, char* argv[])
     QString style( styleFile.readAll() );
     app.setStyleSheet( style );
 
+
+
+
     MainWindow window;
 
 

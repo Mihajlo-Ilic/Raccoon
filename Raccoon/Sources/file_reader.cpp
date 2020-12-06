@@ -3,6 +3,12 @@
 #include<sstream>
 #include<fstream>
 #include<iostream>
+#include<unordered_set>
+#include<stack>
+#include<QFileSystemModel>
+#include <map>
+#include <stdlib.h>
+
 
 std::string& ltrim(std::string& str, const std::string& chars = "\t\n\v\f\r ")
 {
@@ -21,6 +27,13 @@ std::string& trim(std::string& str, const std::string& chars = "\t\n\v\f\r ")
     return ltrim(rtrim(str, chars), chars);
 }
 
+
+std::string& strtolower(std::string &data) {
+    std::transform(data.begin(), data.end(), data.begin(),
+                          [](unsigned char c){ return std::tolower(c); });
+    return data;
+}
+
 std::vector<std::string> split (const std::string &line, char delim) {
     std::vector<std::string> entries;
     std::stringstream strm(line);
@@ -30,8 +43,6 @@ std::vector<std::string> split (const std::string &line, char delim) {
     }
     return entries;
 }
-
-
 
 table loadFromFile(std::string path) {
     table result{};
@@ -57,3 +68,144 @@ table loadFromFile(std::string path) {
     result.auto_deduce_types();
     return result;
 }
+
+std::vector<std::string> words_from_line(std::string &line) {
+    std::vector<std::string> words;
+    line.append("*");
+    std::string tmp = "";
+    bool building_word = false;
+    for(char c:line) {
+        if(!isalnum(c)) {
+            if(building_word) {
+                building_word = false;
+                words.push_back(tmp);
+                tmp = "";
+            }
+        }
+        else {
+            if(!building_word)
+                building_word = true;
+            tmp.push_back(c);
+        }
+    }
+
+    return words;
+}
+
+
+void loadTextFromFile(std::string& path, std::unordered_set<std::string> &stop_words, table& term_table, bool tolower, bool binary){
+
+    //Load words from the file into the dictionary
+    term_table.push_row(std::vector<entry>(term_table.col_n(), entry(0.0)));
+    QFileInfo * finfo = new QFileInfo(QString::fromStdString(path));
+    term_table[term_table.row_n() - 1].set_name(finfo->fileName().toStdString());
+    std::ifstream txtFile;
+    txtFile.open(path);
+    std::unordered_set<std::string> words_in_table;
+    for(unsigned i = 0; i<term_table.col_names().size(); i++) {
+        words_in_table.insert(term_table.col_names()[i]);
+    }
+
+    if(!txtFile.is_open()) {
+        std::cerr << "Tekst fajl ne postoji" << std::endl;
+        return;
+    }
+
+    std::string line;
+    while(std::getline(txtFile,line)) {
+        std::vector<std::string> words = words_from_line(line);
+        if(tolower)
+            std::transform(words.begin(), words.end(), words.begin(), [] (auto w) {return strtolower(w);});
+        for(unsigned i = 0; i<words.size(); i++) {
+            if(stop_words.find(words[i]) == stop_words.end()){
+                if(words_in_table.find(words[i]) == words_in_table.end())
+                        {
+                            term_table.push(words[i]);
+                            words_in_table.insert(words[i]);
+                            std::for_each(term_table[words[i]].begin(), term_table[words[i]].end(), [](entry &e){e = 0;});
+                            term_table[words[i]][term_table.row_n() - 1]++;
+                        }
+                    else {
+                        if(!binary)
+                            term_table[words[i]][term_table.row_n() - 1]++;
+
+                    }
+                  }
+
+                }
+            }
+
+}
+
+void loadTextFromDir(std::string &path_string, std::unordered_set<std::string> &stop_words, table& term_table, bool tolower, bool binary) {
+    //all text files in dir form a single entry
+    term_table.push_row(std::vector<entry>(term_table.col_n(), entry(0.0)));
+    QFileInfo * finfo = new QFileInfo(QString::fromStdString(path_string));
+    term_table[term_table.row_n() - 1].set_name(finfo->fileName().toStdString());
+    std::unordered_set<std::string> words_in_table;
+    for(unsigned i = 0; i<term_table.col_names().size(); i++) {
+        words_in_table.insert(term_table.col_names()[i]);
+    }
+    QFileSystemModel *fsmodel = new QFileSystemModel;
+    fsmodel->setRootPath(QString::fromStdString(path_string));
+
+    QFileInfoList filetree = fsmodel->rootDirectory().entryInfoList();
+    delete fsmodel;
+    std::stack<QFileInfo> st;
+    for(auto it:filetree)
+        st.push(it);
+
+    //begin file tree walk
+    while(!st.empty()) {
+        auto cur = st.top();
+        st.pop();
+        //add contents of directory to DFS stack
+        if(cur.isDir()) {
+            for(auto e : QDir(cur.filePath()).entryInfoList())
+                if(e.fileName() != QString(".") && e.fileName() != QString(".."))
+                    st.push(e);
+        }
+        if(cur.isFile()) {
+            //check extension
+            if(cur.suffix().toStdString() == "txt")
+            {
+                //input this file's text
+                std::ifstream txtFile;
+                txtFile.open(cur.filePath().toStdString());
+                if(!txtFile.is_open()) {
+                    std::cerr << "Could not open file: " << cur.filePath().toStdString() << std:: endl;
+                    continue;
+                }
+
+                std::string line;
+                //reading file line by line
+                while(std::getline(txtFile, line)) {
+                    std::vector<std::string> words = words_from_line(line);
+                    if(tolower)
+                        std::transform(words.begin(), words.end(), words.begin(), [] (auto w) {return strtolower(w);});
+                    for(unsigned i = 0; i<words.size(); i++) {
+                        //we only process words that aren't stop words
+                        if(stop_words.find(words[i]) == stop_words.end()){
+                            //word isn't in the table yet
+                            if(words_in_table.find(words[i]) == words_in_table.end())
+                            {
+                                term_table.push(words[i]);
+                                words_in_table.insert(words[i]);
+                                std::for_each(term_table[words[i]].begin(), term_table[words[i]].end(), [](entry &e){e = entry(0.0);});
+                                term_table[words[i]][term_table.row_n() - 1]++;
+                            }
+                            else
+                                if(!binary)
+                                    term_table[words[i]][term_table.row_n() - 1]++;
+
+                        }
+
+                    }
+                }
+
+            }
+        }
+    }
+
+}
+

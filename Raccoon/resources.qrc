@@ -26,5 +26,7 @@
         <file>Resources/Node_icons/tree.svg</file>
         <file>Resources/Node_icons/dbscan.svg</file>
         <file>Resources/Node_icons/trash_panda.svg</file>
+        <file>Resources/Action_icons/add_file.svg</file>
+        <file>Resources/Action_icons/stop_sign.svg</file>
     </qresource>
 </RCC>
