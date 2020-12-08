@@ -86,6 +86,7 @@ class node : public QWidget{
         int used_inputs();
         int used_outputs();
 
+        bool warning_cheque(std::function<bool(std::string&)> func);
         virtual packet get_msg();
 
         virtual ~node();
@@ -95,7 +96,7 @@ class node : public QWidget{
         QFrame header;
         QFrame body;
         QLabel header_text;
-        QLabel warning_icon;
+        QPushButton warning_icon;
         QPushButton exit_btn;
         
         std::vector<input_connector *> inputs;

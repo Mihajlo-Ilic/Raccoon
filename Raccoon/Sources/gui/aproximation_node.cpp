@@ -32,7 +32,20 @@ aproximation_node::aproximation_node(int width,int height) : node(width,height)
 }
 
 void aproximation_node::preview_b() {
-    preview();
+    int br = 0;
+    for(int i = 0; i < columns.count();i++)
+        if(columns.item(i)->checkState()==Qt::CheckState::Checked)
+            br++;
+    if(warning_cheque([&](auto &x){
+        if (br == 0) {
+            x += "You did't select atribute for binning\n";
+            return true;
+        } else {
+        return false;
+        }
+    })) { }
+    else
+        preview();
 }
 
 void aproximation_node::changed()
@@ -59,20 +72,33 @@ void aproximation_node::on_input_changed()
 
 void aproximation_node::run()
 {
-
-    t=inputs[0]->get_table();
-    for(int i=0;i<columns.count();i++){
+    int br = 0;
+    for(int i = 0; i < columns.count();i++)
         if(columns.item(i)->checkState()==Qt::CheckState::Checked)
-        {
-          if(aproximationCombo.currentText()=="By user adding")
-              aproximation_val(t,columns.item(i)->text().toStdString(),editAprox.text().toDouble());
-            else
-          if(aproximationCombo.currentText()=="By mean")
-              aproximation_mean(t,columns.item(i)->text().toStdString());
+            br++;
+    if(warning_cheque([&](auto &x){
+        if (br == 0) {
+            x += "You did't select atribute for binning\n";
+            return true;
+        } else {
+        return false;
         }
+    })) { }
+    else {
+        t=inputs[0]->get_table();
+        for(int i=0;i<columns.count();i++){
+            if(columns.item(i)->checkState()==Qt::CheckState::Checked)
+            {
+              if(aproximationCombo.currentText()=="By user adding")
+                  aproximation_val(t,columns.item(i)->text().toStdString(),editAprox.text().toDouble());
+                else
+              if(aproximationCombo.currentText()=="By mean")
+                  aproximation_mean(t,columns.item(i)->text().toStdString());
+            }
+        }
+        outputs[0]->send_data(t);
+        needs_update=false;
     }
-    outputs[0]->send_data(t);
-    needs_update=false;
 }
 
 void aproximation_node::help_func(const QString &text){

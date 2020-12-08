@@ -48,28 +48,44 @@ binning_node::binning_node(int width, int height) : node(width,height,1)
     connect(&listWidget,SIGNAL(itemChanged(QListWidgetItem *)),this,SLOT(list_changed(QListWidgetItem *)));
 }
 
+#include<iostream>
 void binning_node::run()
 {
-    t=inputs[0]->get_table();
-    for(int i=0;i<listWidget.count();i++){
+    int br = 0;
+    for(int i = 0; i < listWidget.count();i++)
         if(listWidget.item(i)->checkState()==Qt::CheckState::Checked)
-        {
-        if(binningMethod.currentText()=="binning width")
-            binning_width(t,listWidget.item(i)->text().toStdString(),1);
-        if(binningMethod.currentText()=="binning frequency")
-            binning_frequency(t,listWidget.item(i)->text().toStdString(),1);
-
-
-        if(binningShuffle.currentText()=="By mean")
-            binning_mean(t,listWidget.item(i)->text().toStdString(),1);
-        if(binningShuffle.currentText()=="By border")
-            binning_boundry(t,listWidget.item(i)->text().toStdString(),1);
+            br++;
+    if(warning_cheque([&](auto &x){
+        if (br == 0) {
+            std::cout << "Banga" << std::endl;
+            x += "You did't select atribute for binning\n";
+            return true;
+        } else {
+        return false;
         }
+    })) { }
+    else {
+        t=inputs[0]->get_table();
+        for(int i=0;i<listWidget.count();i++){
+            if(listWidget.item(i)->checkState()==Qt::CheckState::Checked)
+            {
+            if(binningMethod.currentText()=="binning width")
+                binning_width(t,listWidget.item(i)->text().toStdString(),1);
+            if(binningMethod.currentText()=="binning frequency")
+                binning_frequency(t,listWidget.item(i)->text().toStdString(),1);
+
+
+            if(binningShuffle.currentText()=="By mean")
+                binning_mean(t,listWidget.item(i)->text().toStdString(),1);
+            if(binningShuffle.currentText()=="By border")
+                binning_boundry(t,listWidget.item(i)->text().toStdString(),1);
+            }
+        }
+
+        outputs[0]->send_data(t);
+
+        needs_update=false;
     }
-
-    outputs[0]->send_data(t);
-
-    needs_update=false;
 }
 
 packet binning_node::get_msg()
@@ -104,5 +120,19 @@ void binning_node::changed(const QString &s)
 }
 
 void binning_node::preview_b() {
-    preview();
+    int br = 0;
+    for(int i = 0; i < listWidget.count();i++)
+        if(listWidget.item(i)->checkState()==Qt::CheckState::Checked)
+            br++;
+    if(warning_cheque([&](auto &x){
+        if (br == 0) {
+            std::cout << "Banga" << std::endl;
+            x += "You did't select atribute for binning\n";
+            return true;
+        } else {
+        return false;
+        }
+    })) { }
+    else
+        preview();
 }

@@ -328,11 +328,22 @@ void plot_node::run()
 void plot_node::preview()
 {
     std::vector<std::string> fromListWidget;
-    for(auto it : list_widget.selectedItems())
-        if(fromListWidget.size()<=3)
+    if(warning_cheque([&](auto &x){
+        if (list_widget.selectedItems().size() < 2 || list_widget.selectedItems().size() > 3 || t.col_n() == 0) {
+            x += "you have selected less then 2, or more then 3 attributes\n";
+            std::cout << "Usli smo ovde" << std::endl;
+            return true;
+        } else {
+        return false;
+        }
+    })) { }
+    else {
+        for(auto it : list_widget.selectedItems()) {
             fromListWidget.push_back(it->text().toStdString());
-    std::string label = combo_box.currentText().toStdString();
-    plot_function(fromListWidget,label);
+        }
+        std::string label = combo_box.currentText().toStdString();
+        plot_function(fromListWidget,label);
+    }
 }
 
 void plot_node::on_input_changed()

@@ -28,7 +28,6 @@ public slots:
     void changed(const QString& s);
     void preview_b();
     void list_changed(QListWidgetItem *);
-
 };
 
 #endif // BINNING_NODE_HPP

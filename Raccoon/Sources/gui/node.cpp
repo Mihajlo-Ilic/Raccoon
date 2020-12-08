@@ -9,6 +9,8 @@
 #include<QDrag>
 #include<QPen>
 #include<QGraphicsScene>
+#include<QErrorMessage>
+#include<iostream>
 
 //INCLUDE IS NEEDED TO ACCESS STATIC CONNECTORS NEEDED BY SCENE
 //TO MAKE AN EDGE ON DROP EVENTS.PROBABLY BAD DESIGN BUT WE CAN'T THINK OF A BETTER SOLUTION CURRENTLY
@@ -55,12 +57,9 @@ node::node(int width,int height,int n_inputs,int n_outputs){
     //A SYSTEM IS NEEDED TO UPDATE PARENT NODE FROM AN ALGORITHM MAYBE READING FROM CERR STREAM CAN WORK
     warning_icon.setParent(&header);
     warning_icon.setGeometry(width-30,0,25,25);
-    warning_icon.setAlignment(Qt::AlignCenter);
     warning_icon.setMaximumHeight(25);
     warning_icon.setMaximumWidth(25);
-    QPixmap pix(":/res/warning.svg");
-    warning_icon.setPixmap(pix);
-    warning_icon.setScaledContents(true);
+    warning_icon.setStyleSheet("QLabel{background-color:yellow;}");
     warning_icon.setToolTip("Desila se greska brale :(\n ee");
     warning_icon.hide();
 
@@ -91,6 +90,22 @@ node::node(int width,int height,int n_inputs,int n_outputs){
     connect(&exit_btn, &QPushButton::clicked, [&]() {
         delete this;
     });
+}
+
+bool node::warning_cheque(std::function<bool(std::string&)> func) {
+    std::string error_text;
+    QErrorMessage *msg = new QErrorMessage();
+    if (func(error_text)) {
+        warning_icon.show();
+        connect(&warning_icon,(&QPushButton::clicked),[&](){
+            std::cout <<"Guck ytou"<<std::endl;
+            msg->showMessage(QString::fromStdString(error_text));
+        });
+        return true;
+    }
+    std::cout <<"Bubaj" << std::endl;
+    warning_icon.hide();
+    return false;
 }
 
 //NEEDED TO ADD ALL QGRAPHICSITEMS INSIDE NODE TO SCENE
@@ -185,6 +200,8 @@ QPointF node::find_output_position(int index){
     int segment = geometry().height()/(outputs.size() + 1);
     return QPointF(geometry().topRight().x()+1, geometry().y() + segment*(index+1));
 }
+
+
 //GENERIC PREVIEW FUNCTION THAT MOST NODES USE.IT CONVERTS INTERNAL Table TO QTableWidget AND PRESENTS IT IN A DIALOG WINDOW
 void node::preview(){
     QDialog tablePreview;
