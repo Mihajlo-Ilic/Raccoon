@@ -55,13 +55,17 @@ node::node(int width,int height,int n_inputs,int n_outputs){
     //TODO: ADD A SYSTEM TO BE ABLE TO UPDATE WARNING ICON WHEN SOME TEXT IS READ FROM CERR STREAM
     //OR SOMETHING LIKE THAT SO WHEN AN ALGORITHM HAS A PROBLEM NODE CAN NOTIFY USER BY POPPING WARNING ICON
     //A SYSTEM IS NEEDED TO UPDATE PARENT NODE FROM AN ALGORITHM MAYBE READING FROM CERR STREAM CAN WORK
+
     warning_icon.setParent(&header);
     warning_icon.setGeometry(width-30,0,25,25);
     warning_icon.setMaximumHeight(25);
     warning_icon.setMaximumWidth(25);
     warning_icon.setStyleSheet("QLabel{background-color:yellow;}");
     warning_icon.setToolTip("Desila se greska brale :(\n ee");
+    warning_icon.setAttribute(Qt::WA_Hover);
     warning_icon.hide();
+
+    error_msg.setMaximumSize(300,300);
 
     exit_btn.setParent(&header);
     exit_btn.setGeometry(5,5,15,15);
@@ -94,12 +98,12 @@ node::node(int width,int height,int n_inputs,int n_outputs){
 
 bool node::warning_cheque(std::function<bool(std::string&)> func) {
     std::string error_text;
-    QErrorMessage *msg = new QErrorMessage();
     if (func(error_text)) {
+        std::string str = error_text;
         warning_icon.show();
-        connect(&warning_icon,(&QPushButton::clicked),[&](){
-            std::cout <<"Guck ytou"<<std::endl;
-            msg->showMessage(QString::fromStdString(error_text));
+        connect(&warning_icon,(&QPushButton::clicked),[&,str](){
+            error_msg.setText(QString::fromStdString(str));
+            error_msg.exec();
         });
         return true;
     }

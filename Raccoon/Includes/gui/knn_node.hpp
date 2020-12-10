@@ -26,7 +26,11 @@ public:
     void run() override;
     void on_input_changed() override;
     packet get_msg() override;
+
     void preview() override;
+
+    bool check_errors();
+
 public slots:
     void preview_b();
     void combo_changed( QString str);

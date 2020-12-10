@@ -59,9 +59,19 @@ void knn_node::run()
 void knn_node::on_input_changed()
 {
     packet msg = inputs[0]->get_packet();
-    msg.add_column("assigned",column_role::INPUT_COLUMN,column_type::CONTINUOUS);
-    outputs[0]->send_packet(msg);
-    table t = inputs[0]->get_table();
+    if(warning_cheque([&](auto &x){
+        if (msg.packet_rows == 0) {
+            x += "The packet wasn't send to knn_node\n";
+            return true;
+        } else {
+        return false;
+        }
+    })) { }
+    else {
+        msg.add_column("assigned",column_role::INPUT_COLUMN,column_type::CONTINUOUS);
+        outputs[0]->send_packet(msg);
+        table t = inputs[0]->get_table();
+    }
 }
 
 packet knn_node::get_msg()

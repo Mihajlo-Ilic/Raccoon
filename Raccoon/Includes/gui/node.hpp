@@ -10,6 +10,7 @@
 #include<QGraphicsLineItem>
 #include<QGraphicsEllipseItem>
 #include<QGraphicsPolygonItem>
+#include <QMessageBox>
 
 #include<vector>
 
@@ -96,9 +97,13 @@ class node : public QWidget{
         QFrame header;
         QFrame body;
         QLabel header_text;
+
         QPushButton warning_icon;
+        QPushButton exit_btn2;
+
         QPushButton exit_btn;
-        
+        QMessageBox error_msg;
+
         std::vector<input_connector *> inputs;
         std::vector<output_connector *> outputs;
         bool needs_update;

@@ -325,13 +325,13 @@ void plot_node::run()
     t = inputs[0]->get_table();
 }
 
+#include<iostream>
 void plot_node::preview()
 {
     std::vector<std::string> fromListWidget;
-    if(warning_cheque([&](auto &x){
+    if(warning_cheque([&](std::string &x){
         if (list_widget.selectedItems().size() < 2 || list_widget.selectedItems().size() > 3 || t.col_n() == 0) {
-            x += "you have selected less then 2, or more then 3 attributes\n";
-            std::cout << "Usli smo ovde" << std::endl;
+            x = "You have selected less then 2, or more then 3 attributes\n";
             return true;
         } else {
         return false;

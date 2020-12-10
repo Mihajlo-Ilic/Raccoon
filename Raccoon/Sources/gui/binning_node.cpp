@@ -120,19 +120,5 @@ void binning_node::changed(const QString &s)
 }
 
 void binning_node::preview_b() {
-    int br = 0;
-    for(int i = 0; i < listWidget.count();i++)
-        if(listWidget.item(i)->checkState()==Qt::CheckState::Checked)
-            br++;
-    if(warning_cheque([&](auto &x){
-        if (br == 0) {
-            std::cout << "Banga" << std::endl;
-            x += "You did't select atribute for binning\n";
-            return true;
-        } else {
-        return false;
-        }
-    })) { }
-    else
-        preview();
+    preview();
 }
