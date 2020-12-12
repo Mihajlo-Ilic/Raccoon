@@ -49,7 +49,7 @@ binning_node::binning_node(int width, int height) : node(width,height,1)
 }
 
 #include<iostream>
-void binning_node::run()
+bool binning_node::run()
 {
     int br = 0;
     for(int i = 0; i < listWidget.count();i++)
@@ -63,7 +63,7 @@ void binning_node::run()
         } else {
         return false;
         }
-    })) { }
+    })) { return false; }
     else {
         t=inputs[0]->get_table();
         for(int i=0;i<listWidget.count();i++){
@@ -85,6 +85,7 @@ void binning_node::run()
         outputs[0]->send_data(t);
 
         needs_update=false;
+        return true;
     }
 }
 

@@ -74,7 +74,7 @@ class node : public QWidget{
     //VIRTUAL METHODS PREVIEW IS USED FOR PREVIEW BUTTON EVENT
     //INPUT CHANGED IS USED TO RESPOND TO A CHANGE WHEN CONNECTOR RECIEVES DATA
     //RUN IS FOR TOP SORT OF THE SCENE
-        virtual void run() = 0;
+        virtual bool run() = 0;
         virtual void on_input_changed() = 0;
         virtual void preview();
 

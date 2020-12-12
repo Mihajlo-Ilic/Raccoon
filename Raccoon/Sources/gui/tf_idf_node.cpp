@@ -14,10 +14,11 @@ tf_idf_node::tf_idf_node(int width,int height) : node(width,height,1,1)
 void tf_idf_node::on_input_changed() {
 }
 
-void tf_idf_node::run() {
+bool tf_idf_node::run() {
     t=inputs[0]->get_table();
     tf_idf(t);
     outputs[0]->send_data(t);
+    return true;
 }
 
 void tf_idf_node::preview_b() {

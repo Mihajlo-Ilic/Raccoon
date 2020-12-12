@@ -12,7 +12,7 @@ class normalization_node : public node
 public:
     normalization_node(int width, int height);
     void on_input_changed() override;
-    void run() override;
+    bool run() override;
 public slots:
     void preview_b();
     void list_changed();

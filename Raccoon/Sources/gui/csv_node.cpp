@@ -127,8 +127,21 @@ void csv_node::browse() {
     needs_update = true;
 }
 
-void csv_node::run()  {
-    outputs[0]->send_data(t);
+bool csv_node::run()  {
+    if(warning_cheque([&](auto &x){
+        if (t.col_n() == 0) {
+            x += "There is no CSV file that has been loaded!\n";
+            return true;
+        } else {
+        return false;
+        }
+    })) {
+       return false;
+    }
+    else {
+        outputs[0]->send_data(t);
+        return true;
+    }
 }
 
 void csv_node::on_input_changed()

@@ -1,6 +1,7 @@
 #include "../../Includes/gui/knn_node.hpp"
 #include<QDialog>
 #include<QVBoxLayout>
+#include<QMessageBox>
 
 knn_node::knn_node(int width, int height) : node(width,height,2){
     header_text.setText("KNN NODE");
@@ -34,16 +35,29 @@ knn_node::knn_node(int width, int height) : node(width,height,2){
     connect(&previewBtn, SIGNAL(clicked()), this, SLOT(preview_b()));
 }
 
-void knn_node::run()
+#include<iostream>
+bool knn_node::run()
 {
-    if(warning_cheque([&](auto &x){
-        if (inputs[0]->get_table().col_n() == 0) {
-            x += "There are no table inputed here";
-            return true;
-        } else {
+     packet msg = inputs[0]->get_packet();
+     auto col = msg.packet_columns;
+     int col_num = 0;
+     for(int i = 0; i < col.size();i++) {
+         if(col[i].role == TARGET){
+             col_num++;
+             break;
+         }
+     }
+     if(warning_cheque([&](auto &x){
+         if (col_num == 0) {
+             std::cout << "BAKA" << std::endl;
+             x += "The packet didn't had target column!\n";
+             return true;
+         } else {
+         return false;
+         }
+     })) {
         return false;
-        }
-    })) { }
+     }
     else {
         table train =inputs[0]->get_table();
         table test = inputs[0]->get_table();
@@ -53,20 +67,30 @@ void knn_node::run()
         classifier.fit(train);
         t = classifier.predict(test);
         outputs[0]->send_data(t);
+        return true;
     }
 }
 
 void knn_node::on_input_changed()
 {
-    packet msg = inputs[0]->get_packet();
-    if(warning_cheque([&](auto &x){
-        if (msg.packet_rows == 0) {
-            x += "The packet wasn't send to knn_node\n";
-            return true;
-        } else {
-        return false;
-        }
-    })) { }
+     packet msg = inputs[0]->get_packet();
+     auto col = msg.packet_columns;
+     int col_num = 0;
+     for(int i = 0; i < col.size();i++) {
+         if(col[i].role == TARGET){
+             col_num++;
+             break;
+         }
+     }
+     if(warning_cheque([&](auto &x){
+         if (col_num == 0) {
+             std::cout << "BAKA" << std::endl;
+             x += "The packet didn't had target column!\n";
+             return true;
+         } else {
+         return false;
+         }
+     })) { }
     else {
         msg.add_column("assigned",column_role::INPUT_COLUMN,column_type::CONTINUOUS);
         outputs[0]->send_packet(msg);

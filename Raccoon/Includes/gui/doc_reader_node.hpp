@@ -34,7 +34,7 @@ public slots:
     void add();
 public:
     void on_input_changed() override;
-    void run() override;
+    bool run() override;
     doc_reader_node(int width, int height);
     void check_table();
     void loadStopWords(std::string stop_words_path);

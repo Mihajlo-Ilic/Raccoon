@@ -4,6 +4,7 @@
 #include<QMimeData>
 #include<queue>
 #include<set>
+#include<QMessageBox>
 
 #include"../../Includes/gui/csv_node.hpp"
 #include"../../Includes/gui/aproximation_node.hpp"
@@ -240,7 +241,14 @@ void raccoon_scene::run_graph(){
         while(!q.empty()) {
             auto curr = q.front();
             q.pop();
-            curr->run();
+            bool stop = curr->run();
+            // IF WE HAVE AN
+            if(stop == false) {
+                QMessageBox box;
+                box.setText("You have error in your nodes!!!\n");
+                box.exec();
+                return;
+            }
             if(curr->used_outputs() ==0)
                 curr->preview();
             for(auto& it:curr->get_output_nodes()) {

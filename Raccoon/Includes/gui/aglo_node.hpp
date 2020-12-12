@@ -19,7 +19,7 @@ class aglo_node : public node
 public:
     aglo_node(int width,int height);
     void on_input_changed() override;
-    void run() override;
+    bool run() override;
     void preview() override;
     packet get_msg() override;
     void make_dendogram(QGraphicsScene &scene);

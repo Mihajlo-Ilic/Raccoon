@@ -70,7 +70,7 @@ void aproximation_node::on_input_changed()
     needs_update = true;
 }
 
-void aproximation_node::run()
+bool aproximation_node::run()
 {
     int br = 0;
     for(int i = 0; i < columns.count();i++)
@@ -78,12 +78,12 @@ void aproximation_node::run()
             br++;
     if(warning_cheque([&](auto &x){
         if (br == 0) {
-            x += "You did't select atribute for binning\n";
+            x += "You did't select atribute for aproximation\n";
             return true;
         } else {
         return false;
         }
-    })) { }
+    })) { return false; }
     else {
         t=inputs[0]->get_table();
         for(int i=0;i<columns.count();i++){
@@ -98,6 +98,7 @@ void aproximation_node::run()
         }
         outputs[0]->send_data(t);
         needs_update=false;
+        return true;
     }
 }
 

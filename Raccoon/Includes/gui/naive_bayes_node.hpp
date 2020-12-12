@@ -24,7 +24,7 @@ private:
     naive_bayes classifier;
 public:
     nb_node(int width, int height);
-    void run() override;
+    bool run() override;
     void on_input_changed() override;
     packet get_msg() override;
 public slots:

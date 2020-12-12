@@ -71,7 +71,7 @@ void aglo_node::on_input_changed()
     outputs[0]->send_packet(p);
 }
 
-void aglo_node::run()
+bool aglo_node::run()
 {
     table c=inputs[0]->get_table();
     c.pop("partition");
@@ -79,6 +79,7 @@ void aglo_node::run()
     c.pop("cluster");
     t = model.predict(c);
     outputs[0]->send_data(c);
+    return true;
 }
 
 

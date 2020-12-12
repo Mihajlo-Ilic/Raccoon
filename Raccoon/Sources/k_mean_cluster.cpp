@@ -85,7 +85,7 @@ std::vector<int> k_means_pp(const table& t,int k, std::function<double( const ro
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> dis(0, 0.1);
-     std::uniform_int_distribution<> i_dis(0, t.row_n()-1);
+    std::uniform_int_distribution<> i_dis(0, t.row_n()-1);
 
     std::vector<int> returnVector(t.row_n(),-1);
     int random = i_dis(gen);

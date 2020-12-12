@@ -54,7 +54,7 @@ void decision_tree_node::on_input_changed()
     outputs[0]->send_packet(msg);
 }
 #include<iostream>
-void decision_tree_node::run()
+bool decision_tree_node::run()
 {
     table training = inputs[0]->get_table();
     table test = inputs[1]->get_table();
@@ -67,6 +67,7 @@ void decision_tree_node::run()
     std::chrono::steady_clock::time_point end_time = std::chrono::steady_clock::now();
     std::chrono::duration<double> elapsed_seconds = end_time-curr_time;
     std::cout<<"tree time : "<< elapsed_seconds.count()<<".s"<<std::endl;
+    return true;
 }
 
 packet decision_tree_node::get_msg()

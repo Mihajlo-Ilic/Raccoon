@@ -152,10 +152,11 @@ void doc_reader_node::add() {
     current_path = "";
 }
 
-void doc_reader_node::run()
+bool doc_reader_node::run()
 {
     //check_table();
     outputs[0]->send_data(t);
+    return true;
 }
 
 void doc_reader_node::loadStopWords(std::string stop_words_path) {

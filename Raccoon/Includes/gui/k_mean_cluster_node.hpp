@@ -25,7 +25,7 @@ private:
     std::unordered_map<std::string, QColor> cluster_colors;
 public:
     k_mean_cluster_node(int width, int height);
-    void run() override;
+    bool run() override;
     void on_input_changed() override;
     packet get_msg() override;
     void preview() override;

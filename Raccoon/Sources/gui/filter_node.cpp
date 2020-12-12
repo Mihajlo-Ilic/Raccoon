@@ -34,9 +34,20 @@ void filter_node::on_input_changed()
     needs_update = true;
 }
 
-void filter_node::run()
+bool filter_node::run()
 {
     t=inputs[0]->get_table();
+    if(warning_cheque([&](auto &x){
+        if (t.col_n() == 0) {
+            x += "The packet was empty!\n";
+            return true;
+        } else {
+        return false;
+        }
+    })) {
+       return false;
+    }
+    else {
     for(int i=0;i<columns.count();i++)
         if(columns.item(i)->checkState()==Qt::CheckState::Checked)
         {
@@ -44,6 +55,8 @@ void filter_node::run()
         }
     outputs[0]->send_data(t);
     needs_update=false;
+    return true;
+    }
 }
 
 packet filter_node::get_msg()

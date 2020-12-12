@@ -21,7 +21,7 @@ private:
 public:
     void on_input_changed() override;
     binning_node(int width, int height);
-    void run() override;
+    bool run() override;
 
     packet get_msg() override;
 public slots:

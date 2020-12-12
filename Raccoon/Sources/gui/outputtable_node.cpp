@@ -16,9 +16,9 @@ void outputTable_node::on_input_changed()
 
 }
 
-void outputTable_node::run()
+bool outputTable_node::run()
 {
-
+    return true;
 }
 
 void outputTable_node::preview_b() {

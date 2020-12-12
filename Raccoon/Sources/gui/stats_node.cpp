@@ -33,9 +33,10 @@ void stats_node::on_input_changed()
      t = inputs[0]->get_table();
 }
 
-void stats_node::run()
+bool stats_node::run()
 {
     t = inputs[0]->get_table();
+    return true;
 }
 
 void stats_node::preview_b() {

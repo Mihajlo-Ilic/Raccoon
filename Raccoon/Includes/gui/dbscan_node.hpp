@@ -20,7 +20,7 @@ private:
     dbscan clusterizer;
 public:
     dbscan_node(int width, int height);
-    void run() override;
+    bool run() override;
     void preview() override;
     void on_input_changed() override;
     packet get_msg() override;

@@ -35,12 +35,25 @@ k_mean_cluster_node::k_mean_cluster_node(int width,int height) : node(width,heig
     connect(&k_neighbours,SIGNAL(valueChanged(int)),this,SLOT(sb_changed(int)));
 }
 
-void k_mean_cluster_node::run()
+bool k_mean_cluster_node::run()
 {
     t=inputs[0]->get_table();
-    model.fit(t);
-    t=model.predict(t);
-    outputs[0]->send_data(t);
+    if(warning_cheque([&](auto &x){
+        if (t.col_n() == 0) {
+            x += "The packet was empty!\n";
+            return true;
+        } else {
+        return false;
+        }
+    })) {
+       return false;
+    }
+    else {
+        model.fit(t);
+        t=model.predict(t);
+        outputs[0]->send_data(t);
+        return true;
+    }
 }
 
 void k_mean_cluster_node::on_input_changed()

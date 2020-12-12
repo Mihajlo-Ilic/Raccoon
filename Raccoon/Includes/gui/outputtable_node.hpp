@@ -11,7 +11,7 @@ class outputTable_node : public node
 public:
     outputTable_node(int width,int height);
     void on_input_changed() override;
-    void run() override;
+    bool run() override;
 private:
     QPushButton previewBtn;
 public slots:

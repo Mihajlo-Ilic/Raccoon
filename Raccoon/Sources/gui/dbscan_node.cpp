@@ -56,11 +56,12 @@ packet dbscan_node::get_msg()
     return msg;
 }
 
-void dbscan_node::run()
+bool dbscan_node::run()
 {
     table r=inputs[0]->get_table();
     t=clusterizer.fit(r);
     outputs[0]->send_data(t);
+    return true;
 }
 
 void dbscan_node::preview_b() {

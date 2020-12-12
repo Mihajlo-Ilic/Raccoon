@@ -40,7 +40,7 @@ void categoricalToBinnary_node::on_input_changed()
     needs_update = true;
 }
 
-void categoricalToBinnary_node::run()
+bool categoricalToBinnary_node::run()
 {
     t=inputs[0]->get_table();
     for(const auto& it:listWidget.selectedItems())
@@ -60,6 +60,7 @@ void categoricalToBinnary_node::run()
     outputs[0]->send_data(t);
 
     needs_update=false;
+    return true;
 }
 
 packet categoricalToBinnary_node::get_msg()

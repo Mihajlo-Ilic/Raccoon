@@ -38,9 +38,22 @@ void delete_na::on_input_changed(){
     outputs[0]->send_packet(msg);
 }
 
-void delete_na::run()
+bool delete_na::run()
 {
     t=inputs[0]->get_table();
+    if(warning_cheque([&](auto &x){
+        if (t.col_n() == 0) {
+            x += "The packet was empty!\n";
+            return true;
+        } else {
+        return false;
+        }
+    })) {
+       return false;
+    }
+    else {
     remove_na_rows(t);
     outputs[0]->send_data(t);
+    return true;
+    }
 }

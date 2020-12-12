@@ -10,7 +10,7 @@ class partition_node : public node
 public:
     partition_node(int width, int height);
     void on_input_changed() override;
-    void run() override;
+    bool run() override;
     packet get_msg() override;
 private:
     QSpinBox sb_percent;

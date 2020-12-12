@@ -23,7 +23,7 @@ private:
     knn classifier;
 public:
     knn_node(int width, int height);
-    void run() override;
+    bool run() override;
     void on_input_changed() override;
     packet get_msg() override;
 

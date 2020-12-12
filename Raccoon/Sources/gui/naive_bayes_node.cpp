@@ -31,13 +31,14 @@ nb_node::nb_node(int width, int height) : node(width,height,2){
     connect(&alpha_sbox,SIGNAL(valueChanged(double)),this,SLOT(alpha_changed(double)));
 }
 
-void nb_node::run()
+bool nb_node::run()
 {
     table train = inputs[0]->get_table();
     table test = inputs[1]->get_table();
     classifier.fit(train);
     test.pop(train.get_target());
     t=classifier.predict(test);
+    return true;
 }
 
 void nb_node::on_input_changed()

@@ -13,7 +13,7 @@ class categoricalToBinnary_node : public node
 public:
     categoricalToBinnary_node(int width,int height);
     void on_input_changed() override;
-    void run() override;
+    bool run() override;
     packet get_msg() override;
 private:
     QLabel selectLabel;

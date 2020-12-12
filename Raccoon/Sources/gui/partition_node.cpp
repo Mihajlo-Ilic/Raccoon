@@ -47,14 +47,25 @@ void partition_node::on_input_changed(){
     needs_update = true;
 }
 
-void partition_node::run()
+bool partition_node::run()
 {
     t=inputs[0]->get_table();
+    if(warning_cheque([&](auto &x){
+        if (t.col_n() == 0) {
+            x += "The packet didn't had the table!\n";
+            return true;
+        } else {
+        return false;
+        }
+    })) { return true; }
+    else {
     partition(t,(double)sb_percent.value()/100.0,sb_random.value());
 
     outputs[0]->send_data(t[t.where("partition",[](auto x){return x==entry("training");})]);
     outputs[1]->send_data(t[t.where("partition",[](auto x){return x==entry("test");})]);
     needs_update=false;
+    return true;
+    }
 }
 
 packet partition_node::get_msg()

@@ -107,7 +107,6 @@ bool node::warning_cheque(std::function<bool(std::string&)> func) {
         });
         return true;
     }
-    std::cout <<"Bubaj" << std::endl;
     warning_icon.hide();
     return false;
 }

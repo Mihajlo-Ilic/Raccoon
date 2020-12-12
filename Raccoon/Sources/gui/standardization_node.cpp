@@ -34,7 +34,7 @@ void standardization_node::on_input_changed()
     needs_update = true;
 }
 
-void standardization_node::run()
+bool standardization_node::run()
 {
     t=inputs[0]->get_table();
     for(int i=0;i<columns.count();i++){
@@ -47,6 +47,7 @@ void standardization_node::run()
     outputs[0]->send_data(t);
 
     needs_update=false;
+    return true;
 }
 
 void standardization_node::list_changed()

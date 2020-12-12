@@ -30,7 +30,7 @@ void normalization_node::on_input_changed()
     needs_update = true;
 }
 
-void normalization_node::run()
+bool normalization_node::run()
 {
     t=inputs[0]->get_table();
     for(int i=0;i<columns.count();i++){
@@ -43,6 +43,7 @@ void normalization_node::run()
     outputs[0]->send_data(t);
 
     needs_update=false;
+    return true;
 }
 
 void normalization_node::preview_b() {

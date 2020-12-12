@@ -319,43 +319,46 @@ void plot_node::plot_2D(std::vector<std::string> attributes, std::string label,s
     dialog->resize(800,600);
     dialog->exec();
 }
-
-void plot_node::run()
-{
-    t = inputs[0]->get_table();
-}
-
 #include<iostream>
-void plot_node::preview()
+bool plot_node::run()
 {
     std::vector<std::string> fromListWidget;
     if(warning_cheque([&](std::string &x){
-        if (list_widget.selectedItems().size() < 2 || list_widget.selectedItems().size() > 3 || t.col_n() == 0) {
-            x = "You have selected less then 2, or more then 3 attributes\n";
+        if (list_widget.selectedItems().size() < 2 || list_widget.selectedItems().size() > 3) {
+            std::cout <<list_widget.selectedItems().size() << std::endl;
+            x += "You dont have the number of attributes for axes correct, it has to be 2 or 3 of them!\n";
             return true;
         } else {
         return false;
         }
-    })) { }
+    })) { return false; }
     else {
-        for(auto it : list_widget.selectedItems()) {
-            fromListWidget.push_back(it->text().toStdString());
-        }
-        std::string label = combo_box.currentText().toStdString();
-        plot_function(fromListWidget,label);
+        t = inputs[0]->get_table();
+        return true;
     }
+}
+
+void plot_node::preview()
+{
+    std::vector<std::string> fromListWidget;
+    for(auto it : list_widget.selectedItems()) {
+        fromListWidget.push_back(it->text().toStdString());
+     }
+     std::string label = combo_box.currentText().toStdString();
+     plot_function(fromListWidget,label);
 }
 
 void plot_node::on_input_changed()
 {
-    list_widget.clear();
-    combo_box.clear();
-    packet msg = inputs[0]->get_packet();
-    for(const auto& it:msg.packet_columns){
+
+        list_widget.clear();
+        combo_box.clear();
+        packet msg = inputs[0]->get_packet();
+        for(const auto& it:msg.packet_columns){
         list_widget.addItem(QString::fromStdString(it.name));
         combo_box.addItem(QString::fromStdString(it.name));
-    }
-    needs_update = true;
+        }
+        needs_update = true;
 }
 
 void plot_node::preview_b() {

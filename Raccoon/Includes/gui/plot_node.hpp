@@ -23,7 +23,7 @@ public:
     void plot_function(std::vector<std::string> atributes, std::string label);
     void plot_3D(std::vector<std::string> atributes, std::string label,std::vector<std::pair<entry,long>> classInRGB);
     void plot_2D(std::vector<std::string> atributes, std::string label,std::vector<std::pair<entry,long>> classInRGB);
-    void run() override;
+    bool run() override;
     void preview() override;
     void on_input_changed() override;
 public slots:

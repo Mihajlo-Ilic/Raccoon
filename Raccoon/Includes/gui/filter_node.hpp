@@ -12,7 +12,7 @@ class filter_node : public node
 public:
     filter_node(int width, int height);
     void on_input_changed() override;
-    void run() override;
+    bool run() override;
     packet get_msg() override;
 public slots:
     void preview_b();

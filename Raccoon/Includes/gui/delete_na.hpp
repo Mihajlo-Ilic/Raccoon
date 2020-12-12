@@ -11,7 +11,7 @@ class delete_na : public node
 public:
     delete_na(int width, int height);
     void on_input_changed() override;
-    void run() override;
+    bool run() override;
 public slots:
     void preview_b();
 private:
