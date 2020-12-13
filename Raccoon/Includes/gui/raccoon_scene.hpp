@@ -5,6 +5,9 @@
 
 #include<QGraphicsScene>
 #include<QGraphicsItem>
+#include <stack>
+
+
 
 class raccoon_scene : public QGraphicsScene {
 public:
@@ -24,6 +27,7 @@ public:
 
     static connector* selected_input;
     static connector* selected_output;
+
 
     ~raccoon_scene();
 private:

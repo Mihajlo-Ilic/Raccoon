@@ -2,6 +2,7 @@
 #include <chrono>
 #include <QDialog>
 #include <QHBoxLayout>
+#include <future>
 decision_tree_node::decision_tree_node(int width, int height) : node(width, height, 2) {
     header_text.setText("DECISION TREE");
 
@@ -61,7 +62,9 @@ bool decision_tree_node::run()
     training.pop("partition");
     test.pop("partition");
     test.pop(training.get_target());
-    tree.fit(training);
+
+    //tree.fit(training);
+    tree.fit_concurrent(training);
     std::chrono::steady_clock::time_point curr_time = std::chrono::steady_clock::now();
     t=tree.classify(test);
     std::chrono::steady_clock::time_point end_time = std::chrono::steady_clock::now();

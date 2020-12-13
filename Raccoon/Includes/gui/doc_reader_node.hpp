@@ -21,7 +21,10 @@ private:
     QPushButton * stop_word_btn;
     QPushButton * preview_btn;
     QPushButton * add_doc_btn;
-    QPushButton * browse_btn;
+    QPushButton * rm_doc_btn;
+    //int - idx of corresponding item in the tree widget
+    //string - absolute path of the dir/file
+    std::vector<std::pair<int,std::string>> paths;
 
     QComboBox * set_class;
     QSpinBox * set_min;
@@ -29,9 +32,9 @@ private:
     QCheckBox * binary_chk;
 public slots:
     void preview_b();
-    void browse();
     void browse_stop();
     void add();
+    void remove();
 public:
     void on_input_changed() override;
     bool run() override;

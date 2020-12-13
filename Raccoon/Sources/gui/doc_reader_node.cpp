@@ -35,20 +35,23 @@ doc_reader_node::doc_reader_node(int width, int height) : node(width, height, 0)
 
     connect(add_doc_btn,SIGNAL(clicked()),this,SLOT(add()));
 
+    rm_doc_btn = new QPushButton();
+    rm_doc_btn->setParent(btn_header);
+    rm_doc_btn->setGeometry(25, 5, 15, 15);
+    QPixmap pix_minus(":/res/Resources/Action_icons/minus.svg");
+    rm_doc_btn->setIcon(pix_minus);
+
+    connect(rm_doc_btn, SIGNAL(clicked()), this, SLOT(remove()));
+
     stop_word_btn = new QPushButton();
     stop_word_btn->setParent(btn_header);
-    stop_word_btn->setGeometry(25, 5, 15, 15);
+    stop_word_btn->setGeometry(45, 5, 15, 15);
     QPixmap pix_stop(":/res/Resources/Action_icons/stop_sign.svg");
     stop_word_btn->setIcon(pix_stop);
     //HACK: find better/more flexible solution for loading stop words
     connect(stop_word_btn, SIGNAL(clicked()), this, SLOT(browse_stop()));
 
-    browse_btn = new QPushButton();
-    browse_btn->setParent(&body);
-    browse_btn->setGeometry(150, 160, 75, 25);
-    browse_btn->setText("browse");
 
-    connect(browse_btn, SIGNAL(clicked()), this, SLOT(browse()));
 
     preview_btn = new QPushButton();
     preview_btn->setParent(&body);
@@ -95,31 +98,11 @@ void doc_reader_node::check_table()
 }
 
 void doc_reader_node::preview_b() {
+
     preview();
 }
 
-void doc_reader_node::browse() {
 
-    if(set_class->currentText() == "Dir") {
-        QString dirName = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-                                                    "",
-                                                    QFileDialog::ShowDirsOnly
-                                                    | QFileDialog::DontResolveSymlinks);
-        current_path = dirName.toStdString();
-
-        //loadTextFromDir(path, stop_words, t, true, binary_chk->isChecked());
-    }
-
-    else {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
-                                                    "",
-                                                    tr("Text files (*.txt)"));
-
-        current_path = fileName.toStdString();
-        //loadTextFromFile(path, stop_words, t, true, binary_chk->isChecked());
-    }
-
-}
 
 void doc_reader_node::browse_stop() {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
@@ -129,35 +112,59 @@ void doc_reader_node::browse_stop() {
     loadStopWords(path);
 }
 
-void doc_reader_node::on_input_changed(){
+void doc_reader_node::remove(){
+    auto items = doc_tree->selectedItems();
+    for(const auto & item : items) {
+        //Remove columns for words only in this doc
+        t.pop_row(t.row_by_name(item->text(0).toStdString()));
+        paths.erase(std::find_if(paths.begin(), paths.end(), [&] (auto p) { return p.first == doc_tree->indexOfTopLevelItem(item);}));
 
+        delete doc_tree->takeTopLevelItem(doc_tree->indexOfTopLevelItem(item));
+
+    }
 }
 
 void doc_reader_node::add() {
-    QFileInfo * finfo = new QFileInfo(QString::fromStdString(current_path));
-    if(finfo->isDir())
+
+    QString fname;
+    if(set_class->currentText() == "Dir") {
+        fname = QFileDialog::getExistingDirectory(this, tr("Open Folder"), "", QFileDialog::ShowDirsOnly| QFileDialog::DontResolveSymlinks);
+    }
+    else
+        fname = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("Text files (*.txt)"));
+
+    current_path = fname.toStdString();
+    QFileInfo * finfo = new QFileInfo(fname);
+
+    if(finfo->isDir()) {
         loadTextFromDir();
 
-    else if(finfo->isFile()) {
+    }
+    else if(finfo->isFile())
+    {
+
         loadTextFromFile(current_path, stop_words, t, true, binary_chk->isChecked());
         QTreeWidgetItem *new_itm = new QTreeWidgetItem();
         new_itm->setText(0, finfo->fileName());
         doc_tree->addTopLevelItem(new_itm);
+        paths.push_back(std::make_pair(doc_tree->indexOfTopLevelItem(new_itm), current_path));
 
     }
-
     else
         std::cerr << "bad path" << std::endl;
+}
 
-    current_path = "";
+void doc_reader_node::on_input_changed(){
+
 }
 
 bool doc_reader_node::run()
 {
-    //check_table();
+    check_table();
     outputs[0]->send_data(t);
     return true;
 }
+
 
 void doc_reader_node::loadStopWords(std::string stop_words_path) {
     std::ifstream stopFile;
@@ -191,6 +198,7 @@ void doc_reader_node::loadTextFromDir() {
     QTreeWidgetItem * root_it = new QTreeWidgetItem();
     root_it->setText(0, finfo->fileName());
     doc_tree->addTopLevelItem(root_it);
+    paths.push_back(std::make_pair(doc_tree->indexOfTopLevelItem(root_it), current_path));
 
     QFileInfoList filetree = fsmodel->rootDirectory().entryInfoList();
     delete fsmodel;

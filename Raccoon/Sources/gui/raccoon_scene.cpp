@@ -35,6 +35,8 @@ connector* raccoon_scene::selected_output = nullptr;
 
 std::vector<node*> scene_nodes;
 
+
+
 raccoon_scene::raccoon_scene(int width,int height):QGraphicsScene(){
     selected_input = nullptr;
     selected_output = nullptr;
@@ -214,9 +216,12 @@ void raccoon_scene::dropEvent(QGraphicsSceneDragDropEvent *event){
             delete e;
     }
 
+    
+
     selected_input = nullptr;
     selected_output = nullptr;
 }
+
 //SINGLETON PATTERN IF OBJECT OF CLASS R_SCENE EXISTS DONT CREATE ANOTHER
 raccoon_scene* raccoon_scene::get_instance(int width,int height){
     if(instance==nullptr){

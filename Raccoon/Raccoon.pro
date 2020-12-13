@@ -16,6 +16,7 @@ DISTFILES += \
     Resources/Action_icons/add_file.svg \
     Resources/Action_icons/delete.svg \
     Resources/Action_icons/merge.svg \
+    Resources/Action_icons/minus.svg \
     Resources/Action_icons/start.svg \
     Resources/Action_icons/start_opt.svg \
     Resources/Action_icons/stop_sign.svg \

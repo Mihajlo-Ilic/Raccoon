@@ -30,5 +30,6 @@
         <file>Resources/Action_icons/stop_sign.svg</file>
         <file>Resources/Node_icons/doc_reader.svg</file>
         <file>Resources/Node_icons/tf_idf.svg</file>
+        <file>Resources/Action_icons/minus.svg</file>
     </qresource>
 </RCC>

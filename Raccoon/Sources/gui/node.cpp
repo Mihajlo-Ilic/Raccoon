@@ -20,6 +20,7 @@
 
 extern std::vector<node*> scene_nodes;
 
+
 void make_QTable(QTableWidget& qTable,const table &t)
 {
     auto colomns = t.col_names();
@@ -219,6 +220,8 @@ void node::preview(){
 }
 
 node::~node(){
+
+
     auto it=std::find(scene_nodes.begin(),scene_nodes.end(),this);
     if(it!=scene_nodes.end()){
         scene_nodes.erase(it);

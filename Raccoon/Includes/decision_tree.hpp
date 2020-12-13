@@ -61,6 +61,8 @@ private:
     double split_categorical(std::string column);
     double split_continuous(std::string column, double &split_val);
     void split();
+    void split_concurrent();
+    void thread_func(std::vector<std::string> col_names, double &split_val, double &gain_optimal, std::string &split_col);
     std::function<double(table)> clean_metric;
 public:
     friend class decision_tree;
@@ -94,6 +96,7 @@ public:
         min_rows=v;
     }
     void fit(table t);
+    void fit_concurrent(table t);
     table classify(const table& test);
     friend class tree_node;
     ~decision_tree();

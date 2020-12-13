@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <QRect>
 #include <queue>
+#include <thread>
+#include <mutex>
 #define X_SPACING 100
 #define Y_SPACING 100
 #define NODE_WIDTH 150
@@ -63,6 +65,8 @@ void rule_continuous::add_value(entry val) {
     this->val=val;
 }
 
+
+
 #include<iostream>
 tree_node::tree_node(table t, std::function<double(table)> metric, unsigned depth,decision_tree *p) {
     this->t = t;
@@ -99,7 +103,101 @@ tree_node::tree_node(table t, std::function<double(table)> metric, unsigned dept
 
 }
 
+const auto processor_count = std::thread::hardware_concurrency();
+std::mutex split_mutex;
 #include<iostream>
+//TESTING
+
+void tree_node::thread_func(std::vector<std::string> col_names, double &split_val, double &gain_optimal, std::string &split_col) {
+    for(unsigned i = 0u; i<col_names.size(); i++) {
+        auto curr_col = col_names[i];
+
+        if(t[curr_col].role == TARGET)
+            continue;
+
+        if(t[curr_col].type == CONTINUOUS) {
+            double curr_val=0;
+            double d = split_continuous(curr_col, curr_val);
+            //LOCK THE MUTEX
+            split_mutex.lock();
+            if(gain_optimal < d) {
+                 gain_optimal = d;
+                 split_col = curr_col;
+                 split_val=curr_val;
+            }
+            split_mutex.unlock();
+            //UNLOCK THE MUTEX
+        }
+
+        if(t[curr_col].type == NOMINAL) {
+            double d = split_categorical(curr_col);
+            //LOCK THE MUTEX
+            split_mutex.lock();
+            if(gain_optimal < d) {
+                 gain_optimal = d;
+                 split_col = curr_col;
+            }
+            //UNLOCK THE MUTEX
+            split_mutex.unlock();
+        }
+    }
+}
+
+
+void tree_node::split_concurrent() {
+    if(this->is_leaf)
+        return;
+    //these values need to be locked
+    double split_val = 0;
+    double gain_optimal = 0;
+    std::string split_col_optimal = t.col_names()[0];
+    //determines number of columns for each thread to process
+    int k_col = t.col_n()/processor_count;
+    std::vector<std::thread> threads;
+    for(unsigned i = 0u; i < processor_count; i++) {
+
+        //vector containing names of i-th k_col columns
+        //ugly implementation but the best we could think of right now
+        std::vector<std::string> i_colnames;
+        for(unsigned k = k_col*i; k < (unsigned)t.col_n() && k < k_col*(1+i); k++)
+            i_colnames.push_back(t.col_names()[k]);
+
+        //threads.emplace_back(&tree_node::thread_func, this, i_colnames, split_val, gain_optimal, split_col_optimal);
+        threads.emplace_back([&] () {this->thread_func(i_colnames, split_val, gain_optimal, split_col_optimal);});
+    }
+
+    for(auto & th : threads) {
+        th.join();
+    }
+
+    //Make a split rule based on type of split column, recursively call split_concurrent for children of this node
+    if(t[split_col_optimal].type == CONTINUOUS) {
+        split_rule = new rule_continuous(split_col_optimal, entry(split_val));
+        table t_lt = t[t.where(split_col_optimal, [split_val] (auto e) {return e.get_double() < split_val;})];
+        table t_gte = t[t.where(split_col_optimal, [split_val] (auto e) {return e.get_double() >= split_val;})];
+        t_lt.pop(split_col_optimal);
+        t_gte.pop(split_col_optimal);
+        children.push_back(new tree_node(t_lt, clean_metric, depth+1,this->parent));
+        children.push_back(new tree_node(t_gte, clean_metric, depth+1,this->parent));
+
+    }
+    if(t[split_col_optimal].type == NOMINAL) {
+        split_rule = new rule_categorical(split_col_optimal);
+        for(const auto &u : t[split_col_optimal].unique()) {
+            split_rule->add_value(u);
+            table t_i = t[t.where(split_col_optimal, [u] (auto e) {return u == e;})];
+            t_i.pop(split_col_optimal);
+            children.push_back(new tree_node(t_i, clean_metric, depth+1,this->parent));
+        }
+    }
+
+    for(auto it:children) {
+            it->split();
+    }
+}
+
+
+
 void tree_node::split() {
     if(this->is_leaf)
         return;
@@ -117,7 +215,8 @@ void tree_node::split() {
          if(t[curr_col].role==TARGET)
              continue;
          if(t[curr_col].type == column_type::CONTINUOUS) {
-             double curr_val=0;
+
+               double curr_val=0;
                double d = split_continuous(curr_col, curr_val);
                if(gain_optimal < d) {
                     gain_optimal = d;
@@ -360,6 +459,12 @@ void decision_tree::fit(table t) {
     root->split();
 }
 
+void decision_tree::fit_concurrent(table t) {
+    training_table = t;
+    training_table.pop("partition");
+    root = new tree_node(t, clean_metric, 0,this);
+    root->split_concurrent();
+}
 
 table decision_tree::classify(const table& test) {
     table t=test;
@@ -372,7 +477,6 @@ table decision_tree::classify(const table& test) {
 
 void decision_tree::draw_tree(QGraphicsScene *scene) {
     int a = 0;
-    //TODO: This is DFS implementation, change to BFS
     root->draw_node(scene, 500, 500, a);
 }
 
