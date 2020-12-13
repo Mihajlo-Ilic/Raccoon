@@ -35,6 +35,15 @@ k_mean_cluster_node::k_mean_cluster_node(int width,int height) : node(width,heig
     connect(&k_neighbours,SIGNAL(valueChanged(int)),this,SLOT(sb_changed(int)));
 }
 
+void k_mean_cluster_node::serialize(std::ofstream &os)
+{
+    os<<"-n k_mean"<<std::endl;
+    os<<" x="<<geometry().topLeft().x()<<std::endl;
+    os<<" y="<<geometry().topLeft().y()<<std::endl;
+    os<<" distance="<<distance_box.currentText().toStdString()<<std::endl;
+    os<<" k="<<k_neighbours.value()<<std::endl;
+}
+
 bool k_mean_cluster_node::run()
 {
     t=inputs[0]->get_table();
@@ -105,13 +114,20 @@ void k_mean_cluster_node::preview()
     double d = siluette_coef(t);
 
     vbox.addSpacing(20);
-    QLabel sil_l;
-    make_siluete(sil_l,d);
 
     QLabel lab;
     lab.setText("Siluete score: "+QString::number(d));
     vbox.addWidget(&lab);
-    vbox.addWidget(&sil_l);
+
+    QSlider slider;
+    slider.setOrientation(Qt::Horizontal);
+    slider.setMaximum(100);
+    slider.setMinimum(-100);
+    slider.setValue(d*100);
+    slider.setEnabled(false);
+    slider.setStyleSheet("QSlider::groove:horizontal { visibility:hidden; }QSlider::handle:horizontal:disabled{background:rgba(0,0,255,255);} QSlider{background-color: qlineargradient(spread:repeat, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(255, 0, 0, 255),stop:0.5 rgba(255, 183, 0, 255), stop:1 rgba(0, 255, 126, 255));}");
+
+    vbox.addWidget(&slider);
 
     tablePreview->exec();
 }

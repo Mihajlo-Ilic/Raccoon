@@ -24,3 +24,10 @@ bool outputTable_node::run()
 void outputTable_node::preview_b() {
 
 }
+
+void outputTable_node::serialize(std::ofstream &os)
+{
+    os<<"-n output_node"<<std::endl;
+    os<<" x="<<geometry().topLeft().x()<<std::endl;
+    os<<" y="<<geometry().topLeft().y()<<std::endl;
+}

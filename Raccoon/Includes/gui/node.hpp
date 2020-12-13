@@ -13,6 +13,7 @@
 #include <QMessageBox>
 
 #include<vector>
+#include<fstream>
 
 #include "../table.hpp"
 
@@ -89,6 +90,8 @@ class node : public QWidget{
 
         bool warning_cheque(std::function<bool(std::string&)> func);
         virtual packet get_msg();
+        //used of writing to file
+        virtual void serialize(std::ofstream& os) = 0;
 
         virtual ~node();
     protected:

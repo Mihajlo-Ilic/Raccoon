@@ -24,6 +24,8 @@ public:
     bool run() override;
 
     packet get_msg() override;
+
+    void serialize(std::ofstream& os) override;
 public slots:
     void changed(const QString& s);
     void preview_b();

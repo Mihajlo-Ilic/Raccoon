@@ -30,6 +30,16 @@ plot_node::plot_node(int width, int height) : node(width,height,1) {
     connect(&previewBtn, SIGNAL(clicked()), this, SLOT(preview_b()));
 }
 
+void plot_node::serialize(std::ofstream &os)
+{
+    os<<"-n plot"<<std::endl;
+    os<<" x="<<geometry().topLeft().x()<<std::endl;
+    os<<" y="<<geometry().topLeft().y()<<std::endl;
+    os<<" target="<<combo_box.currentText().toStdString()<<std::endl;
+    for(int i=0;i<list_widget.count();i++)
+        os<<" "<<list_widget.item(i)->text().toStdString()<<std::endl;
+}
+
 void plot_node::plot_function(std::vector<std::string> attributes, std::string label) {
     std::vector<entry> classes = t[label].unique();
     std::vector<std::pair<entry,long>> classInRGB;

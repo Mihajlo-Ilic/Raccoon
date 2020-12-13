@@ -13,6 +13,8 @@ public:
     tf_idf_node(int width,int height);
     void on_input_changed() override;
     bool run() override;
+
+    void serialize(std::ofstream& os) override;
 private:
     QPushButton previewBtn;
 public slots:

@@ -85,6 +85,17 @@ doc_reader_node::doc_reader_node(int width, int height) : node(width, height, 0)
 
 }
 
+void doc_reader_node::serialize(std::ofstream &os)
+{
+    os<<"-n doc_reader"<<std::endl;
+    os<<" x="<<geometry().topLeft().x()<<std::endl;
+    os<<" y="<<geometry().topLeft().y()<<std::endl;
+    os<<" min_freq="<<set_min->value()<<std::endl;
+    os<<" max_freq="<<set_max->value()<<std::endl;
+    os<<" binary="<<binary_chk->isChecked()<<std::endl;
+    os<<" class="<<set_class->currentText().toStdString()<<std::endl;
+}
+
 void doc_reader_node::check_table()
 {
     min_freq = set_min->value();

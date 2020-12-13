@@ -15,6 +15,17 @@ void binning_node::on_input_changed()
     needs_update = true;
 }
 
+void binning_node::serialize(std::ofstream &os)
+{
+    os<<"-n bin"<<std::endl;
+    os<<" x="<<geometry().topLeft().x()<<std::endl;
+    os<<" y="<<geometry().topLeft().y()<<std::endl;
+    os<<" shuffle="<<binningShuffle.currentText().toStdString()<<std::endl;
+    os<<" method="<<binningMethod.currentText().toStdString()<<std::endl;
+    for(int i=0;i<listWidget.count();i++)
+        os<<" "<<listWidget.item(i)->text().toStdString()<<std::endl;
+}
+
 binning_node::binning_node(int width, int height) : node(width,height,1)
 {
     header_text.setText("BINNING NODE");

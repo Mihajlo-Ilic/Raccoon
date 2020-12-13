@@ -28,6 +28,9 @@ public:
     static connector* selected_input;
     static connector* selected_output;
 
+    void save_scene(const std::string &path);
+    void load_scene(const std::string &path);
+
 
     ~raccoon_scene();
 private:

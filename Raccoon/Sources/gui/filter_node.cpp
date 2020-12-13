@@ -34,6 +34,15 @@ void filter_node::on_input_changed()
     needs_update = true;
 }
 
+void filter_node::serialize(std::ofstream &os)
+{
+    os<<"-n filter"<<std::endl;
+    os<<" x="<<geometry().topLeft().x()<<std::endl;
+    os<<" y="<<geometry().topLeft().y()<<std::endl;
+    for(int i=0;i<columns.count();i++)
+        os<<" "<<columns.item(i)->text().toStdString()<<std::endl;
+}
+
 bool filter_node::run()
 {
     t=inputs[0]->get_table();

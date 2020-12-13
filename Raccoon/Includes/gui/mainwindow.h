@@ -26,6 +26,14 @@ public slots:
 private slots:
     void on_action_run_triggered();
 
+    void on_actionSave_As_triggered();
+
+    void on_actionSave_2_triggered();
+
+    void on_actionOpen_Scene_triggered();
+
+    void on_actionNew_Scene_triggered();
+
 private:
     Ui::MainWindow *ui;
 };

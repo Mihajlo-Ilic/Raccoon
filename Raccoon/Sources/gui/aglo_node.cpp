@@ -7,6 +7,7 @@
 #include<QColorDialog>
 #include<QComboBox>
 #include<QCheckBox>
+#include<QProgressBar>
 #include<unordered_set>
 
 aglo_node::aglo_node(int width, int height):node(width,height,1)
@@ -62,6 +63,18 @@ aglo_node::aglo_node(int width, int height):node(width,height,1)
     connect(&spin_num,SIGNAL(valueChanged(int)),this,SLOT(num_changed(int)));
     connect(&tab_gscene,SIGNAL(changed(const QList<QRectF>&)),this,SLOT(scene_changed(const QList<QRectF>&)));
 
+}
+
+void aglo_node::serialize(std::ofstream &os)
+{
+    os<<"-n aglo"<<std::endl;
+    os<<" x="<<geometry().topLeft().x()<<std::endl;
+    os<<" y="<<geometry().topLeft().y()<<std::endl;
+    os<<" metric="<<combo_func.currentText().toStdString()<<std::endl;
+    os<<" cluster_metric="<<combo_cfunc.currentText().toStdString()<<std::endl;
+    os<<" dist="<<spin_dist.value()<<std::endl;
+    os<<" num="<<spin_num.value()<<std::endl;
+    os<<std::endl;
 }
 
 void aglo_node::on_input_changed()
@@ -345,14 +358,20 @@ void aglo_node::preview(){
     double d = siluette_coef(t);
 
     vbox.addSpacing(20);
-    QLabel sil_l;
-    make_siluete(sil_l,d);
 
     QLabel lab;
     lab.setText("Siluete score: "+QString::number(d));
     vbox.addWidget(&lab);
 
-    vbox.addWidget(&sil_l);
+    QSlider slider;
+    slider.setOrientation(Qt::Horizontal);
+    slider.setMaximum(100);
+    slider.setMinimum(-100);
+    slider.setValue(d*100);
+    slider.setEnabled(false);
+    slider.setStyleSheet("QSlider::groove:horizontal { visibility:hidden; }QSlider::handle:horizontal:disabled{background:rgba(0,0,255,255);} QSlider{background-color: qlineargradient(spread:repeat, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(255, 0, 0, 255),stop:0.5 rgba(255, 183, 0, 255), stop:1 rgba(0, 255, 126, 255));}");
+
+    vbox.addWidget(&slider);
 
     tabs->addTab(&v_fr,"Table");
     tabs->addTab(dend_frame,"Dendogram");

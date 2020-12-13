@@ -29,6 +29,8 @@ public:
     void on_input_changed() override;
     packet get_msg() override;
     void preview() override;
+
+    void serialize(std::ofstream& os) override;
 public slots:
     void preview_b();
     void combo_changed(QString str);

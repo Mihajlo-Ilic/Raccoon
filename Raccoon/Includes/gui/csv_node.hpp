@@ -29,6 +29,8 @@ public:
     bool run() override;
     packet get_msg() override;
     virtual void on_input_changed() override;
+
+    void serialize(std::ofstream& os) override;
 public slots:
     void load();
     void browse();

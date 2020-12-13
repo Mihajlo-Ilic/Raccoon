@@ -5,6 +5,7 @@
 #include<queue>
 #include<set>
 #include<QMessageBox>
+#include<fstream>
 
 #include"../../Includes/gui/csv_node.hpp"
 #include"../../Includes/gui/aproximation_node.hpp"
@@ -292,6 +293,407 @@ bool raccoon_scene::has_cycle(std::vector<node*> graph){
         }
         return false;
 }
+
+
+void raccoon_scene::save_scene(const std::string &path)
+{
+    std::ofstream file;
+    file.open (path+".rqn");
+    for(auto it:scene_nodes){
+        it->serialize(file);
+        file<<std::endl;
+    }
+    for(unsigned i=0;i<scene_nodes.size();i++){
+        auto inputs = scene_nodes[i]->get_input_nodes();
+        for(unsigned j=0;j<inputs.size();j++)
+            file<<"-e "<<i<<" "<<j<<std::endl;
+    }
+    file.close();
+}
+
+void raccoon_scene::load_scene(const std::string &path)
+{
+    for(auto it:scene_nodes)
+        delete it;
+    scene_nodes.clear();
+
+    std::ifstream file;
+    file.open (path);
+    std::string line;
+    char putanja[255];
+
+    while(std::getline(file,line)){
+
+       if(line.find("-n csv")==0){
+
+           float x;
+           float y;
+           std::getline(file,line);
+           sscanf(line.c_str()," x=%f",&x);
+           std::getline(file,line);
+           sscanf(line.c_str()," y=%f",&y);
+           std::getline(file,line);
+           sscanf(line.c_str()," text=%s",putanja);
+
+            csv_node *n=new csv_node(250,250);
+            n->set_position(QPointF(x,y));
+            scene_nodes.push_back(n);
+            n->add_to_scene(this);
+            addWidget(n);
+       }
+        else
+       if(line.find("-n aglo")==0){
+
+           float x;
+           float y;
+           std::getline(file,line);
+           sscanf(line.c_str()," x=%f",&x);
+           std::getline(file,line);
+           sscanf(line.c_str()," y=%f",&y);
+           std::getline(file,line);
+           sscanf(line.c_str()," metric=%s",putanja);
+           std::getline(file,line);
+           sscanf(line.c_str()," cluster_metric=%s",putanja);
+           std::getline(file,line);
+           sscanf(line.c_str()," dist=%s",putanja);
+           std::getline(file,line);
+           sscanf(line.c_str()," num=%s",putanja);
+
+            aglo_node *n=new aglo_node(250,250);
+            n->set_position(QPointF(x,y));
+            scene_nodes.push_back(n);
+            n->add_to_scene(this);
+            addWidget(n);
+       }
+        else
+       if(line.find("-n aprox")==0){
+
+           float x;
+           float y;
+           std::getline(file,line);
+           sscanf(line.c_str()," x=%f",&x);
+           std::getline(file,line);
+           sscanf(line.c_str()," y=%f",&y);
+           std::getline(file,line);
+           sscanf(line.c_str()," method=%s",putanja);
+           std::getline(file,line);
+           sscanf(line.c_str()," value=%s",putanja);
+
+            aproximation_node *n=new aproximation_node(250,250);
+            n->set_position(QPointF(x,y));
+            scene_nodes.push_back(n);
+            n->add_to_scene(this);
+            addWidget(n);
+       } else
+       if(line.find("-n bin")==0){
+
+           float x;
+           float y;
+           std::getline(file,line);
+           sscanf(line.c_str()," x=%f",&x);
+           std::getline(file,line);
+           sscanf(line.c_str()," y=%f",&y);
+           std::getline(file,line);
+           sscanf(line.c_str()," shuffle=%s",putanja);
+           std::getline(file,line);
+           sscanf(line.c_str()," method=%s",putanja);
+
+            binning_node *n=new binning_node(250,250);
+            n->set_position(QPointF(x,y));
+            scene_nodes.push_back(n);
+            n->add_to_scene(this);
+            addWidget(n);
+       } else
+       if(line.find("-n cat_to_bin")==0){
+
+           float x;
+           float y;
+           std::getline(file,line);
+           sscanf(line.c_str()," x=%f",&x);
+           std::getline(file,line);
+           sscanf(line.c_str()," y=%f",&y);
+
+            categoricalToBinnary_node *n=new categoricalToBinnary_node(250,250);
+            n->set_position(QPointF(x,y));
+            scene_nodes.push_back(n);
+            n->add_to_scene(this);
+            addWidget(n);
+       } else
+       if(line.find("-n dbscan")==0){
+
+           float x;
+           float y;
+           std::getline(file,line);
+           sscanf(line.c_str()," x=%f",&x);
+           std::getline(file,line);
+           sscanf(line.c_str()," y=%f",&y);
+           std::getline(file,line);
+           sscanf(line.c_str()," neighbour=%s",putanja);
+           std::getline(file,line);
+           sscanf(line.c_str()," metric=%s",putanja);
+
+            dbscan_node *n=new dbscan_node(250,250);
+            n->set_position(QPointF(x,y));
+            scene_nodes.push_back(n);
+            n->add_to_scene(this);
+            addWidget(n);
+       } else
+       if(line.find("-n dec_tree")==0){
+
+           float x;
+           float y;
+           std::getline(file,line);
+           sscanf(line.c_str()," x=%f",&x);
+           std::getline(file,line);
+           sscanf(line.c_str()," y=%f",&y);
+           std::getline(file,line);
+           sscanf(line.c_str()," min_row=%s",putanja);
+           std::getline(file,line);
+           sscanf(line.c_str()," max_depth=%s",putanja);
+           std::getline(file,line);
+           sscanf(line.c_str()," min_clean=%s",putanja);
+           std::getline(file,line);
+           sscanf(line.c_str()," metric=%s",putanja);
+
+            decision_tree_node *n=new decision_tree_node(250,250);
+            n->set_position(QPointF(x,y));
+            scene_nodes.push_back(n);
+            n->add_to_scene(this);
+            addWidget(n);
+       } else
+       if(line.find("-n remove_na")==0){
+
+           float x;
+           float y;
+           std::getline(file,line);
+           sscanf(line.c_str()," x=%f",&x);
+           std::getline(file,line);
+           sscanf(line.c_str()," y=%f",&y);
+
+            delete_na *n=new delete_na(250,250);
+            n->set_position(QPointF(x,y));
+            scene_nodes.push_back(n);
+            n->add_to_scene(this);
+            addWidget(n);
+       } else
+       if(line.find("-n doc_reader")==0){
+
+           float x;
+           float y;
+           std::getline(file,line);
+           sscanf(line.c_str()," x=%f",&x);
+           std::getline(file,line);
+           sscanf(line.c_str()," y=%f",&y);
+           std::getline(file,line);
+           sscanf(line.c_str()," min_freq=%s",putanja);
+           std::getline(file,line);
+           sscanf(line.c_str()," max_freq=%s",putanja);
+           std::getline(file,line);
+           sscanf(line.c_str()," binary=%s",putanja);
+           std::getline(file,line);
+           sscanf(line.c_str()," class=%s",putanja);
+
+            doc_reader_node *n=new doc_reader_node(250,250);
+            n->set_position(QPointF(x,y));
+            scene_nodes.push_back(n);
+            n->add_to_scene(this);
+            addWidget(n);
+       } else
+       if(line.find("-n filter")==0){
+
+           float x;
+           float y;
+           std::getline(file,line);
+           sscanf(line.c_str()," x=%f",&x);
+           std::getline(file,line);
+           sscanf(line.c_str()," y=%f",&y);
+
+            filter_node *n=new filter_node(250,250);
+            n->set_position(QPointF(x,y));
+            scene_nodes.push_back(n);
+            n->add_to_scene(this);
+            addWidget(n);
+       } else
+       if(line.find("-n k_mean")==0){
+
+           float x;
+           float y;
+           std::getline(file,line);
+           sscanf(line.c_str()," x=%f",&x);
+           std::getline(file,line);
+           sscanf(line.c_str()," y=%f",&y);
+           std::getline(file,line);
+           sscanf(line.c_str()," distance=%s",putanja);
+           std::getline(file,line);
+           sscanf(line.c_str()," k=%s",putanja);
+
+            k_mean_cluster_node *n=new k_mean_cluster_node(250,250);
+            n->set_position(QPointF(x,y));
+            scene_nodes.push_back(n);
+            n->add_to_scene(this);
+            addWidget(n);
+       } else
+       if(line.find("-n knn")==0){
+
+           float x;
+           float y;
+           std::getline(file,line);
+           sscanf(line.c_str()," x=%f",&x);
+           std::getline(file,line);
+           sscanf(line.c_str()," y=%f",&y);
+           std::getline(file,line);
+           sscanf(line.c_str()," metric=%s",putanja);
+           std::getline(file,line);
+           sscanf(line.c_str()," k=%s",putanja);
+
+            knn_node *n=new knn_node(250,250);
+            n->set_position(QPointF(x,y));
+            scene_nodes.push_back(n);
+            n->add_to_scene(this);
+            addWidget(n);
+       } else
+       if(line.find("-n bayes")==0){
+
+           float x;
+           float y;
+           std::getline(file,line);
+           sscanf(line.c_str()," x=%f",&x);
+           std::getline(file,line);
+           sscanf(line.c_str()," y=%f",&y);
+           std::getline(file,line);
+           sscanf(line.c_str()," alpha=%s",putanja);
+           std::getline(file,line);
+           sscanf(line.c_str()," show_table=%s",putanja);
+
+            nb_node *n=new nb_node(250,250);
+            n->set_position(QPointF(x,y));
+            scene_nodes.push_back(n);
+            n->add_to_scene(this);
+            addWidget(n);
+       } else
+       if(line.find("-n normalization")==0){
+
+           float x;
+           float y;
+           std::getline(file,line);
+           sscanf(line.c_str()," x=%f",&x);
+           std::getline(file,line);
+           sscanf(line.c_str()," y=%f",&y);
+
+
+            normalization_node *n=new normalization_node(250,250);
+            n->set_position(QPointF(x,y));
+            scene_nodes.push_back(n);
+            n->add_to_scene(this);
+            addWidget(n);
+       } else
+       if(line.find("-n output_node")==0){
+
+           float x;
+           float y;
+           std::getline(file,line);
+           sscanf(line.c_str()," x=%f",&x);
+           std::getline(file,line);
+           sscanf(line.c_str()," y=%f",&y);
+
+
+            outputTable_node *n=new outputTable_node(250,250);
+            n->set_position(QPointF(x,y));
+            scene_nodes.push_back(n);
+            n->add_to_scene(this);
+            addWidget(n);
+       } else
+       if(line.find("-n partition")==0){
+
+           float x;
+           float y;
+           std::getline(file,line);
+           sscanf(line.c_str()," x=%f",&x);
+           std::getline(file,line);
+           sscanf(line.c_str()," y=%f",&y);
+           std::getline(file,line);
+           sscanf(line.c_str()," percent=%s",putanja);
+           std::getline(file,line);
+           sscanf(line.c_str()," random=%s",putanja);
+
+
+            partition_node *n=new partition_node(250,250);
+            n->set_position(QPointF(x,y));
+            scene_nodes.push_back(n);
+            n->add_to_scene(this);
+            addWidget(n);
+       } else
+       if(line.find("-n plot")==0){
+
+           float x;
+           float y;
+           std::getline(file,line);
+           sscanf(line.c_str()," x=%f",&x);
+           std::getline(file,line);
+           sscanf(line.c_str()," y=%f",&y);
+           std::getline(file,line);
+           sscanf(line.c_str()," target=%s",putanja);
+
+            plot_node *n=new plot_node(250,250);
+            n->set_position(QPointF(x,y));
+            scene_nodes.push_back(n);
+            n->add_to_scene(this);
+            addWidget(n);
+       } else
+       if(line.find("-n standardize")==0){
+
+           float x;
+           float y;
+           std::getline(file,line);
+           sscanf(line.c_str()," x=%f",&x);
+           std::getline(file,line);
+           sscanf(line.c_str()," y=%f",&y);
+
+            standardization_node *n=new standardization_node(250,250);
+            n->set_position(QPointF(x,y));
+            scene_nodes.push_back(n);
+            n->add_to_scene(this);
+            addWidget(n);
+       } else
+       if(line.find("-n stats")==0){
+
+           float x;
+           float y;
+           std::getline(file,line);
+           sscanf(line.c_str()," x=%f",&x);
+           std::getline(file,line);
+           sscanf(line.c_str()," y=%f",&y);
+
+            stats_node *n=new stats_node(250,250);
+            n->set_position(QPointF(x,y));
+            scene_nodes.push_back(n);
+            n->add_to_scene(this);
+            addWidget(n);
+       } else
+       if(line.find("-n tf_idf")==0){
+
+           float x;
+           float y;
+           std::getline(file,line);
+           sscanf(line.c_str()," x=%f",&x);
+           std::getline(file,line);
+           sscanf(line.c_str()," y=%f",&y);
+
+            tf_idf_node *n=new tf_idf_node(250,250);
+            n->set_position(QPointF(x,y));
+            scene_nodes.push_back(n);
+            n->add_to_scene(this);
+            addWidget(n);
+       } else
+        if(line.find("-e")){
+            int first;
+            int second;
+            sscanf(line.c_str(),"-e %d %d",&first,&second);
+        }
+    }
+    file.close();
+}
+
 //TODO BETTER DESTRUCTOR NOT SURE IF WORKS CURRENTLY. PLACEHOLDER
 raccoon_scene::~raccoon_scene(){
     for(auto it:scene_nodes)

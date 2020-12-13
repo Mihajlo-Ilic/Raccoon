@@ -16,6 +16,15 @@ normalization_node::normalization_node(int width, int height) : node(width, heig
     connect(&columns, SIGNAL(itemSelectionChanged()), this, SLOT(list_changed()));
 }
 
+void normalization_node::serialize(std::ofstream &os)
+{
+    os<<"-n normalization"<<std::endl;
+    os<<" x="<<geometry().topLeft().x()<<std::endl;
+    os<<" y="<<geometry().topLeft().y()<<std::endl;
+    for(int i=0;i<columns.count();i++)
+        os<<" "<<columns.item(i)<<std::endl;
+}
+
 void normalization_node::on_input_changed()
 {
     columns.clear();

@@ -40,7 +40,7 @@ public:
 
     void preview() override;
 
-
+    void serialize(std::ofstream& os) override;
 };
 
 #endif

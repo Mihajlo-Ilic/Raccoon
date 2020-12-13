@@ -20,6 +20,15 @@ void standardization_node::preview_b() {
     preview();
 }
 
+void standardization_node::serialize(std::ofstream &os)
+{
+    os<<"-n standardize"<<std::endl;
+    os<<" x="<<geometry().topLeft().x()<<std::endl;
+    os<<" y="<<geometry().topLeft().y()<<std::endl;
+    for(int i=0;i<columns.count();i++)
+        os<<" "<<columns.item(i)->text().toStdString()<<std::endl;
+}
+
 void standardization_node::on_input_changed()
 {
     columns.clear();

@@ -31,6 +31,17 @@ aproximation_node::aproximation_node(int width,int height) : node(width,height)
     connect(&editAprox,SIGNAL(textChanged(QString)),this,SLOT(help_func(QString)));
 }
 
+void aproximation_node::serialize(std::ofstream &os)
+{
+    os<<"-n aprox"<<std::endl;
+    os<<" x="<<geometry().topLeft().x()<<std::endl;
+    os<<" y="<<geometry().topLeft().y()<<std::endl;
+    os<<" method="<<aproximationCombo.currentText().toStdString()<<std::endl;
+    os<<" value="<<editAprox.text().toStdString()<<std::endl;
+    for(int i=0;i<columns.count();i++)
+        os<<" "<<columns.item(i)->text().toStdString()<<std::endl;
+}
+
 void aproximation_node::preview_b() {
     int br = 0;
     for(int i = 0; i < columns.count();i++)

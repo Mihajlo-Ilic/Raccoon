@@ -22,6 +22,17 @@ categoricalToBinnary_node::categoricalToBinnary_node(int width,int height) : nod
 
 }
 
+
+
+void categoricalToBinnary_node::serialize(std::ofstream &os)
+{
+    os<<"-n cat_to_bin"<<std::endl;
+    os<<" x="<<geometry().topLeft().x()<<std::endl;
+    os<<" y="<<geometry().topLeft().y()<<std::endl;
+    for(int i=0;i<listWidget.count();i++)
+        os<<" "<<listWidget.item(i)->text().toStdString()<<std::endl;
+}
+
 void categoricalToBinnary_node::on_input_changed()
 {
     listWidget.clear();

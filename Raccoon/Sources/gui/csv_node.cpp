@@ -45,6 +45,14 @@ csv_node::csv_node(int width, int height) : node(width,height,0){
 
 }
 
+void csv_node::serialize(std::ofstream &os)
+{
+    os<<"-n csv"<<std::endl;
+    os<<" x="<<geometry().topLeft().x()<<std::endl;
+    os<<" y="<<geometry().topLeft().y()<<std::endl;
+    os<<" text="<<edit.text().toStdString()<<std::endl;
+}
+
 void csv_node::load() {
     if(needs_update){
     std::string path = edit.text().toStdString();

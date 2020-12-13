@@ -13,6 +13,8 @@ public:
     normalization_node(int width, int height);
     void on_input_changed() override;
     bool run() override;
+
+    void serialize(std::ofstream& os) override;
 public slots:
     void preview_b();
     void list_changed();

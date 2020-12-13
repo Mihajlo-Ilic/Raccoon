@@ -8,8 +8,12 @@
 #include"../../Includes/gui/raccoon_scene.hpp"
 #include"../../Includes/transformations.hpp"
 #include<iostream>
+#include<QFileDialog>
 
 raccoon_scene *globalScene;
+
+bool saved_before=false;
+std::string save_path;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -80,4 +84,37 @@ void MainWindow::dropEvent(QDropEvent *event){
 void MainWindow::on_action_run_triggered()
 {
     globalScene->run_graph();
+}
+
+void MainWindow::on_actionSave_As_triggered()
+{
+    QString file= QFileDialog::getSaveFileName(this, tr("Save File"));
+    globalScene->save_scene(file.toStdString());
+    saved_before=true;
+    save_path = file.toStdString();
+}
+
+void MainWindow::on_actionSave_2_triggered()
+{
+    if(saved_before)
+            globalScene->save_scene(save_path);
+        else {
+            QString file= QFileDialog::getSaveFileName(this, tr("Save File"));
+            globalScene->save_scene(file.toStdString());
+            saved_before=true;
+            save_path = file.toStdString();
+    }
+}
+
+void MainWindow::on_actionOpen_Scene_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                                        "",
+                                                        tr("RQN Files (*.rqn)"));
+    globalScene->load_scene(fileName.toStdString());
+}
+
+void MainWindow::on_actionNew_Scene_triggered()
+{
+
 }

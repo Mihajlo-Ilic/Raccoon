@@ -25,6 +25,8 @@ public:
     void on_input_changed() override;
     packet get_msg() override;
 
+    void serialize(std::ofstream& os) override;
+
     ~dbscan_node() = default;
 public slots:
     void preview_b(); 

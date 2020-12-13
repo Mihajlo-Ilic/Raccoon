@@ -47,6 +47,19 @@ decision_tree_node::decision_tree_node(int width, int height) : node(width, heig
     connect(&max_depth_sb,SIGNAL(valueChanged(int)),this,SLOT(depth_changed(int)));
     connect(&min_row_sb,SIGNAL(valueChanged(int)),this,SLOT(row_changed(int)));
 }
+
+void decision_tree_node::serialize(std::ofstream &os)
+{
+    os<<"-n dec_tree"<<std::endl;
+    os<<" x="<<geometry().topLeft().x()<<std::endl;
+    os<<" y="<<geometry().topLeft().y()<<std::endl;
+    os<<" min_row="<<min_row_sb.value()<<std::endl;
+    os<<" max_depth="<< max_depth_sb.value()<<std::endl;
+    os<<" min_clean="<<min_clean_sb.value()<<std::endl;
+    os<<" metric="<<clean_func.currentText().toStdString()<<std::endl;
+
+}
+
 #include<iostream>
 void decision_tree_node::on_input_changed()
 {
@@ -54,7 +67,7 @@ void decision_tree_node::on_input_changed()
     msg.add_column("assigned",column_role::INPUT_COLUMN,column_type::CONTINUOUS);
     outputs[0]->send_packet(msg);
 }
-#include<iostream>
+
 bool decision_tree_node::run()
 {
     table training = inputs[0]->get_table();

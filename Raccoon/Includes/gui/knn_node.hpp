@@ -31,6 +31,8 @@ public:
 
     bool check_errors();
 
+    void serialize(std::ofstream& os) override;
+
 public slots:
     void preview_b();
     void combo_changed( QString str);

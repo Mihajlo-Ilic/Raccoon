@@ -27,6 +27,8 @@ public:
     bool run() override;
     void on_input_changed() override;
     packet get_msg() override;
+
+    void serialize(std::ofstream& os) override;
 public slots:
     void preview_b();
 };

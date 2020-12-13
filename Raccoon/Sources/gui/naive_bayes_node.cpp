@@ -31,6 +31,16 @@ nb_node::nb_node(int width, int height) : node(width,height,2){
     connect(&alpha_sbox,SIGNAL(valueChanged(double)),this,SLOT(alpha_changed(double)));
 }
 
+void nb_node::serialize(std::ofstream &os)
+{
+    os<<"-n bayes"<<std::endl;
+    os<<" x="<<geometry().topLeft().x()<<std::endl;
+    os<<" y="<<geometry().topLeft().y()<<std::endl;
+    os<<" alpha="<<alpha_sbox.value()<<std::endl;
+    os<<" show_table="<<table_checkbox.isChecked()<<std::endl;
+
+}
+
 bool nb_node::run()
 {
     table train = inputs[0]->get_table();

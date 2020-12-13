@@ -35,6 +35,15 @@ knn_node::knn_node(int width, int height) : node(width,height,2){
     connect(&previewBtn, SIGNAL(clicked()), this, SLOT(preview_b()));
 }
 
+void knn_node::serialize(std::ofstream &os)
+{
+    os<<"-n knn"<<std::endl;
+    os<<" x="<<geometry().topLeft().x()<<std::endl;
+    os<<" y="<<geometry().topLeft().y()<<std::endl;
+    os<<" metric="<<distance_box.currentText().toStdString()<<std::endl;
+    os<<" k="<<k_neighbours.value()<<std::endl;
+}
+
 #include<iostream>
 bool knn_node::run()
 {

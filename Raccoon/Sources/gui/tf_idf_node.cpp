@@ -25,3 +25,10 @@ void tf_idf_node::preview_b() {
     tf_idf(t);
     preview();
 }
+
+void tf_idf_node::serialize(std::ofstream &os)
+{
+    os<<"-n tf_idf"<<std::endl;
+    os<<" x="<<geometry().topLeft().x()<<std::endl;
+    os<<" y="<<geometry().topLeft().y()<<std::endl;
+}

@@ -28,6 +28,16 @@ stats_node::stats_node(int width, int height) : node(width, height, 1,0)
     connect(&preview_btn, SIGNAL(clicked()), this, SLOT(preview_b()));
 }
 
+void stats_node::serialize(std::ofstream &os)
+{
+    os<<"-n stats"<<std::endl;
+    os<<" x="<<geometry().topLeft().x()<<std::endl;
+    os<<" y="<<geometry().topLeft().y()<<std::endl;
+    for(int i=0;i<stats.count();i++)
+        os<<" "<<stats.item(i)->checkState()<<std::endl;
+
+}
+
 void stats_node::on_input_changed()
 {
      t = inputs[0]->get_table();

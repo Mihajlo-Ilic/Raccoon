@@ -43,6 +43,8 @@ public:
     void loadStopWords(std::string stop_words_path);
     void loadTextFromDir();
     ~doc_reader_node() = default;
+
+    void serialize(std::ofstream& os) override;
 };
 
 

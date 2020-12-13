@@ -35,6 +35,16 @@ partition_node::partition_node(int width, int height) : node(width, height, 1,2)
     connect(&sb_random,SIGNAL(valueChanged(int)),this,SLOT(changed(int)));
 }
 
+void partition_node::serialize(std::ofstream &os)
+{
+    os<<"-n partition"<<std::endl;
+    os<<" x="<<geometry().topLeft().x()<<std::endl;
+    os<<" y="<<geometry().topLeft().y()<<std::endl;
+    os<<" percent="<<sb_percent.text().toStdString()<<std::endl;
+    os<<" random="<<sb_random.text().toStdString()<<std::endl;
+
+}
+
 void partition_node::preview_b() {
     preview();
 }

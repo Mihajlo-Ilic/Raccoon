@@ -23,6 +23,8 @@ public:
     void preview() override;
     packet get_msg() override;
     void make_dendogram(QGraphicsScene &scene);
+
+    void serialize(std::ofstream& os) override;
 private:
     QComboBox combo_func;
     QLabel label_func;

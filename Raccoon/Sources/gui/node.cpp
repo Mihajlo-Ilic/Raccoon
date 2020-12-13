@@ -61,7 +61,9 @@ node::node(int width,int height,int n_inputs,int n_outputs){
     warning_icon.setGeometry(width-30,0,25,25);
     warning_icon.setMaximumHeight(25);
     warning_icon.setMaximumWidth(25);
-    warning_icon.setStyleSheet("QLabel{background-color:yellow;}");
+    warning_icon.setStyleSheet("QLabel{background-color:rgba(0,0,0,0);}");
+    QPixmap img(":/res/Resources/Action_icons/warning.svg");
+    warning_icon.setIcon(img);
     warning_icon.setToolTip("Desila se greska brale :(\n ee");
     warning_icon.setAttribute(Qt::WA_Hover);
     warning_icon.hide();
@@ -143,8 +145,11 @@ void node::mouseMoveEvent(QMouseEvent *event){
 //NEXT 2 METHODS ARE PRIMARILY USED FOR GRAPH ALGORITHMS IN THE SCENE
 std::vector<node *> node::get_input_nodes(){
     std::vector<node*> res;
-    for(auto it:inputs)
-        res.push_back(it->get_output_node());
+    for(auto it:inputs){
+        auto p = it->get_output_node();
+        if(p!=nullptr)
+        res.push_back(p);
+    }
     return res;
 }
 std::vector<node *> node::get_output_nodes(){
@@ -399,7 +404,9 @@ void input_connector::add_edge(edge *e){
 
 node* input_connector::get_output_node()
 {
+    if(input_edge!=nullptr)
     return input_edge->get_output_node();
+    return nullptr;
 }
 void input_connector::update_edge_position(const QPointF& new_point){
     if(input_edge!=nullptr)

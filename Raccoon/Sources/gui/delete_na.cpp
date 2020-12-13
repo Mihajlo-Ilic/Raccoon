@@ -28,6 +28,13 @@ delete_na::delete_na(int width, int height) : node(width, height, 1)
     connect(&preview_btn, SIGNAL(clicked()), this, SLOT(preview_b()));
 }
 
+void delete_na::serialize(std::ofstream &os)
+{
+    os<<"-n remove_na"<<std::endl;
+    os<<" x="<<geometry().topLeft().x()<<std::endl;
+    os<<" y="<<geometry().topLeft().y()<<std::endl;
+}
+
 void delete_na::preview_b() {
     preview();
 }

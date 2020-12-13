@@ -3,7 +3,8 @@
 QObject{
     background-color :rgb(57, 57, 57);
     color:rgb(217, 217, 217);
-    font-size:12px;
+    font-size:13px;
+    font:bold large "Consolas";
 }
 
 QFrame{
@@ -49,9 +50,12 @@ QMenuBar:item:selected{
     color:rgb(238, 150, 17);
 }
 
-QMenuBar{
- font-size:15px;
+QMenuBar:item{
+    background-color :rgb(47, 47, 47);
+    color:rgb(238,255, 255);
 }
+
+
 
 QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
     background: none;
@@ -141,7 +145,17 @@ QFrame[frameShape="5"]
     background-color: white;
 }
 
-:disabled{
-color:red;
+
+QMenu{
+ margin: 2px;
 }
 
+QMenu::item{
+    font-size:15px;
+    padding: 2px 25px 2px 20px;
+    color: rgb(255, 255, 255);
+}
+
+QMenu::item:selected{
+    color: orange;
+}

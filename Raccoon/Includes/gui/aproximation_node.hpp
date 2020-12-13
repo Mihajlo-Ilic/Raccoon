@@ -16,6 +16,8 @@ public:
     aproximation_node(int width,int height);
     void on_input_changed() override;
     bool run() override;
+
+    void serialize(std::ofstream& os) override;
 private:
     QComboBox aproximationCombo;
     QLabel aproximationLabel;
