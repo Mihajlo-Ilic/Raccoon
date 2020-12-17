@@ -7,6 +7,13 @@
 #include <set>
 #include <map>
 #include<iostream>
+#include <sys/time.h>
+#include <thread>
+#include <mutex>
+
+const auto processor_count = std::thread::hardware_concurrency();
+std::mutex split_mutex2;
+
 //std::function<std::vector<int>(const table& t,int k, std::function<double( const row &, const row &)> metrics )>
 
 std::vector<int> k_first(const table& t,int k, std::function<double( const row &, const row &)> metrics ) {
@@ -146,7 +153,31 @@ void k_mean_cluster::fit(const table& data) {
     training_table = data;
 }
 
+void thread_func1(const table &data,std::vector<int> &clusters,const table &centroids,bool *change,long int *begin_c,long int *end_c,std::function<double( const row &, const row &)> metrics, int k) {
+    for(int i = *begin_c; i < *end_c; i++) {
+        double minimum = std::numeric_limits<int>::max();
+        int cluster_property = -1;
+        int old_property = clusters[i];
+        for(int j = 0; j < k; j++) {
+            if(metrics(centroids[j],data[i]) < minimum) {
+                minimum = metrics(centroids[j],data[i]);
+                cluster_property = j;
+            }
+        }
+        split_mutex2.lock();
+        clusters[i] = cluster_property;
+        if(clusters[i] != old_property && cluster_property!=-1) {
+            *change = true;
+        }
+        split_mutex2.unlock();
+    }
+}
+
 table k_mean_cluster::predict(const table& data) {
+    struct timeval tp;
+    gettimeofday(&tp, NULL);
+    long int ms1 = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+
     table centroids;
     centroids.push(training_table.col_names());
     table data_copy = data;
@@ -159,23 +190,29 @@ table k_mean_cluster::predict(const table& data) {
         centroids.push_row(training_table[it].get_row());
     }
 
+    long int thread_part = (data.row_n() / processor_count);
+    int brojac = 1;
+
+    std::vector<std::pair<long int,long int>> par;
+    for(long int i = 0; i <= processor_count; i++) {
+        long int begin_c = i*thread_part;
+        long int end_c = std::min((i+1)*thread_part,(long int)data.row_n());
+        par.push_back(std::make_pair(begin_c,end_c));
+
+    }
+
     while(change) {
         change=false;
-        for(int i = 0; i < data.row_n(); i++) {
-            double minimum = std::numeric_limits<int>::max();
-            int cluster_property = -1;
-            int old_property = clusters[i];
-            for(int j = 0; j < k; j++) {
-                if(metrics(centroids[j],data[i]) < minimum) {
-                    minimum = metrics(centroids[j],data[i]);
-                    cluster_property = j;
-                }
-            }
-            clusters[i] = cluster_property;
-            if(clusters[i] != old_property && cluster_property!=-1) {
-                change = true;
-            }
+        std::vector<std::thread> threads;
+
+
+        for(long int i = 0; i <= processor_count; i++) {
+            threads.push_back(std::thread(thread_func1,std::ref(data),std::ref(clusters),std::ref(centroids),&change,&par[i].first,&par[i].second,metrics,k));
         }
+        for(auto &th : threads) {
+            th.join();
+        }
+        brojac++;
         for(int i = 0; i < k; i++) {
             std::vector<int> cl;
             for(unsigned j=0;j<clusters.size();j++)
@@ -196,6 +233,12 @@ table k_mean_cluster::predict(const table& data) {
     data_copy.push("cluster");
     for(unsigned i=0;i<clusters.size();i++)
         data_copy["cluster"][i]=entry(clusters[i]);
+
+    gettimeofday(&tp, NULL);
+    long int ms2 = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+
+    std::cout << "VREME: " << ms2 - ms1 << std::endl;
+
     return data_copy;
 
 }

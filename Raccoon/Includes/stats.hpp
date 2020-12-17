@@ -44,6 +44,8 @@ double recall(const table &data, const table &classified, std::string target);
 
 table confusion_matrix(const table &data, const table &classified, std::string target);
 
+void thread_func(const table &t,table &racunanje,double *sum,int begin_c,int end_c,int *n);
+
 double a_function(table& t,int red,table& racunanje);
 
 double b_function(table& t,int red,table& racunanje);

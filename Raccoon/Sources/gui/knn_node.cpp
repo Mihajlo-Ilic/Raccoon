@@ -51,6 +51,7 @@ bool knn_node::run()
      auto col = msg.packet_columns;
      int col_num = 0;
      for(int i = 0; i < col.size();i++) {
+         std::cout<< i << " je = " << col[i].role << std::endl;
          if(col[i].role == TARGET){
              col_num++;
              break;

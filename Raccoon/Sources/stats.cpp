@@ -3,6 +3,8 @@
 #include <numeric>
 #include<cmath>
 #include<set>
+#include<mutex>
+#include<thread>
 
 double column_mean(const collumn &c) {
     double sum = 0;
@@ -207,6 +209,9 @@ table confusion_matrix(const table &data, const table &classified, std::string t
     return res;
 }
 
+const auto processor_count = std::thread::hardware_concurrency();
+std::mutex split_mutex3;
+
 double a_function(table& t,int red,table &racunanje){
     double sum = 0.0;
     double n = 0.0;
@@ -253,19 +258,37 @@ double b_function(table& t,int red,table& racunanje){
     return mapa[ime].first/mapa[ime].second;
 }
 
+void thread_func2(table &t,table &racunanje,double *sum,int begin_c,int end_c,double *n) {
+    for(int i=begin_c;i<end_c;i++){
+        split_mutex3.lock();
+        double red_a = a_function(t,i,racunanje);
+        double red_b = b_function(t,i,racunanje);
+        if(red_a!=0){
+            *sum +=(red_b-red_a)/(std::max(red_b,red_a));
+        }
+        *n+=1.0;
+        split_mutex3.unlock();
+    }
+}
+
 double siluette_coef(table& t){
+
     table racunanje = t;
     racunanje.pop("cluster");
     double n = 0.0;
     double sum = 0.0;
-    for(int i=0;i<t.row_n();i++){
-        double red_a = a_function(t,i,racunanje);
-        double red_b = b_function(t,i,racunanje);
-        if(red_a!=0){
-            sum +=(red_b-red_a)/(std::max(red_b,red_a));
-
-        }
-        n+=1.0;
+    int thread_part = t.row_n()/processor_count;
+    std::vector<std::thread> threads;
+    std::vector<std::pair<int,int>> part;
+    for(int i=0;i<=processor_count;i++){
+        int begin_c = thread_part*i;
+        int end_c = std::min(thread_part*(i+1),t.row_n());
+        part.push_back(std::make_pair(begin_c,end_c));
+    }
+    for(int i=0;i<=processor_count;i++)
+        threads.push_back(std::thread(thread_func2,std::ref(t),std::ref(racunanje),&sum,part[i].first,part[i].second,&n));
+    for(auto & th : threads) {
+        th.join();
     }
     return sum/n;
 }

@@ -37,6 +37,7 @@ void normalization_node::on_input_changed()
         columns.addItem(l_item);
     }
     needs_update = true;
+    outputs[0]->send_data(t);
 }
 
 bool normalization_node::run()
@@ -56,10 +57,10 @@ bool normalization_node::run()
 }
 
 void normalization_node::preview_b() {
+    outputs[0]->send_data(t);
     preview();
 }
 
-void normalization_node::list_changed()
-{
+void normalization_node::list_changed(){
 
 }

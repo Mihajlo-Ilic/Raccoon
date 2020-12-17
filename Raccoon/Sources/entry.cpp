@@ -227,7 +227,7 @@ double entry::get_double() const{
                 double curr = std::stod (s_v,&sz);
                 return curr;
             } catch(const std::invalid_argument&){
-                std::cout<<"string can't be casted to double"<<std::endl;
+                //std::cout<<"string can't be casted to double"<<std::endl;
                 return 0.0;
             }
         }
