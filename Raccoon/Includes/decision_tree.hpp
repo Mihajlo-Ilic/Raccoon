@@ -4,8 +4,9 @@
 #include "../Includes/table.hpp"
 #include <unordered_map>
 #include <QGraphicsScene>
-double entropy(table t);
-double gini(table t);
+
+double entropy(std::unordered_map<std::string, int> &n_classes, int n_rows);
+double gini(std::unordered_map<std::string,int> &n_classes, int n_rows);
 
 class decision_tree;
 
@@ -52,8 +53,9 @@ private:
     decision_tree * parent;
     unsigned depth;
     std::unordered_map<std::string, int> n_classes;
+    int n_rows;
     double score;
-    table t;
+    std::vector<int> idxes;
     rule * split_rule;
     std::vector<tree_node*> children;
     bool is_leaf;
@@ -63,10 +65,10 @@ private:
     void split();
     void split_concurrent();
     void thread_func(std::vector<std::string> col_names, double &split_val, double &gain_optimal, std::string &split_col);
-    std::function<double(table)> clean_metric;
+    std::function<double(std::unordered_map<std::string, int> &, int)> clean_metric;
 public:
     friend class decision_tree;
-    tree_node(table t, std::function<double(table)> metric, unsigned depth,decision_tree* p);
+    tree_node(std::vector<int>&& idxes, std::function<double(std::unordered_map<std::string, int> &, int)> metric, unsigned depth,decision_tree* p);
     void draw_node(QGraphicsScene *scene, int x, int y, int & child_x);
     entry classify(row r);
     ~tree_node();
@@ -78,13 +80,13 @@ class decision_tree
     int min_rows;
     double min_clean;
     tree_node * root;
-    std::function<double(table)> clean_metric;
+    std::function<double(std::unordered_map<std::string, int> &, int)> clean_metric;
     table training_table;
 public:
     decision_tree();
     std::unordered_map<int, int> levels;
     void set_stop_conditions(unsigned max_depth, int min_rows, double min_clean);
-    void set_func(std::function<double(table)> metric);
+    void set_func(std::function<double(std::unordered_map<std::string, int> &, int)> metric);
     void draw_tree(QGraphicsScene *scene);
     void set_max_depth(int v){
         max_depth=v;

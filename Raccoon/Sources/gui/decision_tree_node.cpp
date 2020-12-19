@@ -1,4 +1,5 @@
 #include "../../Includes/gui/decision_tree_node.hpp"
+#include "../../Includes/stats.hpp"
 #include <chrono>
 #include <QDialog>
 #include <QHBoxLayout>
@@ -76,8 +77,8 @@ bool decision_tree_node::run()
     test.pop("partition");
     test.pop(training.get_target());
 
-    //tree.fit(training);
-    tree.fit_concurrent(training);
+    tree.fit(training);
+    //tree.fit_concurrent(training);
     std::chrono::steady_clock::time_point curr_time = std::chrono::steady_clock::now();
     t=tree.classify(test);
     std::chrono::steady_clock::time_point end_time = std::chrono::steady_clock::now();
@@ -225,9 +226,32 @@ void decision_tree_node::preview() {
         tab_gscene.setBackgroundBrush(QColorDialog::getColor());
     });
 
+    QFrame * frm = new QFrame();
+    QVBoxLayout * vb = new QVBoxLayout();
+    frm->setLayout(vb);
 
+    vb->addWidget(&data_table);
 
-    tabs->addTab(&data_table,"Table");
+    vb->addSpacing(20);
+
+    table train = inputs[0]->get_table();
+    train.pop(train.get_target());
+
+    table train_res = tree.classify(train);
+
+    double train_acc = accuracy_score(inputs[0]->get_table(),train_res,inputs[0]->get_table().get_target());
+
+    QLabel * train_lab = new QLabel();
+    train_lab->setText("Train accuracy : "+QString::number(train_acc));
+
+    table conf_train = confusion_matrix(inputs[0]->get_table(),train_res,inputs[0]->get_table().get_target());
+    QTableWidget * q_conf_train = new QTableWidget;
+    make_QTable(*q_conf_train,conf_train);
+
+    vb->addWidget(train_lab);
+    vb->addWidget(q_conf_train);
+
+    tabs->addTab(frm,"Table");
     tabs->addTab(tree_frame, "Tree");
 
     tablePreview->exec();

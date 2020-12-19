@@ -193,11 +193,18 @@ table confusion_matrix(const table &data, const table &classified, std::string t
     table res{};
     res.push(classes);
     std::unordered_map<std::string,int> helper;
-    for(unsigned int i = 0; i<classes.size(); i++) {
+   /* for(unsigned int i = 0; i<classes.size(); i++) {
         res.push_row();
         res[i]=entry(0.0);
         res[i].set_name(classes[i]);
         helper[classes[i]]=i;
+    }*/
+
+    for(int i = 0; i < res.col_n(); i++) {
+        res.push_row();
+        res[i] = entry(0.0);
+        res[i].set_name(res.col_names()[i]);
+        helper[res.col_names()[i]] = i;
     }
 
     for(int i=0;i<classified.row_n();i++){

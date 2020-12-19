@@ -1,5 +1,6 @@
 #include "../Includes/decision_tree.hpp"
 #include <numeric>
+#include <unordered_set>
 #include <cmath>
 #include <algorithm>
 #include <QRect>
@@ -68,8 +69,8 @@ void rule_continuous::add_value(entry val) {
 
 
 #include<iostream>
-tree_node::tree_node(table t, std::function<double(table)> metric, unsigned depth,decision_tree *p) {
-    this->t = t;
+tree_node::tree_node(std::vector<int>&& idxs, std::function<double(std::unordered_map<std::string, int> &, int)> metric, unsigned depth,decision_tree *p) {
+    this->idxes = idxs;
     this->clean_metric = metric;
     this->depth = depth;
     this->parent=p;
@@ -79,26 +80,31 @@ tree_node::tree_node(table t, std::function<double(table)> metric, unsigned dept
     else
         this->parent->levels[depth]++;
 
-    for(const auto &it : t[t.get_target()].unique()) {
-         n_classes[it.get_string()] = t.where(t.get_target(), [it] (auto x) {return x.get_string() == it.get_string();}).size();
+   this->n_rows = idxs.size();
+
+   //Form "n_classes" map
+    for(int i = 0; i < n_rows; i++) {
+        auto cl_name = parent->training_table[parent->training_table.get_target()][idxs[i]].get_string();
+        if(n_classes.find(cl_name) == n_classes.end())
+            n_classes.insert(std::make_pair(cl_name, 1));
+        else
+            n_classes[cl_name]++;
     }
 
-    this->score = clean_metric(t);
-
-    if(depth >= parent->max_depth || t.row_n() <= parent->min_rows || clean_metric(t) <= parent->min_clean || t.col_n()==1)
-    {    this->is_leaf = true;
-         //most frequent class in node
-        auto classes = t[t.get_target()].unique();
+    this->score = clean_metric(n_classes, n_rows);
+    if(depth >= parent->max_depth || n_rows <= parent->min_rows || score <= parent->min_clean || n_rows ==1)
+    {
+        this->is_leaf = true;
+        //most frequent class in node
+        std::string cl_freq = "n/a";
         int max = 0;
-        entry cl_freq;
-        for(const auto &cl : classes) {
-            int tmp = t.where(t.get_target(), [cl](auto e){return e == cl;}).size();
-            if(tmp > max) {
-                max = tmp;
-                cl_freq = cl;
+        for(const auto & cl : n_classes)
+            if(cl.second > max) {
+                max = cl.second;
+                cl_freq = cl.first;
             }
-        }
-        class_name = cl_freq.get_string();
+
+        this->class_name = entry(cl_freq);
     }
 
 }
@@ -107,7 +113,7 @@ const auto processor_count = std::thread::hardware_concurrency();
 std::mutex split_mutex;
 #include<iostream>
 //TESTING
-
+/*
 void tree_node::thread_func(std::vector<std::string> col_names, double &split_val, double &gain_optimal, std::string &split_col) {
     for(unsigned i = 0u; i<col_names.size(); i++) {
         auto curr_col = col_names[i];
@@ -195,14 +201,14 @@ void tree_node::split_concurrent() {
             it->split();
     }
 }
-
+*/
 
 
 void tree_node::split() {
     if(this->is_leaf)
         return;
 
-
+    table & t = parent->training_table;
     std::vector<std::string> colnames = t.col_names();
     std::string split_col_optimal = colnames[0];
 
@@ -211,11 +217,10 @@ void tree_node::split() {
     //Determine which column to split by
     for(unsigned i = 0u; i < colnames.size(); i++) {
          auto curr_col = colnames[i];
-
          if(t[curr_col].role==TARGET)
              continue;
-         if(t[curr_col].type == column_type::CONTINUOUS) {
 
+         if(t[curr_col].type == column_type::CONTINUOUS) {
                double curr_val=0;
                double d = split_continuous(curr_col, curr_val);
                if(gain_optimal < d) {
@@ -223,36 +228,60 @@ void tree_node::split() {
                     split_col_optimal = curr_col;
                     split_val=curr_val;
                }
+                //std::cout<<"najbolji iz "<<curr_col<<" je "<<curr_val<<" sa "<<d<<std::endl;
          }
-
          if(t[curr_col].type == column_type::NOMINAL) {
              double d = split_categorical(curr_col);
              if(gain_optimal < d) {
                   gain_optimal = d;
                   split_col_optimal = curr_col;
              }
-
+            //std::cout<<" split po "<<curr_col<<" je "<<d<<std::endl;
          }
     }
 
+    //std::cout<<"\n\nUZIMAM: "<<split_col_optimal<<" ZA SPLIT"<<std::endl;
+
     if(t[split_col_optimal].type == CONTINUOUS) {
         split_rule = new rule_continuous(split_col_optimal, entry(split_val));
-        table t_lt = t[t.where(split_col_optimal, [split_val] (auto e) {return e.get_double() < split_val;})];
+        std::vector<int> vec_lte;
+        std::vector<int> vec_gt;
+        for(unsigned i = 0; i < idxes.size(); i++) {
+            if(t[split_col_optimal][idxes[i]].get_double() <= split_val)
+                vec_lte.push_back(idxes[i]);
+            else
+                vec_gt.push_back(idxes[i]);
+        }
+        children.push_back(new tree_node(std::move(vec_lte), clean_metric, depth+1, parent));
+        children.push_back(new tree_node(std::move(vec_gt),clean_metric, depth+1, parent));
+
+        /*table t_lt = t[t.where(split_col_optimal, [split_val] (auto e) {return e.get_double() < split_val;})];
         table t_gte = t[t.where(split_col_optimal, [split_val] (auto e) {return e.get_double() >= split_val;})];
         t_lt.pop(split_col_optimal);
         t_gte.pop(split_col_optimal);
         children.push_back(new tree_node(t_lt, clean_metric, depth+1,this->parent));
-        children.push_back(new tree_node(t_gte, clean_metric, depth+1,this->parent));
+        children.push_back(new tree_node(t_gte, clean_metric, depth+1,this->parent));*/
 
     }
     if(t[split_col_optimal].type == NOMINAL) {
         split_rule = new rule_categorical(split_col_optimal);
-        for(const auto &u : t[split_col_optimal].unique()) {
-            split_rule->add_value(u);
-            table t_i = t[t.where(split_col_optimal, [u] (auto e) {return u == e;})];
-            t_i.pop(split_col_optimal);
-            children.push_back(new tree_node(t_i, clean_metric, depth+1,this->parent));
+        //we need a new child for each unique value
+        std::unordered_map<std::string, std::vector<int>> unique_vals;
+        for(unsigned i = 0; i<idxes.size(); i++) {
+            auto val_name = parent->training_table[split_col_optimal][idxes[i]].get_string();
+            if(unique_vals.find(val_name) == unique_vals.end()) {
+                std::vector<int> tmp;
+                tmp.push_back(idxes[i]);
+                unique_vals.insert(std::make_pair(val_name, tmp));
+                split_rule->add_value(val_name);
+            }
+            else
+                unique_vals[val_name].push_back(idxes[i]);
         }
+
+        for(auto & val : unique_vals)
+            children.push_back(new tree_node(std::move(val.second), clean_metric, depth + 1, parent));
+
     }
 
     for(auto it:children) {
@@ -260,6 +289,48 @@ void tree_node::split() {
     }
 }
 
+double tree_node::split_categorical(std::string col_name) {
+    double parent_clean = clean_metric(n_classes, n_rows);
+
+    double gain_sum = 0;
+    double split_info = 0;
+
+    //KEY - Name of unique value from the column "col_name"
+    //VALUE - Vector of row indexes whose value for "col_name" equals the key
+    std::unordered_map<std::string, std::vector<int>> unique_vals;
+
+    for(unsigned i = 0; i<idxes.size(); i++) {
+        auto val_name = parent->training_table[col_name][idxes[i]].get_string();
+        if(unique_vals.find(val_name) == unique_vals.end()) {
+            std::vector<int> tmp;
+            tmp.push_back(idxes[i]);
+            unique_vals.insert(std::make_pair(val_name, tmp));
+        }
+        else
+            unique_vals[val_name].push_back(idxes[i]);
+    }
+
+    for(const auto & val : unique_vals) {
+        //Each vector of indexes (val.second) forms a "sub-table"; we need to check how clean each sub-table is
+        std::unordered_map<std::string, int> val_classes;
+        for(const auto & it : val.second) {
+            auto class_name = parent->training_table[parent->training_table.get_target()][it].get_string();
+            if(val_classes.find(class_name) == val_classes.end())
+                val_classes.insert(std::make_pair(class_name, 1));
+            else
+                val_classes[class_name]++;
+        }
+
+        int n_i = val.second.size();
+        gain_sum += ((double)n_i/n_rows)*clean_metric(val_classes, n_i);
+        split_info += -((double)n_i/n_rows)*log2(((double)n_i/n_rows));
+    }
+
+    return (parent_clean - gain_sum)/split_info;
+
+}
+
+/*
 double tree_node::split_categorical(std::string col_name) {
     double parent_clean = clean_metric(t);
     double n = t.row_n();
@@ -273,8 +344,48 @@ double tree_node::split_categorical(std::string col_name) {
         split_info += -((double)n_i/n)*log2(((double)n_i/n));
     }
     return (parent_clean - gain_sum)/split_info;
+}*/
+
+double tree_node::split_continuous(std::string col_name, double &split_val) {
+    double parent_clean = clean_metric(n_classes, n_rows);
+
+    //This is a unique (singleton) table that belongs to the tree
+    //I'm using this reference for the sake of brevity
+    table & parent_table = (parent->training_table);
+    std::sort(idxes.begin(), idxes.end(), [&] (auto& i, auto& j) {return parent_table[col_name][i].get_double() < parent_table[col_name][j].get_double();});
+
+    std::unordered_map<std::string, int> left;
+    std::unordered_map<std::string, int> right;
+
+    //initialize the "left" and "right" child
+    for(const auto & cl : n_classes) {
+        left.insert(std::make_pair(cl.first, 0));
+        right.insert(cl);
+    }
+    //std::cout<<"split po "<<col_name<<std::endl;
+    double gain_ratio_column = 0;
+    for(unsigned i = 0; i<idxes.size()-1; i++) {
+        left[parent_table[parent_table.get_target()][idxes[i]].get_string()]++;
+        right[parent_table[parent_table.get_target()][idxes[i]].get_string()]--;
+
+        if(parent_table[col_name][idxes[i]].get_double() == parent_table[col_name][idxes[i+1]].get_double())
+            continue;
+
+        int n_lt = i+1;
+        int n_gte = n_rows - (i+1);
+        double gain = parent_clean - ((double)n_lt/n_rows)*clean_metric(left, n_lt) - ((double)n_gte/n_rows)*clean_metric(right, n_gte);
+        double split_info = -((double)n_lt/n_rows)*log2((double)n_lt/n_rows) - ((double)n_gte/n_rows)*log2((double)n_gte/n_rows);
+        //std::cout<<parent_table[col_name][idxes[i]].get_double()<<"  "<<gain/split_info<<std::endl;
+        if(gain_ratio_column < gain/split_info) {
+              gain_ratio_column = gain/split_info;
+              split_val = parent_table[col_name][idxes[i]].get_double();
+        }
+    }
+    return gain_ratio_column;
 }
 
+
+/*
 double tree_node::split_continuous(std::string col_name, double &split_val) {
     double parent_clean = clean_metric(t);
     double n = t.row_n();
@@ -299,7 +410,7 @@ double tree_node::split_continuous(std::string col_name, double &split_val) {
         }
     }
     return gain_ratio_column;
-}
+}*/
 
 #include <QGraphicsSimpleTextItem>
 #include <QRectF>
@@ -368,7 +479,8 @@ void tree_node::draw_node(QGraphicsScene *scene, int x, int y, int & child_x) {
 
         QGraphicsSimpleTextItem *rule = new QGraphicsSimpleTextItem();
         scene->addItem(rule);
-        rule->setText(QString::fromStdString(rule_names[i]));
+        if(rule_names.size()>0)
+            rule->setText(QString::fromStdString(rule_names[i]));
         rule->setPos(child_x - 15, rect_item->y() + (double)NODE_HEIGHT + (double)Y_SPACING*(3.0/4.0));
         rule->setZValue(500);
 
@@ -415,55 +527,56 @@ void tree_node::draw_node(QGraphicsScene *scene, int x, int y, int & child_x) {
 }
 
 //METRICS
-double entropy(table t) {
-      auto target_classes = t[t.get_target()].unique();
-      double e = 0;
-      double j_freq = 0;
-      for(const auto &j : target_classes) {
-          j_freq = ((double)t.where(t.get_target(), [j](auto ent) {return ent == j;}).size())/t.row_n();
-          e -= j_freq*log2(j_freq);
-      }
-      return e;
+
+double entropy(std::unordered_map<std::string, int> &n_classes, int row_n) {
+    //n_classes maps the name of each class into the number of rows belonging to that class; in total, there are "row_n" rows.
+    double e = 0;
+    double j_freq = 0;
+    for(const auto & j : n_classes) {
+        j_freq = (double)j.second/(double)row_n;
+        if(j_freq!=0.0)
+            e -= j_freq*log2(j_freq);
+    }
+    return e;
 }
 
-double gini(table t) {
-    auto target_classes = t[t.get_target()].unique();
+double gini(std::unordered_map<std::string, int> &n_classes, int row_n) {
     double g = 1;
     double j_freq = 0;
-    for(const auto &j : target_classes) {
-        j_freq = ((double)t.where(t.get_target(), [j](auto ent) {return ent == j;}).size())/t.row_n();
+    for(const auto & j : n_classes) {
+        j_freq = (double)j.second/(double)row_n;
         g -= j_freq*j_freq;
     }
     return g;
 }
 
+
+
+
 //DECISION TREE
 decision_tree::decision_tree()
 {
     //default values for stop conditions
-    max_depth = 255;
-    min_rows = 1;
+    max_depth = 100;
+    min_rows = 2;
     min_clean = 0;
     //default metric
     clean_metric = entropy;
 }
 
-void decision_tree::set_func(std::function<double (table)> metric) {
+void decision_tree::set_func(std::function<double (std::unordered_map<std::string, int> &, int)> metric) {
     clean_metric = metric;
 }
 
 void decision_tree::fit(table t) {
     training_table = t;
     training_table.pop("partition");
-    root = new tree_node(t, clean_metric, 0,this);
-    root->split();
-}
+    std::vector<int> rows(t.row_n());
+    for(unsigned i = 0; i<rows.size(); i++)
+        rows[i] = i;
 
-void decision_tree::fit_concurrent(table t) {
-    training_table = t;
-    training_table.pop("partition");
-    root = new tree_node(t, clean_metric, 0,this);
-    root->split_concurrent();
+    root = new tree_node(std::move(rows), clean_metric, 0,this);
+    root->split();
 }
 
 table decision_tree::classify(const table& test) {
