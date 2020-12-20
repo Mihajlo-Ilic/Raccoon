@@ -16,9 +16,11 @@ class k_mean_cluster_node : public node
     Q_OBJECT
 private:
     QComboBox distance_box;
+    QComboBox init_box;
     QPushButton previewBtn;
     QSpinBox k_neighbours;
     QLabel distance_label;
+    QLabel init_label;
     QLabel k_neighbours_label;
     k_mean_cluster model;
 

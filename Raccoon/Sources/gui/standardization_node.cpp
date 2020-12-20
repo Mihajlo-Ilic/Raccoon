@@ -41,6 +41,7 @@ void standardization_node::on_input_changed()
         columns.addItem(l_item);
     }
     needs_update = true;
+    outputs[0]->send_packet(msg);
 }
 
 bool standardization_node::run()
@@ -66,7 +67,6 @@ void standardization_node::list_changed()
         standardize(curr,it->text().toStdString());
     t=curr;
 
-    outputs[0]->send_data(t);
 
     needs_update=false;
 }

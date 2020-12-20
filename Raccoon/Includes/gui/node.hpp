@@ -59,7 +59,7 @@ struct packet{
 
 
 //INTERFACE USED TO REPRESENT NODE IN SCENE
-
+class edge;
 
 class node : public QWidget{
     public:
@@ -71,6 +71,7 @@ class node : public QWidget{
     //USED FOR GETTING CONNECTED INPUTS/OUTPUTS
         std::vector<node *> get_input_nodes();
         std::vector<node *> get_output_nodes();
+        std::vector<edge *> get_input_edges();
     
     //VIRTUAL METHODS PREVIEW IS USED FOR PREVIEW BUTTON EVENT
     //INPUT CHANGED IS USED TO RESPOND TO A CHANGE WHEN CONNECTOR RECIEVES DATA
@@ -87,6 +88,13 @@ class node : public QWidget{
     //NEEDED FOR TOPS SORT TO KNOW IN DEGREE AND SHOULD IT BE PREVIEWED
         int used_inputs();
         int used_outputs();
+
+        input_connector* get_input_con(int ind){
+            return inputs[ind];
+        }
+        output_connector* get_output_con(int ind){
+            return outputs[ind];
+        }
 
         bool warning_cheque(std::function<bool(std::string&)> func);
         virtual packet get_msg();
@@ -139,6 +147,8 @@ class edge : public QGraphicsLineItem{
         node* get_input_node();
         node* get_output_node();
 
+        std::pair<int,int> get_indexes() const;
+
         ~edge();
     private:
         void update_arrow();
@@ -146,6 +156,9 @@ class edge : public QGraphicsLineItem{
         input_connector* in;
         output_connector* out;
         QGraphicsPolygonItem arrow;
+
+        int index_in;
+        int index_out;
 };
 
 //CONNECTORS USED TO REPRESENT SOCKETS BETWEEN EDGES
@@ -162,6 +175,8 @@ class connector : public QGraphicsEllipseItem{
         void set_position(const QPointF& new_point);
         void add_to_scene(QGraphicsScene* scene);
 
+        int get_index() const;
+
         virtual void add_edge(edge *e) = 0;
         virtual void update_edge_position(const QPointF& new_point) = 0;
         
@@ -170,6 +185,7 @@ class connector : public QGraphicsEllipseItem{
 
         virtual ~connector();
     protected:
+        int index;
         connector(node* p);
 
         node* parent;
@@ -194,7 +210,7 @@ class input_connector : public connector{
 
         ~input_connector();
     private:
-        input_connector(node *p);
+        input_connector(node *p,int ind);
         edge* input_edge;
         table input_table;
         packet recieved_packet;
@@ -224,7 +240,7 @@ class output_connector : public connector {
 
         ~output_connector();
     private:
-        output_connector(node* p);
+        output_connector(node* p,int ind);
         std::vector<edge*> output_edges;
     friend class node;
 };

@@ -91,7 +91,7 @@ bool aglo_node::run()
     c.pop(c.get_target());
     c.pop("cluster");
     t = model.predict(c);
-    outputs[0]->send_data(c);
+    outputs[0]->send_data(t);
     return true;
 }
 

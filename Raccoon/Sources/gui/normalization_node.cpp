@@ -37,7 +37,7 @@ void normalization_node::on_input_changed()
         columns.addItem(l_item);
     }
     needs_update = true;
-    outputs[0]->send_data(t);
+    outputs[0]->send_packet(msg);
 }
 
 bool normalization_node::run()

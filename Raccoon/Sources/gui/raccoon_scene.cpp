@@ -158,6 +158,13 @@ void raccoon_scene::dropEvent(QGraphicsSceneDragDropEvent *event){
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
     }
+    if(event->mimeData()->text()=="table_output_button"){
+        outputTable_node* n=new outputTable_node(250,100);
+        addWidget(n);
+        n->add_to_scene(this);
+        n->set_position(event->scenePos());
+        scene_nodes.push_back(n);
+    }
     if(event->mimeData()->text()=="stats_button"){
         stats_node* n=new stats_node(250,250);
         addWidget(n);
@@ -304,9 +311,12 @@ void raccoon_scene::save_scene(const std::string &path)
         file<<std::endl;
     }
     for(unsigned i=0;i<scene_nodes.size();i++){
-        auto inputs = scene_nodes[i]->get_input_nodes();
-        for(unsigned j=0;j<inputs.size();j++)
-            file<<"-e "<<i<<" "<<j<<std::endl;
+        auto input_edges = scene_nodes[i]->get_input_edges();
+        for(auto it:input_edges){
+            int pos = std::find(scene_nodes.begin(),scene_nodes.end(),it->get_input_node())-scene_nodes.begin();
+            auto pair = it->get_indexes();
+            file<<"-e "<<pos<<" "<<pair.second<<" "<<i<<" "<<pair.first<<std::endl;
+        }
     }
     file.close();
 }
@@ -340,6 +350,11 @@ void raccoon_scene::load_scene(const std::string &path)
             scene_nodes.push_back(n);
             n->add_to_scene(this);
             addWidget(n);
+
+            std::string s = putanja;
+            if(s!=""){
+                //TODO ADD PATH
+            }
        }
         else
        if(line.find("-n aglo")==0){
@@ -685,10 +700,15 @@ void raccoon_scene::load_scene(const std::string &path)
             n->add_to_scene(this);
             addWidget(n);
        } else
-        if(line.find("-e")){
-            int first;
-            int second;
-            sscanf(line.c_str(),"-e %d %d",&first,&second);
+        if(line.find("-e")==0){
+            int node_out;
+            int out_ind;
+            int node_in;
+            int in_ind;
+            sscanf(line.c_str(),"-e %d %d %d %d",&node_out,&out_ind,&node_in,&in_ind);
+
+            edge* e=new edge(scene_nodes[node_in]->get_input_con(in_ind),scene_nodes[node_out]->get_output_con(out_ind));
+            e->add_to_scene(this);
         }
     }
     file.close();

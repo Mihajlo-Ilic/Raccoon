@@ -9,15 +9,24 @@ k_mean_cluster_node::k_mean_cluster_node(int width,int height) : node(width,heig
     previewBtn.setText("preview");
     k_neighbours.setMinimum(1);
 
+    init_label.setText("init centers");
     distance_label.setText("distance function");
     k_neighbours_label.setText("k means");
     previewBtn.setText("preview");
+
+    init_box.addItem("K++");
+    init_box.addItem("Random");
+    init_box.addItem("First K");
+
+
     distance_box.addItem("Manhattan distance");
     distance_box.addItem("Euclidean distance");
     distance_box.addItem("SMC distance");
     distance_box.addItem("Zakard distance");
     distance_box.addItem("Cos distance");
 
+    init_label.setParent(&body);
+    init_box.setParent(&body);
     distance_box.setParent(&body);
     distance_label.setParent(&body);
     k_neighbours.setParent(&body);
@@ -28,11 +37,23 @@ k_mean_cluster_node::k_mean_cluster_node(int width,int height) : node(width,heig
     distance_label.setGeometry(geometry().x() + 130,geometry().y() + 10,110,30);
     k_neighbours.setGeometry(geometry().x() + 10,geometry().y() + 50,110,30);
     k_neighbours_label.setGeometry(geometry().x() + 130,geometry().y() + 50,110,30);
+    init_label.setGeometry(geometry().x() + 130,geometry().y() + 90,110,30);
+    init_box.setGeometry(geometry().x() + 10,geometry().y() + 90,110,30);
+
     previewBtn.setGeometry(geometry().x() + 190,geometry().y() + 200,50,20);
 
     connect(&previewBtn, SIGNAL(clicked()), this, SLOT(preview_b()));
     connect(&distance_box,SIGNAL(currentTextChanged(QString )),this,SLOT(combo_changed( QString )));
     connect(&k_neighbours,SIGNAL(valueChanged(int)),this,SLOT(sb_changed(int)));
+
+    connect(&init_box, QOverload<int>::of(&QComboBox::currentIndexChanged), [&](int index){
+        if(index==0)
+            model.set_init(k_means_pp);
+        if(index==1)
+            model.set_init(init_random);
+        if(index==2)
+            model.set_init(k_first);
+    });
 }
 
 void k_mean_cluster_node::serialize(std::ofstream &os)

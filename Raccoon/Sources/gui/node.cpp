@@ -85,12 +85,12 @@ node::node(int width,int height,int n_inputs,int n_outputs){
     outputs.resize(n_outputs,nullptr);
 
     for(unsigned i=0;i<inputs.size();i++){
-        inputs[i] = new input_connector(this);
+        inputs[i] = new input_connector(this,i);
         inputs[i]->set_position(find_input_position(i));
     }
 
     for(unsigned i=0;i<outputs.size();i++){
-        outputs[i] = new output_connector(this);
+        outputs[i] = new output_connector(this,i);
         outputs[i]->set_position(find_output_position(i));
     }
 
@@ -159,6 +159,15 @@ std::vector<node *> node::get_output_nodes(){
             res.push_back(n);
     }
     return res;
+}
+
+std::vector<edge *> node::get_input_edges()
+{
+    std::vector<edge*> ret;
+    for(auto it:inputs)
+        if(it->input_edge!=nullptr)
+            ret.push_back(it->input_edge);
+    return ret;
 }
 //UPDATES POSITION OF NODE AND ALL OF ITS CONNECTORS
 void node::set_position(const QPointF& point){
@@ -303,6 +312,11 @@ node *edge::get_output_node()
     return in->get_parent();
 }
 
+std::pair<int, int> edge::get_indexes() const
+{
+    return std::make_pair(in->get_index(),out->get_index());
+}
+
 //CALCULATES NORMAL VECTOR OF THE LINE THEN NORMALIZES IT AND SCALES IT AND CREATES AN ARROW FROM IT
 void edge::update_arrow(){
     QPolygonF pol;
@@ -343,6 +357,11 @@ connector::connector(node* p):QGraphicsEllipseItem(0,0,15,15),parent(p){
 void connector::add_to_scene(QGraphicsScene* scene){
     scene->addItem(this);
     scene->addItem(&text);
+}
+
+int connector::get_index() const
+{
+    return index;
 }
 //WHEN MOUSE IS PRESSED ON CONNECTOR IT UPDATES GLOBAL VARIABLES OF SCENE TO BE HIM AND STARTS A DRAG EVENT WITH TAGS 'LINE'
 //TO INDICATE THAT A LINE SHOULD BE DRAWN BETWEEN HIM AND MOUSE POSITION
@@ -388,7 +407,8 @@ connector::~connector(){
 
 
 //INPUT CONNECTOR EVENTS
-input_connector::input_connector(node* p):connector(p){
+input_connector::input_connector(node* p,int ind):connector(p){
+    index = ind;
     QPen pen(QColor(30,30,30));
     pen.setWidth(3);
     setPen(pen);
@@ -448,7 +468,8 @@ input_connector::~input_connector(){
 }
 
 //OUTPUT CONECTOR METHOD DEFINITIONS
-output_connector::output_connector(node* p):connector(p){
+output_connector::output_connector(node* p,int ind):connector(p){
+    index=ind;
     QPen pen(QColor(30,30,30));
     pen.setWidth(3);
     setPen(pen);

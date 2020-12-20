@@ -4,6 +4,7 @@
 #include "node.hpp"
 #include <QPushButton>
 #include <QObject>
+#include <QLineEdit>
 
 class outputTable_node : public node
 {
@@ -12,10 +13,12 @@ public:
     outputTable_node(int width,int height);
     void on_input_changed() override;
     bool run() override;
+    void preview() override;
 
     void serialize(std::ofstream& os) override;
 private:
-    QPushButton previewBtn;
+    QLineEdit path_line;
+    QPushButton file_browser_button;
 public slots:
     void preview_b();
 };

@@ -9,7 +9,9 @@ public:
     void fit(const table& data);
     table predict(const table& data);
 
-
+    void set_init(std::function<std::vector<int>(const table&,int, std::function<double( const row &, const row &)> )> f){
+        init_func = f;
+    }
 
     void set_metric(std::function<double( const row &, const row &)> func){
         metrics = func;
