@@ -13,7 +13,7 @@ categoricalToBinnary_node::categoricalToBinnary_node(int width,int height) : nod
     previewBtn.setText("preview");
     listWidget.setSelectionMode(QAbstractItemView::NoSelection);
 
-    selectLabel.setGeometry(geometry().x() + 10,geometry().y() + 10,100,20);
+    selectLabel.setGeometry(geometry().x() + 10,geometry().y() + 10,120,20);
     listWidget.setGeometry(geometry().x() + 10,geometry().y() + 40,230,150);
     previewBtn.setGeometry(geometry().x() + 190,geometry().y() + 200,50,20);
 
@@ -53,25 +53,39 @@ void categoricalToBinnary_node::on_input_changed()
 
 bool categoricalToBinnary_node::run()
 {
-    t=inputs[0]->get_table();
-    for(const auto& it:listWidget.selectedItems())
-        categorical_to_binary(t,it->text().toStdString());
-
-    outputs[0]->send_data(t);
-
-    needs_update=false;
-
-    t=inputs[0]->get_table();
-    for(int i=0;i<listWidget.count();i++)
+    int br = 0;
+    for(int i = 0; i < listWidget.count();i++)
         if(listWidget.item(i)->checkState()==Qt::CheckState::Checked)
-        {
-            categorical_to_binary(t,listWidget.item(i)->text().toStdString());
+            br++;
+    if(warning_cheque([&](auto &x){
+        if (br == 0) {
+            x += "You did't select atribute for conversion\n";
+            return true;
+        } else {
+        return false;
         }
+    })) { return false; }
+    else {
+        t=inputs[0]->get_table();
+        for(const auto& it:listWidget.selectedItems())
+            categorical_to_binary(t,it->text().toStdString());
 
-    outputs[0]->send_data(t);
+        outputs[0]->send_data(t);
 
-    needs_update=false;
-    return true;
+        needs_update=false;
+
+        t=inputs[0]->get_table();
+        for(int i=0;i<listWidget.count();i++)
+            if(listWidget.item(i)->checkState()==Qt::CheckState::Checked)
+            {
+                categorical_to_binary(t,listWidget.item(i)->text().toStdString());
+            }
+
+        outputs[0]->send_data(t);
+
+        needs_update=false;
+        return true;
+    }
 }
 
 packet categoricalToBinnary_node::get_msg()
@@ -99,5 +113,18 @@ void categoricalToBinnary_node::list_changed(QListWidgetItem *item)
 
 
 void categoricalToBinnary_node::preview_b() {
-    preview();
+    int br = 0;
+    for(int i = 0; i < listWidget.count();i++)
+        if(listWidget.item(i)->checkState()==Qt::CheckState::Checked)
+            br++;
+    if(warning_cheque([&](auto &x){
+        if (br == 0) {
+            x += "You did't select atribute for conversion\n";
+            return true;
+        } else {
+        return false;
+        }
+    })) { }
+    else
+        preview();
 }
