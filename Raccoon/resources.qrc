@@ -31,5 +31,6 @@
         <file>Resources/Node_icons/doc_reader.svg</file>
         <file>Resources/Node_icons/tf_idf.svg</file>
         <file>Resources/Action_icons/minus.svg</file>
+        <file>Resources/Node_icons/apriori.svg</file>
     </qresource>
 </RCC>

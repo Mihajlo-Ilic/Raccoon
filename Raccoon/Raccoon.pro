@@ -49,11 +49,13 @@ DISTFILES += \
 
 HEADERS += \
     Includes/agglo_cluster.hpp \
+    Includes/apriori.hpp \
     Includes/dbscan.hpp \
     Includes/decision_tree.hpp \
     Includes/entry.hpp \
     Includes/file_reader.hpp \
     Includes/gui/aglo_node.hpp \
+    Includes/gui/apriori_node.hpp \
     Includes/gui/aproximation_node.hpp \
     Includes/gui/binning_node.hpp \
     Includes/gui/categoricaltobinnary_node.hpp \
@@ -85,11 +87,13 @@ HEADERS += \
 
 SOURCES += \
     Sources/agglo_cluster.cpp \
+    Sources/apriori.cpp \
     Sources/dbscan.cpp \
     Sources/decision_tree.cpp \
     Sources/entry.cpp \
     Sources/file_reader.cpp \
     Sources/gui/aglo_node.cpp \
+    Sources/gui/apriori_node.cpp \
     Sources/gui/aproximation_node.cpp \
     Sources/gui/binning_node.cpp \
     Sources/gui/categoricaltobinnary_node.cpp \

@@ -44,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->plot_button,SIGNAL(released()),this,SLOT(drop_action()));
     connect(ui->doc_button,SIGNAL(released()),this,SLOT(drop_action()));
     connect(ui->tf_idf_button,SIGNAL(released()),this,SLOT(drop_action()));
+    connect(ui->apriori_button,SIGNAL(released()),this,SLOT(drop_action()));
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {

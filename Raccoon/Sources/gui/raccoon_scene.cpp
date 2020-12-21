@@ -27,6 +27,7 @@
 #include"../../Includes/gui/plot_node.hpp"
 #include "../../Includes/gui/doc_reader_node.hpp"
 #include "../../Includes/gui/tf_idf_node.hpp"
+#include "../../Includes/gui/apriori_node.hpp"
 
 //instance for singleton pattern
 raccoon_scene *raccoon_scene::instance = nullptr;
@@ -214,6 +215,15 @@ void raccoon_scene::dropEvent(QGraphicsSceneDragDropEvent *event){
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
     }
+    if(event->mimeData()->text()=="apriori_button"){
+        apriori_node* n=new apriori_node(250,250);
+        addWidget(n);
+        n->add_to_scene(this);
+        n->set_position(event->scenePos());
+        scene_nodes.push_back(n);
+    }
+
+
     QGraphicsScene::dropEvent(event);
     if(selected_input && selected_output){
         edge * e = new edge((input_connector*)selected_input,

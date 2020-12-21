@@ -230,6 +230,7 @@ void node::preview(){
     QTableWidget qTable{};
     hBox.addWidget(&qTable);
     make_QTable(qTable,t);
+    qTable.setSortingEnabled(true);
     tablePreview.exec();
 }
 
