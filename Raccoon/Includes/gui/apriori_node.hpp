@@ -16,6 +16,7 @@ public:
     apriori_node(int width,int height);
     void on_input_changed() override;
     bool run() override;
+    void preview() override;
 
     void serialize(std::ofstream& os) override;
 private:
