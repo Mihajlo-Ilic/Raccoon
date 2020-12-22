@@ -61,7 +61,7 @@ node::node(int width,int height,int n_inputs,int n_outputs){
     warning_icon.setGeometry(width-30,0,25,25);
     warning_icon.setMaximumHeight(25);
     warning_icon.setMaximumWidth(25);
-    warning_icon.setStyleSheet("QLabel{background-color:rgba(0,0,0,0);}");
+    warning_icon.setStyleSheet("QPushButton{background-color:rgba(0,0,0,0);border:none}");
     QPixmap img(":/res/Resources/Action_icons/warning.svg");
     warning_icon.setIcon(img);
     warning_icon.setToolTip("Desila se greska brale :(\n ee");
@@ -74,6 +74,7 @@ node::node(int width,int height,int n_inputs,int n_outputs){
     exit_btn.setGeometry(5,5,15,15);
     exit_btn.setMaximumHeight(25);
     exit_btn.setMaximumWidth(25);
+    exit_btn.setStyleSheet("QPushButton{border:none;}");
     QPixmap pix_exit(":/res/Resources/Action_icons/delete.svg");
     exit_btn.setIcon(QIcon(pix_exit));
 

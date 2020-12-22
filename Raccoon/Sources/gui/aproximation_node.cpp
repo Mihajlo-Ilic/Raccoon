@@ -49,7 +49,7 @@ void aproximation_node::preview_b() {
             br++;
     if(warning_cheque([&](auto &x){
         if (br == 0) {
-            x += "You did't select atribute for binning\n";
+            x += "You didn't select attribute for binning\n";
             return true;
         } else {
         return false;

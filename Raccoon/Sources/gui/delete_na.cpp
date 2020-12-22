@@ -59,6 +59,7 @@ bool delete_na::run()
        return false;
     }
     else {
+
     remove_na_rows(t);
     outputs[0]->send_data(t);
     return true;

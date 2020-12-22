@@ -60,7 +60,10 @@ table loadFromFile(std::string path) {
             std::vector<std::string> entries = split(line, ',');
             std::vector<std::pair<std::string, entry>> instance;
             for(unsigned i = 0; i<entries.size(); i++) {
-                instance.push_back(std::make_pair(header[i], entry(trim(entries[i]))));
+                std::string in = trim(entries[i]);
+                if(in!="")
+                    instance.push_back(std::make_pair(header[i], entry(in)));
+                else instance.push_back(std::make_pair(header[i], entry()));
             }
             result.push_row(instance);
         }

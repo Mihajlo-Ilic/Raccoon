@@ -349,9 +349,9 @@ void aglo_node::preview(){
     tab_gview.setScene(&tab_gscene);
     make_dendogram(tab_gscene);
 
-    QFrame v_fr;
+    QFrame* v_fr=new QFrame();
     QVBoxLayout vbox;
-    v_fr.setLayout(&vbox);
+    v_fr->setLayout(&vbox);
 
     vbox.addWidget(&data_table);
 
@@ -373,7 +373,7 @@ void aglo_node::preview(){
 
     vbox.addWidget(&slider);
 
-    tabs->addTab(&v_fr,"Table");
+    tabs->addTab(v_fr,"Table");
     tabs->addTab(dend_frame,"Dendogram");
     //event methods
 

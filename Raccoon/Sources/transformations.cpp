@@ -86,11 +86,11 @@ void partition(table &data,float percent,int rand_state) {
 
     }
 }
-
+#include<iostream>
 void remove_na_rows(table &data) {
     data.pop_rows(data.where([](auto x) {  {
         for(auto y : x) {
-            if(y == entry("n/a")){
+            if(y.get_string() == entry("n/a").get_string()){
                 return true;
             }
         }
@@ -184,7 +184,7 @@ void binning_boundry(table &data,std::string attribute,int sets) {
 
 void aproximation_val(table &data,std::string attribute,double value) {
     std::for_each(data[attribute].begin(),data[attribute].end(),[value](auto &x) {
-        if(x == entry("n/a"))
+        if(x.get_string() == entry("n/a").get_string())
             x = entry(value);
     });
 }
@@ -192,10 +192,9 @@ void aproximation_val(table &data,std::string attribute,double value) {
 void aproximation_mean(table &data,std::string attribute) {
     double value = column_mean(data[attribute]);
     std::for_each(data[attribute].begin(),data[attribute].end(),[value](auto &x) {
-        if(x == entry("n/a"))
+        if(x.get_string() == entry("n/a").get_string())
             x = entry(value);
     });
-
 }
 
 std::vector<double> idf(table &t){
