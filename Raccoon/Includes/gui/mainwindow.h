@@ -34,6 +34,12 @@ private slots:
 
     void on_actionNew_Scene_triggered();
 
+    void on_action_unmerge_triggered();
+
+    void on_action_delete_triggered();
+
+
+
 private:
     Ui::MainWindow *ui;
 };

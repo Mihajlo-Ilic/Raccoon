@@ -151,7 +151,6 @@ color:red
    <addaction name="action_run_opt"/>
    <addaction name="separator"/>
    <addaction name="action_delete"/>
-   <addaction name="action_merge"/>
    <addaction name="action_unmerge"/>
    <addaction name="separator"/>
   </widget>
@@ -236,7 +235,7 @@ color:red
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-997</y>
+          <y>0</y>
           <width>120</width>
           <height>1863</height>
          </rect>

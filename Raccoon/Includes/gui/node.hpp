@@ -27,6 +27,13 @@ void make_QTable(QTableWidget& qTable,const table &t);
 
 //structs used for representing packets being sent between nodes
 
+enum node_selection {
+    not_selected = 0,
+    first_selected = 1,
+    second_selected = 2
+};
+
+
 struct column_data{
     bool operator!=(const column_data& rhs) const;
 
@@ -114,6 +121,13 @@ class node : public QWidget{
         virtual void serialize(std::ofstream& os) = 0;
         QGraphicsProxyWidget * proxy;
 
+        bool delete_all_scene_is_called;
+
+        void set_header_color(node_selection select);
+
+        int is_node_selected;
+
+
         virtual ~node();
     protected:
         node(int width,int height,int n_inputs =1,int n_outputs =1);
@@ -160,11 +174,15 @@ class edge : public QGraphicsLineItem{
         node* get_input_node();
         node* get_output_node();
 
+        void arrow_css_style();
+
         std::pair<int,int> get_indexes() const;
 
         ~edge();
     private:
         void update_arrow();
+
+        bool is_edge_selected;
 
         input_connector* in;
         output_connector* out;

@@ -23,6 +23,10 @@ extern std::vector<action *> undo_stack;
 extern std::vector<action *> redo_stack;
 extern void check_stack();
 
+extern edge* selectedEdge;
+extern int number_of_selected_nodes;
+extern std::pair<node*,node*> selectedNodes;
+
 void make_QTable(QTableWidget& qTable,const table &t)
 {
     auto colomns = t.col_names();
@@ -45,6 +49,9 @@ node::node(int width,int height,int n_inputs,int n_outputs){
     dragged = false;
     header.setParent(this);
     body.setParent(this);
+
+    is_node_selected = not_selected;
+    delete_all_scene_is_called = false;
 
     //QT Components initialization
     setGeometry(0,0,width,height);
@@ -158,8 +165,42 @@ void node::rm_from_scene(QGraphicsScene *scene) {
     }
 }
 
+void node::set_header_color(node_selection select) {
+    if(select == not_selected) {
+        this->header.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0.524092, y1:1, x2:0.518, y2:0, stop:0 rgba(14, 45, 74,255), stop:1 rgba(32, 107, 161,255));border-top-right-radius:5px;border-top-left-radius:5px;");
+    } else if(select == first_selected) {
+        this->header.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0.524092, y1:1, x2:0.518, y2:0, stop:0 rgba(112,128,144,255), stop:1 rgba(47,79,79,255));border-top-right-radius:5px;border-top-left-radius:5px;");
+    } else {
+        this->header.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0.524092, y1:1, x2:0.518, y2:0, stop:0 rgba(119,136,153,255), stop:1 rgba(105,105,105,255));border-top-right-radius:5px;border-top-left-radius:5px;");
+    }
+}
+
 void node::mousePressEvent(QMouseEvent *event){
     if(event->button() & Qt::LeftButton) {
+
+        if(number_of_selected_nodes == 0 && this->is_node_selected == not_selected) {
+            this->set_header_color(first_selected);
+            this->is_node_selected = first_selected;
+            selectedNodes.first = this;
+            number_of_selected_nodes = 1;
+        } else if(number_of_selected_nodes == 1 && this->is_node_selected == not_selected) {
+            this->set_header_color(second_selected);
+            this->is_node_selected = second_selected;
+            selectedNodes.second = this;
+            number_of_selected_nodes = 2;
+        } else if(number_of_selected_nodes == 2 && this->is_node_selected == not_selected){
+            selectedNodes.second->set_header_color(not_selected);
+            selectedNodes.second->is_node_selected = not_selected;
+            selectedNodes.second = nullptr;
+            selectedNodes.first->is_node_selected = not_selected;
+            selectedNodes.first->set_header_color(not_selected);
+            selectedNodes.first = nullptr;
+            selectedNodes.first = this;
+            this->set_header_color(first_selected);
+            this->is_node_selected = first_selected;
+            number_of_selected_nodes = 1;
+        }
+
         dragStart = event->pos();
         move_action * mv = new move_action(this, geometry().topLeft(), QPoint(0, 0));
         undo_stack.push_back(mv);
@@ -302,21 +343,20 @@ void node::preview(){
 }
 
 node::~node(){
-
-
     auto it=std::find(scene_nodes.begin(),scene_nodes.end(),this);
     if(it!=scene_nodes.end()){
-        scene_nodes.erase(it);
+        if((*it)->delete_all_scene_is_called == false)
+            scene_nodes.erase(it);
         packet p;
         for(auto i:outputs)
             i->send_packet(p);
     }
-    for(auto i:inputs)
+    for(auto i:inputs) {
         delete i;
+    }
     for(auto i:outputs)
         delete i;
 }
-
 
 //EDGE METHOD DEFINITIONS
 
@@ -324,13 +364,16 @@ edge::edge(input_connector* input,output_connector *output):in(input),out(output
     in->add_edge(this);
     out->add_edge(this);
 
+
     setLine(in->get_position().x(),in->get_position().y()+10,
                 out->get_position().x(),out->get_position().y()+10);
-    
+
     QPen pen{QColor(20,20,20)};
     pen.setWidth(5);
     pen.setCapStyle(Qt::PenCapStyle::RoundCap);
     pen.setStyle(Qt::DashDotLine);
+
+    is_edge_selected = false;
 
     arrow.setPen(pen);
     arrow.setZValue(-0.5);
@@ -341,10 +384,55 @@ edge::edge(input_connector* input,output_connector *output):in(input),out(output
 
     out->force_send();
 }
-void edge::mousePressEvent(QGraphicsSceneMouseEvent *event){
-//TODO
-    Q_UNUSED(event);
+
+
+void edge::arrow_css_style() {
+    if(is_edge_selected == true) {
+        QPen pen{QColor(150,20,20)};
+        pen.setWidth(7);
+        pen.setCapStyle(Qt::PenCapStyle::RoundCap);
+        pen.setStyle(Qt::DashDotLine);
+
+        this->arrow.setPen(pen);
+        this->arrow.setZValue(-0.5);
+        setZValue(-0.5);
+
+        setPen(pen);
+
+        update_arrow();
+    } else {
+        QPen pen{QColor(20,20,20)};
+        pen.setWidth(5);
+        pen.setCapStyle(Qt::PenCapStyle::RoundCap);
+        pen.setStyle(Qt::DashDotLine);
+
+        is_edge_selected = false;
+
+        arrow.setPen(pen);
+        arrow.setZValue(-0.5);
+        setZValue(-0.5);
+
+        setPen(pen);
+        update_arrow();
+    }
 }
+
+void edge::mousePressEvent(QGraphicsSceneMouseEvent *event){
+    if(event->button() & Qt::LeftButton & this->is_edge_selected == false) {
+        if(selectedEdge != nullptr) {
+            selectedEdge->is_edge_selected = false;
+            selectedEdge->arrow_css_style();
+            selectedEdge = this;
+            this->is_edge_selected = true;
+            this->arrow_css_style();
+        } else {
+            selectedEdge = this;
+            this->is_edge_selected = true;
+            this->arrow_css_style();
+        }
+    }
+}
+
 //UPDATES ONE BEGINING AND END POINTS OF THE LINE
 void edge::set_begin_pos(const QPointF& new_point){
     setLine(new_point.x(),new_point.y()+10,line().p2().x(),line().p2().y());

@@ -40,6 +40,11 @@ std::vector<node*> scene_nodes;
 
 std::vector<action *> undo_stack;
 std::vector<action *> redo_stack;
+
+edge *selectedEdge;
+int number_of_selected_nodes;
+std::pair<node*,node*> selectedNodes;
+
 void check_stack() {
     if(undo_stack.size() > 20)
     {
@@ -177,6 +182,11 @@ raccoon_scene::raccoon_scene(int width,int height):QGraphicsScene(){
     pen.setWidth(5);
     pen.setCapStyle(Qt::PenCapStyle::RoundCap);
     pen.setStyle(Qt::DashDotLine);
+
+    number_of_selected_nodes = 0;
+    selectedEdge = nullptr;
+    selectedNodes.first = nullptr;
+    selectedNodes.second = nullptr;
 
     connector_line.setPen(pen);
     setSceneRect(QRect(0,0,width,height));
@@ -478,6 +488,63 @@ void raccoon_scene::run_graph(){
             }
         }
 }
+
+#include <Includes/gui/raccoon_scene.hpp>
+void raccoon_scene::delete_graph() {
+    for(auto it:scene_nodes) {
+        it->delete_all_scene_is_called = true;
+        delete it;
+    }
+    scene_nodes.clear();
+}
+
+void raccoon_scene::delete_edge() {
+    if(selectedEdge != nullptr) {
+        delete selectedEdge;
+        selectedEdge = nullptr;
+    }
+}
+
+void raccoon_scene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+    QGraphicsScene::mousePressEvent(event);
+    if(event->button() & Qt::RightButton) {
+        if(selectedNodes.first != nullptr) {
+            selectedNodes.first->is_node_selected = not_selected;
+            selectedNodes.first->set_header_color(not_selected);
+            selectedNodes.first = nullptr;
+        }
+        if(selectedNodes.second != nullptr) {
+            selectedNodes.second->is_node_selected = not_selected;
+            selectedNodes.second->set_header_color(not_selected);
+            selectedNodes.second = nullptr;
+        }
+        number_of_selected_nodes = 0;
+    }
+}
+
+void raccoon_scene::unmerge_nodes() {
+    if(number_of_selected_nodes == 2) {
+        node *n1 = selectedNodes.first;
+        node *n2 = selectedNodes.second;
+        std::vector<edge*> n1_edges = n1->get_output_edges();
+        std::vector<edge*> n2_edges = n1->get_input_edges();
+        for(auto it : n1_edges) {
+            if(it->get_output_node() == n2)
+                delete it;
+        }
+        for(auto it : n2_edges) {
+            if(it->get_input_node() == n2)
+                delete it;
+        }
+
+    } else {
+        QMessageBox box;
+        box.setText("You need to select 2 nodes to make unmerge action");
+        box.exec();
+    }
+}
+
+
 //USED TO IDENTIFY IF THERE IS A CYCLE IN GRAPH.IF THERE IS WE DON'T ALLOW THAT BECAUSE GRAPH NEEDS TO STAY ACYCLIC
 
 bool findCycle(std::set<node*> parents,node * n) {

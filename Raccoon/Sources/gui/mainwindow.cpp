@@ -121,5 +121,14 @@ void MainWindow::on_actionOpen_Scene_triggered()
 
 void MainWindow::on_actionNew_Scene_triggered()
 {
-
+    globalScene->delete_graph();
 }
+
+void MainWindow::on_action_delete_triggered() {
+    globalScene->delete_edge();
+}
+
+void MainWindow::on_action_unmerge_triggered() {
+    globalScene->unmerge_nodes();
+}
+

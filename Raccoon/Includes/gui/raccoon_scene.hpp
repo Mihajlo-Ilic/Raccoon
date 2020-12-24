@@ -94,6 +94,12 @@ public:
     static connector* selected_input;
     static connector* selected_output;
 
+    void delete_graph();
+    void delete_edge();
+
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *e);
+    void unmerge_nodes();
+
     void save_scene(const std::string &path);
     void load_scene(const std::string &path);
 
