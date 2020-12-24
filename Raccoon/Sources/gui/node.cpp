@@ -122,11 +122,6 @@ node::node(int width,int height,int n_inputs,int n_outputs){
         auto tmp = std::find(scene_nodes.begin(), scene_nodes.end(), this);
         if(tmp != std::end(scene_nodes))
             scene_nodes.erase(tmp);
-        /*
-        for(auto p : out_vec1)
-            std::cout << p.first << " " << p.second << std::endl;
-        for(auto p : out_vec2)
-            std::cout << p.first << " " << p.second << std::endl;*/
     });
 }
 

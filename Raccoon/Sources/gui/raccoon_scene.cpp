@@ -143,34 +143,39 @@ void delete_action::redo() {
 
 }
 //Edge actions
-connect_action::connect_action(edge * _e) : e(_e) {
-    n1 = _e->get_input_node();
-    n2 = e->get_output_node();
-    idxes = _e->get_indexes();
+connect_action::connect_action(edge * _e) : n1(_e->get_input_node()), n2(_e->get_output_node()), idxes(_e->get_indexes()) {
+
 }
 
 void connect_action::undo(){
-    delete e;
+    for(auto e:n1->get_output_edges()) {
+        if(e->get_output_node() == n2 && e->get_indexes() == idxes)
+            delete e;
+    }
 }
 
 void connect_action::redo(){
-    e = new edge(n2->get_input_con(idxes.second), n1->get_output_con(idxes.first));
+    edge * e = new edge(n2->get_input_con(idxes.second), n1->get_output_con(idxes.first));
     e->add_to_scene(raccoon_scene::get_ptr());
 }
 
-disconnect_action::disconnect_action(edge * _e) : e(_e) {
+disconnect_action::disconnect_action(edge * _e) {
     n1 = _e->get_input_node();
-    n2 = e->get_output_node();
+    n2 = _e->get_output_node();
     idxes = _e->get_indexes();
 }
 
 void disconnect_action::undo() {
-    e = new edge(n2->get_input_con(idxes.second), n1->get_output_con(idxes.first));
+    edge * e = new edge(n2->get_input_con(idxes.second), n1->get_output_con(idxes.first));
     e->add_to_scene(raccoon_scene::get_ptr());
 }
 
 void disconnect_action::redo() {
-    delete e;
+    //delete e;
+    for(auto e:n1->get_output_edges()) {
+        if(e->get_output_node() == n2 && e->get_indexes() == idxes)
+            delete e;
+    }
 }
 
 //ACTUAL SCENE STUFF BEGINS HERE
@@ -500,6 +505,8 @@ void raccoon_scene::delete_graph() {
 
 void raccoon_scene::delete_edge() {
     if(selectedEdge != nullptr) {
+        undo_stack.push_back(new disconnect_action(selectedEdge));
+        check_stack();
         delete selectedEdge;
         selectedEdge = nullptr;
     }
@@ -529,12 +536,18 @@ void raccoon_scene::unmerge_nodes() {
         std::vector<edge*> n1_edges = n1->get_output_edges();
         std::vector<edge*> n2_edges = n1->get_input_edges();
         for(auto it : n1_edges) {
-            if(it->get_output_node() == n2)
+            if(it->get_output_node() == n2) {
+                undo_stack.push_back(new disconnect_action(it));
+                check_stack();
                 delete it;
+            }
         }
         for(auto it : n2_edges) {
-            if(it->get_input_node() == n2)
+            if(it->get_input_node() == n2) {
+                undo_stack.push_back(new disconnect_action(it));
+                check_stack();
                 delete it;
+            }
         }
 
     } else {

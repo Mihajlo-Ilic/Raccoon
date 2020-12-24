@@ -51,7 +51,6 @@ public:
 
 class connect_action : public action {
 private:
-    edge * e;
     node * n1;
     node * n2;
     std::pair<int, int> idxes;
@@ -63,7 +62,6 @@ public:
 
 class disconnect_action : public action {
 private:
-    edge * e;
     node * n1;
     node * n2;
     std::pair<int, int> idxes;
