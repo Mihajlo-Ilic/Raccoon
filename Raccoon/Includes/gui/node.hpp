@@ -11,6 +11,7 @@
 #include<QGraphicsEllipseItem>
 #include<QGraphicsPolygonItem>
 #include <QMessageBox>
+#include <QGraphicsProxyWidget>
 
 #include<vector>
 #include<fstream>
@@ -72,6 +73,16 @@ class node : public QWidget{
         std::vector<node *> get_input_nodes();
         std::vector<node *> get_output_nodes();
         std::vector<edge *> get_input_edges();
+        std::vector<edge *> get_output_edges();
+
+    //Data needed for node reconstruction after "deletion"
+        std::vector<std::pair<int, node*>> in_vec1;
+        std::vector<std::pair<node*, int>> in_vec2;
+        void input_info();
+
+        std::vector<std::pair<int, node*>> out_vec1;
+        std::vector<std::pair<node*, int>> out_vec2;
+        void output_info();
     
     //VIRTUAL METHODS PREVIEW IS USED FOR PREVIEW BUTTON EVENT
     //INPUT CHANGED IS USED TO RESPOND TO A CHANGE WHEN CONNECTOR RECIEVES DATA
@@ -81,6 +92,7 @@ class node : public QWidget{
         virtual void preview();
 
         void add_to_scene(QGraphicsScene* scene);
+        void rm_from_scene(QGraphicsScene * scene);
         void set_position(const QPointF& point);
 
         void send_data();
@@ -100,6 +112,7 @@ class node : public QWidget{
         virtual packet get_msg();
         //used of writing to file
         virtual void serialize(std::ofstream& os) = 0;
+        QGraphicsProxyWidget * proxy;
 
         virtual ~node();
     protected:

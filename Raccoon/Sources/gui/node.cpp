@@ -19,7 +19,9 @@
 #include<cmath>
 
 extern std::vector<node*> scene_nodes;
-
+extern std::vector<action *> undo_stack;
+extern std::vector<action *> redo_stack;
+extern void check_stack();
 
 void make_QTable(QTableWidget& qTable,const table &t)
 {
@@ -96,7 +98,28 @@ node::node(int width,int height,int n_inputs,int n_outputs){
     }
 
     connect(&exit_btn, &QPushButton::clicked, [&]() {
-        delete this;
+        //Save the connection information to restore it later
+        input_info();
+        output_info();
+        undo_stack.push_back(new delete_action(this));
+        check_stack();
+
+        hide();
+        //undo the connections:
+        for(auto e:get_input_edges())
+            delete e;
+
+        for(auto e:get_output_edges())
+            delete e;
+        rm_from_scene(raccoon_scene::get_ptr());
+        auto tmp = std::find(scene_nodes.begin(), scene_nodes.end(), this);
+        if(tmp != std::end(scene_nodes))
+            scene_nodes.erase(tmp);
+        /*
+        for(auto p : out_vec1)
+            std::cout << p.first << " " << p.second << std::endl;
+        for(auto p : out_vec2)
+            std::cout << p.first << " " << p.second << std::endl;*/
     });
 }
 
@@ -123,9 +146,24 @@ void node::add_to_scene(QGraphicsScene* scene){
         it->add_to_scene(scene);
 }
 
+//remove all QGraphicsItem-s from scene
+void node::rm_from_scene(QGraphicsScene *scene) {
+    for(auto it:inputs) {
+        scene->removeItem(it);
+        scene->removeItem(&it->text);
+    }
+    for(auto it:outputs) {
+        scene->removeItem(it);
+        scene->removeItem(&it->text);
+    }
+}
+
 void node::mousePressEvent(QMouseEvent *event){
     if(event->button() & Qt::LeftButton) {
         dragStart = event->pos();
+        move_action * mv = new move_action(this, geometry().topLeft(), QPoint(0, 0));
+        undo_stack.push_back(mv);
+        check_stack();
         dragged = true;
     }
 }
@@ -170,6 +208,34 @@ std::vector<edge *> node::get_input_edges()
             ret.push_back(it->input_edge);
     return ret;
 }
+
+std::vector<edge *> node::get_output_edges() {
+    std::vector<edge*> ret;
+    for(auto it : outputs) {
+        for(auto e : it->output_edges)
+            if(e != nullptr)
+                ret.push_back(e);
+    }
+    return ret;
+}
+
+void node::input_info() {
+   auto edges = get_input_edges();
+   for(auto e : edges) {
+       in_vec1.push_back(std::make_pair(e->get_indexes().first, e->get_input_node()));
+       in_vec2.push_back(std::make_pair(e->get_input_node(), e->get_indexes().second));
+   }
+}
+
+void node::output_info(){
+   auto edges = get_output_edges();
+   for(auto e : edges) {
+       out_vec1.push_back(std::make_pair(e->get_indexes().second, e->get_output_node()));
+       out_vec2.push_back(std::make_pair(e->get_output_node(), e->get_indexes().first));
+   }
+}
+
+
 //UPDATES POSITION OF NODE AND ALL OF ITS CONNECTORS
 void node::set_position(const QPointF& point){
     setGeometry(point.x(),point.y(),geometry().width(),geometry().height());

@@ -6,6 +6,7 @@
 #include<set>
 #include<QMessageBox>
 #include<fstream>
+#include <QGraphicsProxyWidget>
 
 #include"../../Includes/gui/csv_node.hpp"
 #include"../../Includes/gui/aproximation_node.hpp"
@@ -37,8 +38,137 @@ connector* raccoon_scene::selected_output = nullptr;
 
 std::vector<node*> scene_nodes;
 
+std::vector<action *> undo_stack;
+std::vector<action *> redo_stack;
+void check_stack() {
+    if(undo_stack.size() > 20)
+    {
+        auto a = undo_stack.front();
+        delete_action * da = dynamic_cast<delete_action *>(a);
+        if(da != nullptr)
+            delete da->get_node();
+
+        undo_stack.erase(undo_stack.begin());
+    }
+}
+//UNDO/REDO IMPLEMENTATION
+//Node actions
+create_action::create_action(node * _n, QPointF _scene_pos) : n(_n), scene_pos(_scene_pos) {
+
+}
+
+void create_action::undo() {
+    auto node_ref = std::find(scene_nodes.begin(), scene_nodes.end(), n);
+    if(node_ref != std::end(scene_nodes)) {
+        scene_nodes.erase(node_ref);
+        n->rm_from_scene(raccoon_scene::get_ptr());
+        raccoon_scene::get_ptr()->removeItem(n->proxy);
+    }
+    else
+        std::cerr << "Error undoing create action" << std::endl;
+}
+
+void create_action::redo() {
+    raccoon_scene::get_ptr()->addItem(n->proxy);
+    n->add_to_scene(raccoon_scene::get_ptr());
+    n->set_position(scene_pos);
+    scene_nodes.push_back(n);
+}
+
+move_action::move_action(node * _n, QPoint _start_point, QPoint _end_point) : n(_n), start_point(_start_point), end_point(_end_point) {
+
+}
+
+void move_action::undo() {
+    end_point = n->geometry().topLeft();
+    n->set_position(start_point);
+}
+
+void move_action::redo() {
+    n->set_position(end_point);
+}
 
 
+delete_action::delete_action(node * _n) : n(_n){
+
+}
+
+void delete_action::undo() {
+    //restore the node
+    n->show();
+    n->add_to_scene(raccoon_scene::get_ptr());
+    scene_nodes.push_back(n);
+    //RESTORE CONNECTIONS:
+    //input connections:
+    for(auto p : n->in_vec1) {
+        node * other = p.second;
+        for(auto p1 : n->in_vec2)
+            if(p1.first == other && std::find(scene_nodes.begin(), scene_nodes.end(), other) != scene_nodes.end())
+            {
+                edge * e = new edge(n->get_input_con(p.first), other->get_output_con(p1.second));
+                e->add_to_scene(raccoon_scene::get_ptr());
+            }
+    }
+    //output connections:
+    for(auto p : n->out_vec1) {
+        node * other = p.second;
+        for(auto p1 : n->out_vec2)
+            if(p1.first == other && std::find(scene_nodes.begin(), scene_nodes.end(), other) != scene_nodes.end())
+            {
+                edge * e = new edge(other->get_input_con(p1.second), n->get_output_con(p.first));
+                e->add_to_scene(raccoon_scene::get_ptr());
+            }
+    }
+
+
+}
+
+void delete_action::redo() {
+    n->hide();
+    n->rm_from_scene(raccoon_scene::get_ptr());
+    for(auto e : n->get_input_edges())
+        delete e;
+
+    for(auto e : n->get_output_edges())
+        delete e;
+
+    auto tmp = std::find(scene_nodes.begin(), scene_nodes.end(), n);
+    if(tmp != std::end(scene_nodes))
+        scene_nodes.erase(tmp);
+
+}
+//Edge actions
+connect_action::connect_action(edge * _e) : e(_e) {
+    n1 = _e->get_input_node();
+    n2 = e->get_output_node();
+    idxes = _e->get_indexes();
+}
+
+void connect_action::undo(){
+    delete e;
+}
+
+void connect_action::redo(){
+    e = new edge(n2->get_input_con(idxes.second), n1->get_output_con(idxes.first));
+    e->add_to_scene(raccoon_scene::get_ptr());
+}
+
+disconnect_action::disconnect_action(edge * _e) : e(_e) {
+    n1 = _e->get_input_node();
+    n2 = e->get_output_node();
+    idxes = _e->get_indexes();
+}
+
+void disconnect_action::undo() {
+    e = new edge(n2->get_input_con(idxes.second), n1->get_output_con(idxes.first));
+    e->add_to_scene(raccoon_scene::get_ptr());
+}
+
+void disconnect_action::redo() {
+    delete e;
+}
+
+//ACTUAL SCENE STUFF BEGINS HERE
 raccoon_scene::raccoon_scene(int width,int height):QGraphicsScene(){
     selected_input = nullptr;
     selected_output = nullptr;
@@ -77,150 +207,192 @@ void raccoon_scene::dropEvent(QGraphicsSceneDragDropEvent *event){
     connector_line.setLine(0,0,0,0);
     if(event->mimeData()->text()=="csv_button"){
         csv_node* n=new csv_node(250,250);
-        addWidget(n);
+        n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
+        undo_stack.push_back(new create_action(n, event->scenePos()));
+        check_stack();
     }
     if(event->mimeData()->text()=="approximate_button"){
         aproximation_node* n=new aproximation_node(250,250);
-        addWidget(n);
+        n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
+        undo_stack.push_back(new create_action(n, event->scenePos()));
+        check_stack();
     }
     if(event->mimeData()->text()=="to_numeric_button"){
         categoricalToBinnary_node* n=new categoricalToBinnary_node(250,250);
-        addWidget(n);
+        n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
+        undo_stack.push_back(new create_action(n, event->scenePos()));
+        check_stack();
     }
     if(event->mimeData()->text()=="remove_na_button"){
         delete_na* n=new delete_na(250,250);
-        addWidget(n);
+        n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
+        undo_stack.push_back(new create_action(n, event->scenePos()));
+        check_stack();
     }
     if(event->mimeData()->text()=="filter_button"){
         filter_node* n=new filter_node(250,250);
-        addWidget(n);
+        n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
+        undo_stack.push_back(new create_action(n, event->scenePos()));
+        check_stack();
     }
     if(event->mimeData()->text()=="knn_button"){
         knn_node* n=new knn_node(250,250);
-        addWidget(n);
+        n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
+        undo_stack.push_back(new create_action(n, event->scenePos()));
+        check_stack();
     }
     if(event->mimeData()->text()=="normalization_button"){
         normalization_node* n=new normalization_node(250,250);
-        addWidget(n);
+        n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
+        undo_stack.push_back(new create_action(n, event->scenePos()));
+        check_stack();
     }
     if(event->mimeData()->text()=="partition_button"){
         partition_node* n=new partition_node(250,250);
-        addWidget(n);
+        n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
+        undo_stack.push_back(new create_action(n, event->scenePos()));
+        check_stack();
     }
     if(event->mimeData()->text()=="standardize_button"){
         standardization_node* n=new standardization_node(250,250);
-        addWidget(n);
+        n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
+        undo_stack.push_back(new create_action(n, event->scenePos()));
+        check_stack();
     }
     if(event->mimeData()->text()=="binning_button"){
         binning_node* n=new binning_node(250,250);
-        addWidget(n);
+        n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
+        undo_stack.push_back(new create_action(n, event->scenePos()));
+        check_stack();
     }
     if(event->mimeData()->text()=="bayes_button"){
         nb_node* n=new nb_node(250,250);
-        addWidget(n);
+        n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
+        undo_stack.push_back(new create_action(n, event->scenePos()));
+        check_stack();
     }
     if(event->mimeData()->text()=="plot_button"){
         plot_node* n=new plot_node(250,250);
-        addWidget(n);
+        n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
+        undo_stack.push_back(new create_action(n, event->scenePos()));
+        check_stack();
     }
     if(event->mimeData()->text()=="table_output_button"){
         outputTable_node* n=new outputTable_node(250,100);
-        addWidget(n);
+        n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
+        undo_stack.push_back(new create_action(n, event->scenePos()));
+        check_stack();
     }
     if(event->mimeData()->text()=="stats_button"){
         stats_node* n=new stats_node(250,250);
-        addWidget(n);
+        n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
+        undo_stack.push_back(new create_action(n, event->scenePos()));
+        check_stack();
     }
     if(event->mimeData()->text()=="k_means_button"){
         k_mean_cluster_node* n=new k_mean_cluster_node(250,250);
-        addWidget(n);
+        n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
+        undo_stack.push_back(new create_action(n, event->scenePos()));
+        check_stack();
     }
     if(event->mimeData()->text()=="dec_tree_button"){
         decision_tree_node* n=new decision_tree_node(250,250);
-        addWidget(n);
+        n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
+        undo_stack.push_back(new create_action(n, event->scenePos()));
+        check_stack();
     }
     if(event->mimeData()->text()=="dbscan_button"){
         dbscan_node* n=new dbscan_node(250,250);
-        addWidget(n);
+        n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
+        undo_stack.push_back(new create_action(n, event->scenePos()));
+        check_stack();
     }
     if(event->mimeData()->text()=="aglo_button"){
         aglo_node* n=new aglo_node(250,250);
-        addWidget(n);
+        n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
+        undo_stack.push_back(new create_action(n, event->scenePos()));
+        check_stack();
     }
     if(event->mimeData()->text()=="doc_button"){
         doc_reader_node* n=new doc_reader_node(250,250);
-        addWidget(n);
+        n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
+        undo_stack.push_back(new create_action(n, event->scenePos()));
+        check_stack();
     }
     if(event->mimeData()->text()=="tf_idf_button"){
         tf_idf_node* n=new tf_idf_node(250,250);
-        addWidget(n);
+        n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
+        undo_stack.push_back(new create_action(n, event->scenePos()));
+        check_stack();
     }
     if(event->mimeData()->text()=="apriori_button"){
         apriori_node* n=new apriori_node(250,250);
-        addWidget(n);
+        n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
         scene_nodes.push_back(n);
+        undo_stack.push_back(new create_action(n, event->scenePos()));
+        check_stack();
     }
 
 
@@ -228,8 +400,11 @@ void raccoon_scene::dropEvent(QGraphicsSceneDragDropEvent *event){
     if(selected_input && selected_output){
         edge * e = new edge((input_connector*)selected_input,
                             (output_connector*)selected_output);
-        if(has_cycle(scene_nodes)==false)
+        if(has_cycle(scene_nodes)==false) {
             e->add_to_scene(this);
+            undo_stack.push_back(new connect_action(e));
+            check_stack();
+        }
         else
             delete e;
     }
@@ -247,6 +422,28 @@ raccoon_scene* raccoon_scene::get_instance(int width,int height){
         return instance;
     }
     return nullptr;
+}
+
+//GET POINTER TO SCENE
+raccoon_scene* raccoon_scene::get_ptr() {
+    return instance;
+}
+
+//UNDO/REDO IMPLEMENTATION
+void raccoon_scene::undo_action() {
+    if(!undo_stack.empty()) {
+    redo_stack.push_back(undo_stack.back());
+    undo_stack.back()->undo();
+    undo_stack.pop_back();
+    }
+}
+
+void raccoon_scene::redo_action() {
+    if(!redo_stack.empty()) {
+    undo_stack.push_back(redo_stack.back());
+    redo_stack.back()->redo();
+    redo_stack.pop_back();
+    }
 }
 #include<iostream>
 //TOP SORT FOR RUNNING THE SCENE
