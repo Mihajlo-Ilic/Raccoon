@@ -132,3 +132,13 @@ void MainWindow::on_action_unmerge_triggered() {
     globalScene->unmerge_nodes();
 }
 
+
+void MainWindow::on_actionUndo_triggered()
+{
+    globalScene->undo_action();
+}
+
+void MainWindow::on_actionRedo_triggered()
+{
+    globalScene->redo_action();
+}

@@ -31,6 +31,7 @@ public:
     void serialize(std::ofstream& os) override;
 public slots:
     void preview_b();
+    void preview() override;
 };
 
 #endif

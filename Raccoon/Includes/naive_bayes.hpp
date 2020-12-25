@@ -9,6 +9,7 @@ public:
     naive_bayes();
     void fit(const table& t);
     table predict(const table& t);
+    table predict_text(const table& t);
     table get_table();
     void set_alpha(double a);
 private:
@@ -25,6 +26,7 @@ private:
     void calculate_continuous(std::string column_name,std::string class_name,table& t);
 
     entry predict_row(const table &t, int index);
+    entry predict_row_text(const table &t, int index);
 };
 
 #endif

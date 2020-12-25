@@ -1,0 +1,5 @@
+Hardver predstavlja fizicke komponente racunara
+Njega u celini cine vise komponenti maticna ploca procesor hard disk graficka kartica periferni uredjaji memorije
+
+Kada se kaze racunar najcesce se misli na hardver tj uredjaj koji je sposoban da vrsi razna racunanja
+desktop laptop mobilni telefoni android iphone 

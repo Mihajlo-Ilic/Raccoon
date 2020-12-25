@@ -16,7 +16,7 @@ double column_mean(const collumn &c) {
 
     return sum/(double)n;
 }
-
+#include<iostream>
 double column_stdev(const collumn &c) {
     double mean = column_mean(c);
     double sum = 0;
@@ -24,7 +24,8 @@ double column_stdev(const collumn &c) {
         return x + (y.get_double() - mean)*(y.get_double() - mean);
     });
     int n = c.size();
-
+    if(n<=1)
+        return sum;
     return sqrt(sum/(double)(n-1));
 }
 

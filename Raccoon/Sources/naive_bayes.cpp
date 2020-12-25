@@ -17,6 +17,7 @@ void naive_bayes::fit(const table &t)
 
     std::string target_name = t.get_target();
     //table has no target column
+    std::cout<<target_name<<" "<<std::endl;
     if(target_name=="no_target")
         return;
     auto unique_targets = training[target_name].unique();
@@ -55,6 +56,19 @@ table naive_bayes::predict(const table &t)
     return res;
 }
 
+table naive_bayes::predict_text(const table &t)
+{
+    table res=t;
+    res.push("assigned");
+
+    for(int i=0;i<t.row_n();i++){
+        res["assigned"][i]=predict_row_text(t,i);
+    }
+
+
+    return res;
+}
+
 void naive_bayes::calculate_nominal(std::string column_name,std::string class_name,table& t)
 {
     auto unique_vals = training[column_name].unique();
@@ -82,9 +96,20 @@ entry naive_bayes::predict_row(const table &t, int index)
     for(const auto &class_name : class_chances){
         //foreach class calculate chance row belongs to it
         double chance = 1;
+
+
+
         for(auto col_name : t.col_names()){
+
+            auto cls = training.col_names();
+            auto s = std::find(cls.begin(),cls.end(),col_name);
+
+            if(s==cls.end()){
+                chance*=0.01;
+            }
+            else
             if(t[col_name].type == NOMINAL){
-                chance *= categorical_cache[std::make_pair(col_name+" = "+t[col_name][index].get_string(),class_name.first)];
+                chance *= (0.01)+categorical_cache[std::make_pair(col_name+" = "+t[col_name][index].get_string(),class_name.first)];
 //                std::cout<<t[col_name][index].get_string()<<" "<<categorical_cache[std::make_pair(col_name+" = "+t[col_name][index].get_string(),class_name.first)]<<std::endl;
             }
             else
@@ -92,13 +117,13 @@ entry naive_bayes::predict_row(const table &t, int index)
                 auto p=continuous_cache[std::make_pair(col_name,class_name.first)];
                 double mean=p.first;
                 double var=p.second;
-                chance *=std::sqrt(1.0/(6.28*var)) * std::exp(-1* ( (t[col_name][index].get_double()-mean)*(t[col_name][index].get_double()-mean)/ ( 2*var )));
+                chance *=(0.01)+std::sqrt(1.0/(6.28*var)) * std::exp(-1* ( (t[col_name][index].get_double()-mean)*(t[col_name][index].get_double()-mean)/ ( 2*var )));
 //                std::cout<<col_name<<" "<<std::sqrt(1.0/(6.28*var)) * std::exp(-1* ( (t[col_name][index].get_double()-mean)*(t[col_name][index].get_double()-mean)/ ( 2*var )))<<std::endl;
 
             }
         }
 
-        chance *= class_name.second;
+        chance *= 0.001+class_name.second;
 //        std::cout<<class_name.first<<" : "<<class_name.second<<std::endl;
 //        std::cout<<chance<<std::endl;
 //        std::cout<<"________"<<std::endl;
@@ -110,6 +135,26 @@ entry naive_bayes::predict_row(const table &t, int index)
 
     }
     return best_e;
+}
+
+entry naive_bayes::predict_row_text(const table &t, int index)
+{
+    std::vector<double> prio(training.row_n(),0.0);
+    auto train_cols = training.col_names();
+    auto cols = t.col_names();
+
+    for(int i=0;i<training.row_n();i++)
+        for(auto& col:cols){
+            if(std::find(train_cols.begin(),train_cols.end(),col)!=train_cols.end())
+                if(training[col][i].get_double()>0 && t[col][index].get_double()>0)
+                    prio[i]+=training[col][i].get_double();
+        }
+    if(t.row_n()>0)
+    {
+        auto it = std::max_element(prio.begin(),prio.end());
+        return entry(training[it-prio.begin()].r_name());
+    }
+    return entry("n/a");
 }
 
 table naive_bayes::get_table()

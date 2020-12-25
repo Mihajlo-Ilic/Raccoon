@@ -102,6 +102,7 @@ void loadTextFromFile(std::string& path, std::unordered_set<std::string> &stop_w
     term_table.push_row(std::vector<entry>(term_table.col_n(), entry(0.0)));
     QFileInfo * finfo = new QFileInfo(QString::fromStdString(path));
     term_table[term_table.row_n() - 1].set_name(finfo->fileName().toStdString());
+    term_table["class"][term_table.row_n() - 1] = entry(finfo->fileName().toStdString());
     std::ifstream txtFile;
     txtFile.open(path);
     std::unordered_set<std::string> words_in_table;

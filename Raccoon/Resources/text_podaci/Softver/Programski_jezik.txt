@@ -1,0 +1,12 @@
+Programski jezik predstavlja nacin zadavanja komandi racunaru
+Postoje jeziki visokog nivoa i jezici niskog nivoa
+Jezik niskog nivoa je nesto sto racunar razume i nad cime moze da radi
+Jezik viseg nivoa predstavlja nesto sto je programeru razumljivije i lakse za rad.
+Jezik je napisan kao niz funkcija koje u sebi sadrze naredbe i izraze koji se kroz programske prevodioce svedu na jezik niskog nivoa
+Jezici uglavnom pripadaju jednoj ili vise programskih paradigmi i mogu da budu strogo ili slabo tipizirani
+Nude osnovne funkcije za rad i osnovne tipove podataka
+
+Neki od poznatih jezika su
+C C++ Java Python SQL Javascript C# PHP 
+
+Kada se krene sa ucenjem programskog jezika obicno prvi program koji se napise je hello world

@@ -383,7 +383,7 @@ void raccoon_scene::dropEvent(QGraphicsSceneDragDropEvent *event){
         check_stack();
     }
     if(event->mimeData()->text()=="doc_button"){
-        doc_reader_node* n=new doc_reader_node(250,250);
+        doc_reader_node* n=new doc_reader_node(350,250);
         n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());

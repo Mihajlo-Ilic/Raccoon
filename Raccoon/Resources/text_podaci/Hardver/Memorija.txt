@@ -1,0 +1,10 @@
+Memorija predstavlja komponente u racunaru koje sluze za skladistenje podataka.
+Glavne karakteristike su kapacitet i brzina.
+Jedna osobina joj je sto je manji kapacitet to je veca brzina memorije.
+Neki tipovi memorije su
+Ram ili glavna memorija
+Registri u procesoru
+Kes memorija
+Spoljasnja memorija ( hard disk )
+Generalno memorija se meri u bajtima ( 1 byte = 8 bit )
+Neke vece mere od bajta su kilobyte , megabyte , gigabyte , terabyte ( kb , mb , gb ,tb )

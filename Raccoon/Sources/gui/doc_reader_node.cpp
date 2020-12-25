@@ -64,7 +64,7 @@ doc_reader_node::doc_reader_node(int width, int height) : node(width, height, 0)
     settings = new QFormLayout;
     QFrame *settings_frame=new QFrame();
     settings_frame->setParent(&body);
-    settings_frame->setGeometry(140, 10, 100, 140);
+    settings_frame->setGeometry(140, 10, 200, 140);
     settings_frame->setLayout(settings);
 
     set_class = new QComboBox;
@@ -82,7 +82,9 @@ doc_reader_node::doc_reader_node(int width, int height) : node(width, height, 0)
 
     binary_chk = new QCheckBox;
     settings->addRow("binary:", binary_chk);
-
+    t.push("class");
+    t["class"].type=NOMINAL;
+    t["class"].role=TARGET;
 }
 
 void doc_reader_node::serialize(std::ofstream &os)
@@ -121,6 +123,7 @@ void doc_reader_node::browse_stop() {
                                                     tr("Text files (*.txt)"));
     std::string path = fileName.toStdString();
     loadStopWords(path);
+    outputs[0]->send_packet(packet(t));
 }
 
 void doc_reader_node::remove(){
@@ -133,6 +136,9 @@ void doc_reader_node::remove(){
         delete doc_tree->takeTopLevelItem(doc_tree->indexOfTopLevelItem(item));
 
     }
+
+
+    outputs[0]->send_packet(packet(t));
 }
 
 void doc_reader_node::add() {
@@ -163,15 +169,17 @@ void doc_reader_node::add() {
     }
     else
         std::cerr << "bad path" << std::endl;
+    outputs[0]->send_packet(packet(t));
+
 }
 
 void doc_reader_node::on_input_changed(){
-
+    outputs[0]->send_packet(packet(t));
 }
 
 bool doc_reader_node::run()
 {
-    check_table();
+
     outputs[0]->send_data(t);
     return true;
 }
@@ -197,6 +205,7 @@ void doc_reader_node::loadTextFromDir() {
     t.push_row(std::vector<entry>(t.col_n(), entry(0.0)));
     QFileInfo * finfo = new QFileInfo(QString::fromStdString(current_path));
     t[t.row_n() - 1].set_name(finfo->fileName().toStdString());
+    t["class"][t.row_n() - 1]= entry((finfo->fileName().toStdString()));
     std::unordered_set<std::string> words_in_table;
     for(unsigned i = 0; i<t.col_names().size(); i++) {
         words_in_table.insert(t.col_names()[i]);

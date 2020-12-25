@@ -1,0 +1,8 @@
+Procesor predstavlja komonentu u racunaru zaduzenu za izvrsavanje instrukcija
+Procesor poseduje skup instrukcija koje on moze da izvrsi , taj skup moze da bude slozen ili jednostavan po tom kriterijumu se pravi podela na cisc i risc arhikteturu procesora
+Da bi izvrsio instrukciju procesor mora da dobije naredbu o kojoj instrukciji je rec i nad kojim podacima da se izvrsi
+Podaci nad kojim se vrse operacije moraju da se nalaze u registrima procesora koji su memorija namenjena iskljucivo za koriscenje procesora
+Glavna karekteristika procesora im je brzina
+ona se merzi u herzima ( Hz )
+Danasnji procesori poseduju par giga herza ( GHz )
+Takodje procesori poseduju jezgra koja im omogucavaju multi procesovanje

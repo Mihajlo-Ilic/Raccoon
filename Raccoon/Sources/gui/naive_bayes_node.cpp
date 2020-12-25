@@ -1,4 +1,5 @@
 #include "../../Includes/gui/naive_bayes_node.hpp"
+#include <QVBoxLayout>
 
 nb_node::nb_node(int width, int height) : node(width,height,2){
     header_text.setText("Naive Bayes NODE");
@@ -13,7 +14,7 @@ nb_node::nb_node(int width, int height) : node(width,height,2){
     alpha_label.setGeometry(geometry().x()+10,geometry().y()+10,110,30);
     alpha_label.setAlignment(Qt::AlignRight|Qt::AlignVCenter);
 
-    table_label.setText("show bayes table");
+    table_label.setText("text classify");
     table_label.setParent(&body);
     table_label.setGeometry(geometry().x()+10,geometry().y()+40,110,30);
     table_label.setAlignment(Qt::AlignRight|Qt::AlignVCenter);
@@ -46,8 +47,9 @@ bool nb_node::run()
     table train = inputs[0]->get_table();
     table test = inputs[1]->get_table();
     classifier.fit(train);
-    test.pop(train.get_target());
-    t=classifier.predict(test);
+    if(table_checkbox.checkState()==Qt::Checked)
+        t=classifier.predict_text(test);
+    else t=classifier.predict(test);
     return true;
 }
 
@@ -67,4 +69,33 @@ packet nb_node::get_msg()
 
 void nb_node::preview_b() {
     preview();
+}
+
+void nb_node::preview()
+{
+    QDialog dial;
+    QTableWidget tab;
+    make_QTable(tab,t);
+
+    QVBoxLayout vb;
+    dial.setLayout(&vb);
+
+    vb.addWidget(&tab);
+
+    vb.addSpacing(20);
+
+    QLabel lb;
+    lb.setText("prio table");
+    vb.addWidget(&lb);
+
+    QTableWidget tab_prio;
+    make_QTable(tab_prio,classifier.get_table());
+
+    if(table_checkbox.checkState()==Qt::Checked){
+        make_QTable(tab_prio,inputs[0]->get_table());
+    }
+    vb.addWidget(&tab_prio);
+
+
+    dial.exec();
 }

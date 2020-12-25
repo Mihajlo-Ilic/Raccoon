@@ -7,7 +7,7 @@
 
 using namespace QtDataVisualization;
 
-plot_node::plot_node(int width, int height) : node(width,height,1) {
+plot_node::plot_node(int width, int height) : node(width,height,1,0) {
     header_text.setText("PLOT NODE");
 
     previewBtn.setText("preview");

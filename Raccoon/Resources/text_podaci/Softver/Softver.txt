@@ -1,0 +1,14 @@
+Softver predstavlja skup programa na racunaru koje taj racunar moze da izvrsi
+Softver moze biti aplikativni i sistemski
+aplikativni predstavlja programe koji se najcesce i koriste dok sistemski predstavlja programe koje koristi operativni sistem 
+programi se pisu na nekom od programskih jezika koji se zatim kompajliraju u izvrsne datoteke koje mogu da se pokrenu na racunaru
+operativni sistemi predstavljaju programe koji se pokrecu odmah nakon startovanja racunara
+operativni sistemi su zaduzeni za nacin na koji ce raditi taj racunar kao i brigu o vodjenju menadzmenta nad resursima tog racunara
+oni u sebi sadrze takozvano jezgro koje predstavlja skup funkcionalnosti koje oni mogu da izvrse
+aplikativni programi takodje mogu da koriste neke funkcionalnosti tako sto im operativni sistem dopusta kroz razne interfejse neke naredbe
+
+Poznati operativni sistemi su 
+Linux Windows Mac
+
+Osim operativnih sistema generalno koriscenji softver cine 
+text editor web pretrazivac file manager 
