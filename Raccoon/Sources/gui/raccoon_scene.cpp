@@ -266,7 +266,7 @@ void raccoon_scene::dropEvent(QGraphicsSceneDragDropEvent *event){
         check_stack();
     }
     if(event->mimeData()->text()=="knn_button"){
-        knn_node* n=new knn_node(250,250);
+        knn_node* n=new knn_node(250,150);
         n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
@@ -284,7 +284,7 @@ void raccoon_scene::dropEvent(QGraphicsSceneDragDropEvent *event){
         check_stack();
     }
     if(event->mimeData()->text()=="partition_button"){
-        partition_node* n=new partition_node(250,250);
+        partition_node* n=new partition_node(200,150);
         n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
@@ -311,7 +311,7 @@ void raccoon_scene::dropEvent(QGraphicsSceneDragDropEvent *event){
         check_stack();
     }
     if(event->mimeData()->text()=="bayes_button"){
-        nb_node* n=new nb_node(250,250);
+        nb_node* n=new nb_node(250,130);
         n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
@@ -347,7 +347,7 @@ void raccoon_scene::dropEvent(QGraphicsSceneDragDropEvent *event){
         check_stack();
     }
     if(event->mimeData()->text()=="k_means_button"){
-        k_mean_cluster_node* n=new k_mean_cluster_node(250,250);
+        k_mean_cluster_node* n=new k_mean_cluster_node(250,190);
         n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
@@ -392,7 +392,7 @@ void raccoon_scene::dropEvent(QGraphicsSceneDragDropEvent *event){
         check_stack();
     }
     if(event->mimeData()->text()=="tf_idf_button"){
-        tf_idf_node* n=new tf_idf_node(250,250);
+        tf_idf_node* n=new tf_idf_node(150,100);
         n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
@@ -401,7 +401,7 @@ void raccoon_scene::dropEvent(QGraphicsSceneDragDropEvent *event){
         check_stack();
     }
     if(event->mimeData()->text()=="apriori_button"){
-        apriori_node* n=new apriori_node(250,250);
+        apriori_node* n=new apriori_node(250,150);
         n->proxy = addWidget(n);
         n->add_to_scene(this);
         n->set_position(event->scenePos());
@@ -795,7 +795,7 @@ void raccoon_scene::load_scene(const std::string &path)
            std::getline(file,line);
            sscanf(line.c_str()," class=%s",putanja);
 
-            doc_reader_node *n=new doc_reader_node(250,250);
+            doc_reader_node *n=new doc_reader_node(350,250);
             n->set_position(QPointF(x,y));
             scene_nodes.push_back(n);
             n->add_to_scene(this);
@@ -816,6 +816,21 @@ void raccoon_scene::load_scene(const std::string &path)
             n->add_to_scene(this);
             addWidget(n);
        } else
+           if(line.find("-n apriori")==0){
+
+               float x;
+               float y;
+               std::getline(file,line);
+               sscanf(line.c_str()," x=%f",&x);
+               std::getline(file,line);
+               sscanf(line.c_str()," y=%f",&y);
+
+                apriori_node *n=new apriori_node(250,150);
+                n->set_position(QPointF(x,y));
+                scene_nodes.push_back(n);
+                n->add_to_scene(this);
+                addWidget(n);
+           } else
        if(line.find("-n k_mean")==0){
 
            float x;
@@ -829,7 +844,7 @@ void raccoon_scene::load_scene(const std::string &path)
            std::getline(file,line);
            sscanf(line.c_str()," k=%s",putanja);
 
-            k_mean_cluster_node *n=new k_mean_cluster_node(250,250);
+            k_mean_cluster_node *n=new k_mean_cluster_node(250,190);
             n->set_position(QPointF(x,y));
             scene_nodes.push_back(n);
             n->add_to_scene(this);
@@ -848,7 +863,7 @@ void raccoon_scene::load_scene(const std::string &path)
            std::getline(file,line);
            sscanf(line.c_str()," k=%s",putanja);
 
-            knn_node *n=new knn_node(250,250);
+            knn_node *n=new knn_node(250,150);
             n->set_position(QPointF(x,y));
             scene_nodes.push_back(n);
             n->add_to_scene(this);
@@ -867,7 +882,7 @@ void raccoon_scene::load_scene(const std::string &path)
            std::getline(file,line);
            sscanf(line.c_str()," show_table=%s",putanja);
 
-            nb_node *n=new nb_node(250,250);
+            nb_node *n=new nb_node(250,130);
             n->set_position(QPointF(x,y));
             scene_nodes.push_back(n);
             n->add_to_scene(this);
@@ -899,7 +914,7 @@ void raccoon_scene::load_scene(const std::string &path)
            sscanf(line.c_str()," y=%f",&y);
 
 
-            outputTable_node *n=new outputTable_node(250,250);
+            outputTable_node *n=new outputTable_node(250,100);
             n->set_position(QPointF(x,y));
             scene_nodes.push_back(n);
             n->add_to_scene(this);
@@ -919,7 +934,7 @@ void raccoon_scene::load_scene(const std::string &path)
            sscanf(line.c_str()," random=%s",putanja);
 
 
-            partition_node *n=new partition_node(250,250);
+            partition_node *n=new partition_node(250,150);
             n->set_position(QPointF(x,y));
             scene_nodes.push_back(n);
             n->add_to_scene(this);
@@ -981,7 +996,7 @@ void raccoon_scene::load_scene(const std::string &path)
            std::getline(file,line);
            sscanf(line.c_str()," y=%f",&y);
 
-            tf_idf_node *n=new tf_idf_node(250,250);
+            tf_idf_node *n=new tf_idf_node(150,100);
             n->set_position(QPointF(x,y));
             scene_nodes.push_back(n);
             n->add_to_scene(this);

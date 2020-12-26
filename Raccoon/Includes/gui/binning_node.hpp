@@ -7,6 +7,7 @@
 #include <QListWidget>
 #include <QPushButton>
 #include <QObject>
+#include <QSpinBox>
 
 class binning_node : public node
 {
@@ -18,6 +19,8 @@ private:
     QLabel binningMethodLabel;
     QLabel binningShuffleLabel;
     QPushButton previewBtn;
+    QLabel set_label;
+    QSpinBox sets_spin;
 public:
     void on_input_changed() override;
     binning_node(int width, int height);

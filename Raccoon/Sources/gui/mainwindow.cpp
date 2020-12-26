@@ -16,6 +16,8 @@ raccoon_scene *globalScene;
 bool saved_before=false;
 std::string save_path;
 
+
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -49,6 +51,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->doc_button,SIGNAL(released()),this,SLOT(drop_action()));
     connect(ui->tf_idf_button,SIGNAL(released()),this,SLOT(drop_action()));
     connect(ui->apriori_button,SIGNAL(released()),this,SLOT(drop_action()));
+
+    ui->menuFile->setStyleSheet("QMenu::Item{color:white;}");
+    ui->menuEdit->setStyleSheet("QMenu::Item{color:white;}");
+    ui->menuHelp->setStyleSheet("QMenu::Item{color:white;}");
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
@@ -83,6 +89,38 @@ void MainWindow::dragMoveEvent(QDragMoveEvent *event){
 void MainWindow::dropEvent(QDropEvent *event){
     QMainWindow::dropEvent(event);
     event->accept();
+}
+
+void MainWindow::init(std::string theme, std::string path)
+{
+    if(theme=="Light"){
+        ui->menuFile->setStyleSheet("QMenu::Item{color:black;}");
+        ui->menuEdit->setStyleSheet("QMenu::Item{color:black;}");
+        ui->menuHelp->setStyleSheet("QMenu::Item{color:black;}");
+
+        ui->aglo_button->setIcon(QPixmap(":/res/Resources/Node_icons_light/aglo.png"));
+        ui->apriori_button->setIcon(QPixmap(":/res/Resources/Node_icons_light/apriori.png"));
+        ui->approximate_button->setIcon(QPixmap(":/res/Resources/Node_icons_light/aproximation.png"));
+        ui->binning_button->setIcon(QPixmap(":/res/Resources/Node_icons_light/binning.png"));
+        ui->to_numeric_button->setIcon(QPixmap(":/res/Resources/Node_icons_light/cat_to_num.png"));
+        ui->dbscan_button->setIcon(QPixmap(":/res/Resources/Node_icons_light/dbscan.png"));
+        ui->filter_button->setIcon(QPixmap(":/res/Resources/Node_icons_light/filter.png"));
+
+        ui->k_means_button->setIcon(QPixmap(":/res/Resources/Node_icons_light/k_means.png"));
+        ui->knn_button->setIcon(QPixmap(":/res/Resources/Node_icons_light/knn.png"));
+        ui->normalization_button->setIcon(QPixmap(":/res/Resources/Node_icons_light/normalization.png"));
+        ui->partition_button->setIcon(QPixmap(":/res/Resources/Node_icons_light/partition.png"));
+        ui->plot_button->setIcon(QPixmap(":/res/Resources/Node_icons_light/plot.png"));
+        ui->remove_na_button->setIcon(QPixmap(":/res/Resources/Node_icons_light/remove_na.png"));
+        ui->standardize_button->setIcon(QPixmap(":/res/Resources/Node_icons_light/standardization.png"));
+        ui->stats_button->setIcon(QPixmap(":/res/Resources/Node_icons_light/stats.png"));
+        ui->tf_idf_button->setIcon(QPixmap(":/res/Resources/Node_icons_light/tf_idf.png"));
+        ui->dec_tree_button->setIcon(QPixmap(":/res/Resources/Node_icons_light/tree.png"));
+    }
+
+    if(path!=""){
+        globalScene->load_scene(path);
+    }
 }
 
 

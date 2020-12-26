@@ -61,6 +61,7 @@ node::node(int width,int height,int n_inputs,int n_outputs){
     header_text.setParent(&header);
     header_text.setGeometry(0,0,width,25);
     header_text.setAlignment(Qt::AlignCenter);
+    header_text.setObjectName("header_text");
 
     //TODO: ADD A SYSTEM TO BE ABLE TO UPDATE WARNING ICON WHEN SOME TEXT IS READ FROM CERR STREAM
     //OR SOMETHING LIKE THAT SO WHEN AN ALGORITHM HAS A PROBLEM NODE CAN NOTIFY USER BY POPPING WARNING ICON
@@ -88,6 +89,7 @@ node::node(int width,int height,int n_inputs,int n_outputs){
     exit_btn.setIcon(QIcon(pix_exit));
 
     header.setObjectName("header");
+    body.setObjectName("body");
     needs_update = true;
 
     //Output and Input socket initialization
@@ -672,8 +674,9 @@ packet::packet(){
 
 packet::packet(const table &t){
     auto vec = t.col_names();
-    for(const auto& it:vec)
+    for(const auto& it:vec){
         add_column(t[it],it);
+    }
     packet_rows = t.row_n();
 }
 
@@ -696,9 +699,20 @@ bool packet::operator==(const packet &rhs) const{
     }
     return false;
 }
+#include<set>
 
 void packet::add_column(const collumn &col, std::string name){
     column_data new_data;
+
+    if(col.type==NOMINAL){
+        std::set<std::string> s;
+        for(int i=0;i<col.size();i++)
+            s.insert(col[i].get_string());
+
+        for(auto& it:s)
+            new_data.unique_values.push_back(it);
+    }
+
     new_data.name=name;
     new_data.role=col.role;
     new_data.type=col.type;
@@ -723,11 +737,11 @@ void packet::remove_column(std::string item){
 }
 
 bool column_data::operator!=(const column_data &rhs) const{
-    return name!=rhs.name && role!=rhs.role && type!=rhs.type;
+    return name!=rhs.name && role!=rhs.role && type!=rhs.type && unique_values!=rhs.unique_values;
 }
 
 bool column_data::operator==(const column_data &rhs) const{
-    return name==rhs.name && role==rhs.role && type==rhs.type;
+    return name==rhs.name && role==rhs.role && type==rhs.type && unique_values==rhs.unique_values;
 }
 
 void make_siluete(QLabel &lab, double d)

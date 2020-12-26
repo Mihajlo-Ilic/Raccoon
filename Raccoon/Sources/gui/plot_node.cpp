@@ -11,7 +11,7 @@ plot_node::plot_node(int width, int height) : node(width,height,1,0) {
     header_text.setText("PLOT NODE");
 
     previewBtn.setText("preview");
-    label.setText("Choose and atribute for label");
+    label.setText("Choose attribute for label");
     label2.setText("Choose axis:");
 
     combo_box.setParent(&body);

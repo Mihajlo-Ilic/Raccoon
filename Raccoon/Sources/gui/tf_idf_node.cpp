@@ -8,7 +8,7 @@ tf_idf_node::tf_idf_node(int width,int height) : node(width,height,1,1)
 
     previewBtn.setText("preview");
 
-    previewBtn.setGeometry(geometry().x() + 190,geometry().y() + 200,50,20);
+    previewBtn.setGeometry(geometry().x() + 50,geometry().y() + 40,70,30);
 }
 
 void tf_idf_node::on_input_changed() {

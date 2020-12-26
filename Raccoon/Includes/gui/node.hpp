@@ -38,7 +38,7 @@ struct column_data{
     bool operator!=(const column_data& rhs) const;
 
     bool operator==(const column_data& rhs) const;
-
+    std::vector<std::string> unique_values;
     std::string name;
     column_role role;
     column_type type;

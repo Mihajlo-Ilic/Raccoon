@@ -40,7 +40,7 @@ k_mean_cluster_node::k_mean_cluster_node(int width,int height) : node(width,heig
     init_label.setGeometry(geometry().x() + 130,geometry().y() + 90,110,30);
     init_box.setGeometry(geometry().x() + 10,geometry().y() + 90,110,30);
 
-    previewBtn.setGeometry(geometry().x() + 190,geometry().y() + 200,50,20);
+    previewBtn.setGeometry(geometry().x() + 170,geometry().y() + 130,70,20);
 
     connect(&previewBtn, SIGNAL(clicked()), this, SLOT(preview_b()));
     connect(&distance_box,SIGNAL(currentTextChanged(QString )),this,SLOT(combo_changed( QString )));

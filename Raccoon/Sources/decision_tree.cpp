@@ -52,8 +52,8 @@ std::vector<std::string> rule_categorical::get_string()
 std::vector<std::string> rule_continuous::get_string()
 {
     std::vector<std::string> res(2);
-    res[0] = get_colname() + " < " + std::to_string(val);
-    res[1] = get_colname() + " >= " + std::to_string(val);
+    res[0] = get_colname() + " <= " + val.get_string();
+    res[1] = get_colname() + " > " + val.get_string();
     return res;
 }
 

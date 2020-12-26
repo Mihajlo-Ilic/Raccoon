@@ -54,7 +54,7 @@ aglo_node::aglo_node(int width, int height):node(width,height,1)
     spin_dist.setGeometry(120,90,90,30);
     spin_num.setGeometry(120,130,90,30);
 
-    preview_button.setGeometry(geometry().x() + 190,geometry().y() + 200,50,20);
+    preview_button.setGeometry(geometry().x() + 170,geometry().y() + 200,70,20);
 
     connect(&preview_button, SIGNAL(clicked()), this, SLOT(preview_b()));
     connect(&combo_cfunc,SIGNAL(currentTextChanged(QString )),this,SLOT(combo_clust_changed( QString )));

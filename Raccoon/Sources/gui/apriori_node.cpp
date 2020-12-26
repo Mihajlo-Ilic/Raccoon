@@ -3,7 +3,7 @@
 #include<QFormLayout>
 #include<QListWidget>
 
-apriori_node::apriori_node(int width, int height):node(250,250,1,1)
+apriori_node::apriori_node(int width, int height):node(width,height,1,1)
 {
     header_text.setText("APRIORI NODE");
 

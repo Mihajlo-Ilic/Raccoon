@@ -28,7 +28,7 @@ knn_node::knn_node(int width, int height) : node(width,height,2){
     distance_label.setGeometry(geometry().x() + 130,geometry().y() + 10,110,30);
     k_neighbours.setGeometry(geometry().x() + 10,geometry().y() + 50,110,30);
     k_neighbours_label.setGeometry(geometry().x() + 130,geometry().y() + 50,110,30);
-    previewBtn.setGeometry(geometry().x() + 190,geometry().y() + 200,50,20);
+    previewBtn.setGeometry(geometry().x() + 170,geometry().y() + 90,70,20);
 
     connect(&distance_box,SIGNAL(currentTextChanged(QString )),this,SLOT(combo_changed( QString )));
     connect(&k_neighbours,SIGNAL(valueChanged(int)),this,SLOT(k_changed(int)));

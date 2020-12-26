@@ -32,5 +32,29 @@
         <file>Resources/Node_icons/table_output.png</file>
         <file>Resources/Node_icons/tf_idf.png</file>
         <file>Resources/Node_icons/tree.png</file>
+        <file>Resources/Action_icons/new_icon.png</file>
+        <file>Resources/Action_icons/open_file.png</file>
+        <file>Resources/Action_icons/redo.png</file>
+        <file>Resources/Action_icons/save_as.png</file>
+        <file>Resources/Action_icons/save_file.png</file>
+        <file>Resources/Action_icons/undo.png</file>
+        <file>Resources/style2.qss</file>
+        <file>Resources/Node_icons_light/aglo.png</file>
+        <file>Resources/Node_icons_light/apriori.png</file>
+        <file>Resources/Node_icons_light/aproximation.png</file>
+        <file>Resources/Node_icons_light/binning.png</file>
+        <file>Resources/Node_icons_light/cat_to_num.png</file>
+        <file>Resources/Node_icons_light/dbscan.png</file>
+        <file>Resources/Node_icons_light/filter.png</file>
+        <file>Resources/Node_icons_light/k_means.png</file>
+        <file>Resources/Node_icons_light/knn.png</file>
+        <file>Resources/Node_icons_light/normalization.png</file>
+        <file>Resources/Node_icons_light/partition.png</file>
+        <file>Resources/Node_icons_light/plot.png</file>
+        <file>Resources/Node_icons_light/remove_na.png</file>
+        <file>Resources/Node_icons_light/standardization.png</file>
+        <file>Resources/Node_icons_light/stats.png</file>
+        <file>Resources/Node_icons_light/tf_idf.png</file>
+        <file>Resources/Node_icons_light/tree.png</file>
     </qresource>
 </RCC>

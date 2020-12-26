@@ -11,7 +11,8 @@ csv_node::csv_node(int width, int height) : node(width,height,0){
     loadBtn.setParent(&body);
     browseBtn.setParent(&body);
     browseBtn.setGeometry(geometry().x() + 165,geometry().y() + 10,30,30);
-    loadBtn.setGeometry(geometry().x() + 200,geometry().y() + 10,30,30);
+    loadBtn.setGeometry(geometry().x() + 200,geometry().y() + 10,40,30);
+    browseBtn.setIcon(QPixmap(":/res/Resources/Action_icons/open_file.png"));
     loadBtn.setText("load");
     colomns.setParent(&body);
     colomns.setGeometry(geometry().x() + 10, geometry().y() + 50, 100, 150);

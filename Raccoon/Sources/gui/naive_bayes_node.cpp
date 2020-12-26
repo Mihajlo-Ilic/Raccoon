@@ -26,10 +26,9 @@ nb_node::nb_node(int width, int height) : node(width,height,2){
 
     previewBtn.setText("preview");
     previewBtn.setParent(&body);
-    previewBtn.setGeometry(geometry().x() + 190,geometry().y() + 200,50,20);
+    previewBtn.setGeometry(geometry().x() + 170,geometry().y() + 60,70,20);
 
     connect(&previewBtn, SIGNAL(clicked()), this, SLOT(preview_b()));
-    connect(&alpha_sbox,SIGNAL(valueChanged(double)),this,SLOT(alpha_changed(double)));
 }
 
 void nb_node::serialize(std::ofstream &os)

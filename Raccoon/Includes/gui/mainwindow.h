@@ -21,6 +21,8 @@ public:
     virtual void dragMoveEvent(QDragMoveEvent *event);
     virtual void dropEvent(QDropEvent *event);
 
+    void init(std::string theme,std::string path);
+
 public slots:
     void drop_action();
 private slots:

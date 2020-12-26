@@ -35,6 +35,8 @@ binning_node::binning_node(int width, int height) : node(width,height,1)
     binningShuffle.setParent(&body);
     binningMethodLabel.setParent(&body);
     binningShuffleLabel.setParent(&body);
+    sets_spin.setParent(&body);
+    set_label.setParent(&body);
     previewBtn.setParent(&body);
 
     listWidget.setSelectionMode(QAbstractItemView::NoSelection);
@@ -46,12 +48,18 @@ binning_node::binning_node(int width, int height) : node(width,height,1)
     binningShuffle.addItem("By mean");
     binningShuffle.addItem("By border");
 
-    listWidget.setGeometry(geometry().x() + 10,geometry().y() + 10,230,130);
+    sets_spin.setMinimum(1);
+
+    sets_spin.setGeometry(geometry().x() + 60,geometry().y() + 120,50,30);
+    set_label.setGeometry(geometry().x() + 10,geometry().y() + 120,40,30);
+    set_label.setText("# bins:");
+
+    listWidget.setGeometry(geometry().x() + 10,geometry().y() + 10,230,110);
     binningMethodLabel.setGeometry(geometry().x() + 10,geometry().y() + 150,110,20);
     binningShuffleLabel.setGeometry(geometry().x() + 130,geometry().y() + 150,110,20);
     binningMethod.setGeometry(geometry().x() + 10,geometry().y() + 180,110,20);
     binningShuffle.setGeometry(geometry().x() + 130,geometry().y() + 180,110,20);
-    previewBtn.setGeometry(geometry().x() + 190,geometry().y() + 205,50,20);
+    previewBtn.setGeometry(geometry().x() + 170,geometry().y() + 205,70,20);
 
     connect(&previewBtn,SIGNAL(clicked()),this,SLOT(preview_b()));
     connect(&binningShuffle,SIGNAL(currentTextChanged(QString )),this,SLOT(changed( QString )));
@@ -80,15 +88,15 @@ bool binning_node::run()
             if(listWidget.item(i)->checkState()==Qt::CheckState::Checked)
             {
             if(binningMethod.currentText()=="binning width")
-                binning_width(t,listWidget.item(i)->text().toStdString(),1);
+                binning_width(t,listWidget.item(i)->text().toStdString(),sets_spin.value());
             if(binningMethod.currentText()=="binning frequency")
-                binning_frequency(t,listWidget.item(i)->text().toStdString(),1);
+                binning_frequency(t,listWidget.item(i)->text().toStdString(),sets_spin.value());
 
 
             if(binningShuffle.currentText()=="By mean")
-                binning_mean(t,listWidget.item(i)->text().toStdString(),1);
+                binning_mean(t,listWidget.item(i)->text().toStdString(),sets_spin.value());
             if(binningShuffle.currentText()=="By border")
-                binning_boundry(t,listWidget.item(i)->text().toStdString(),1);
+                binning_boundry(t,listWidget.item(i)->text().toStdString(),sets_spin.value());
             }
         }
 

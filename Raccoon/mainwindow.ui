@@ -95,6 +95,9 @@ color:red
 }</string>
    </property>
    <widget class="QMenu" name="menuFile">
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
     <property name="title">
      <string>File</string>
     </property>
@@ -191,9 +194,12 @@ color:red
       <height>868</height>
      </size>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout">
+    <layout class="QVBoxLayout" name="verticalLayout" stretch="0">
      <property name="spacing">
-      <number>0</number>
+      <number>30</number>
+     </property>
+     <property name="sizeConstraint">
+      <enum>QLayout::SetNoConstraint</enum>
      </property>
      <property name="leftMargin">
       <number>0</number>
@@ -233,14 +239,17 @@ color:red
           <x>0</x>
           <y>0</y>
           <width>120</width>
-          <height>1863</height>
+          <height>1943</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">
+         <property name="spacing">
+          <number>5</number>
+         </property>
          <item>
           <widget class="QToolButton" name="csv_button">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -248,7 +257,7 @@ color:red
            <property name="minimumSize">
             <size>
              <width>80</width>
-             <height>80</height>
+             <height>85</height>
             </size>
            </property>
            <property name="text">
@@ -284,7 +293,7 @@ color:red
          <item>
           <widget class="QToolButton" name="doc_button">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -292,7 +301,7 @@ color:red
            <property name="minimumSize">
             <size>
              <width>80</width>
-             <height>80</height>
+             <height>85</height>
             </size>
            </property>
            <property name="text">
@@ -341,7 +350,7 @@ color:red
          <item>
           <widget class="QToolButton" name="stats_button">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -349,7 +358,7 @@ color:red
            <property name="minimumSize">
             <size>
              <width>80</width>
-             <height>80</height>
+             <height>85</height>
             </size>
            </property>
            <property name="text">
@@ -385,7 +394,7 @@ color:red
          <item>
           <widget class="QToolButton" name="table_output_button">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -393,7 +402,7 @@ color:red
            <property name="minimumSize">
             <size>
              <width>80</width>
-             <height>80</height>
+             <height>85</height>
             </size>
            </property>
            <property name="text">
@@ -429,7 +438,7 @@ color:red
          <item>
           <widget class="QToolButton" name="plot_button">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -437,7 +446,7 @@ color:red
            <property name="minimumSize">
             <size>
              <width>80</width>
-             <height>80</height>
+             <height>85</height>
             </size>
            </property>
            <property name="text">
@@ -486,7 +495,7 @@ color:red
          <item>
           <widget class="QToolButton" name="filter_button">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -494,7 +503,7 @@ color:red
            <property name="minimumSize">
             <size>
              <width>80</width>
-             <height>80</height>
+             <height>85</height>
             </size>
            </property>
            <property name="text">
@@ -530,7 +539,7 @@ color:red
          <item>
           <widget class="QToolButton" name="tf_idf_button">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -538,7 +547,7 @@ color:red
            <property name="minimumSize">
             <size>
              <width>80</width>
-             <height>80</height>
+             <height>85</height>
             </size>
            </property>
            <property name="text">
@@ -574,7 +583,7 @@ color:red
          <item>
           <widget class="QToolButton" name="normalization_button">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -582,7 +591,7 @@ color:red
            <property name="minimumSize">
             <size>
              <width>80</width>
-             <height>80</height>
+             <height>85</height>
             </size>
            </property>
            <property name="text">
@@ -618,7 +627,7 @@ color:red
          <item>
           <widget class="QToolButton" name="standardize_button">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -626,7 +635,7 @@ color:red
            <property name="minimumSize">
             <size>
              <width>80</width>
-             <height>80</height>
+             <height>85</height>
             </size>
            </property>
            <property name="text">
@@ -662,7 +671,7 @@ color:red
          <item>
           <widget class="QToolButton" name="approximate_button">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -670,7 +679,7 @@ color:red
            <property name="minimumSize">
             <size>
              <width>80</width>
-             <height>80</height>
+             <height>85</height>
             </size>
            </property>
            <property name="text">
@@ -706,7 +715,7 @@ color:red
          <item>
           <widget class="QToolButton" name="partition_button">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -714,7 +723,7 @@ color:red
            <property name="minimumSize">
             <size>
              <width>80</width>
-             <height>80</height>
+             <height>85</height>
             </size>
            </property>
            <property name="text">
@@ -750,7 +759,7 @@ color:red
          <item>
           <widget class="QToolButton" name="binning_button">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -758,7 +767,7 @@ color:red
            <property name="minimumSize">
             <size>
              <width>80</width>
-             <height>80</height>
+             <height>85</height>
             </size>
            </property>
            <property name="text">
@@ -794,7 +803,7 @@ color:red
          <item>
           <widget class="QToolButton" name="remove_na_button">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -802,7 +811,7 @@ color:red
            <property name="minimumSize">
             <size>
              <width>80</width>
-             <height>80</height>
+             <height>85</height>
             </size>
            </property>
            <property name="text">
@@ -838,7 +847,7 @@ color:red
          <item>
           <widget class="QToolButton" name="to_numeric_button">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -846,7 +855,7 @@ color:red
            <property name="minimumSize">
             <size>
              <width>80</width>
-             <height>80</height>
+             <height>85</height>
             </size>
            </property>
            <property name="text">
@@ -895,7 +904,7 @@ color:red
          <item>
           <widget class="QToolButton" name="dbscan_button">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -903,7 +912,7 @@ color:red
            <property name="minimumSize">
             <size>
              <width>80</width>
-             <height>80</height>
+             <height>85</height>
             </size>
            </property>
            <property name="text">
@@ -939,7 +948,7 @@ color:red
          <item>
           <widget class="QToolButton" name="k_means_button">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -947,7 +956,7 @@ color:red
            <property name="minimumSize">
             <size>
              <width>80</width>
-             <height>80</height>
+             <height>85</height>
             </size>
            </property>
            <property name="text">
@@ -983,7 +992,7 @@ color:red
          <item>
           <widget class="QToolButton" name="aglo_button">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -991,7 +1000,7 @@ color:red
            <property name="minimumSize">
             <size>
              <width>80</width>
-             <height>80</height>
+             <height>85</height>
             </size>
            </property>
            <property name="text">
@@ -1040,7 +1049,7 @@ color:red
          <item>
           <widget class="QToolButton" name="dec_tree_button">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -1048,7 +1057,7 @@ color:red
            <property name="minimumSize">
             <size>
              <width>80</width>
-             <height>80</height>
+             <height>85</height>
             </size>
            </property>
            <property name="text">
@@ -1084,7 +1093,7 @@ color:red
          <item>
           <widget class="QToolButton" name="knn_button">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -1092,7 +1101,7 @@ color:red
            <property name="minimumSize">
             <size>
              <width>80</width>
-             <height>80</height>
+             <height>85</height>
             </size>
            </property>
            <property name="text">
@@ -1128,7 +1137,7 @@ color:red
          <item>
           <widget class="QToolButton" name="bayes_button">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -1136,7 +1145,7 @@ color:red
            <property name="minimumSize">
             <size>
              <width>80</width>
-             <height>80</height>
+             <height>85</height>
             </size>
            </property>
            <property name="text">
@@ -1185,7 +1194,7 @@ color:red
          <item>
           <widget class="QToolButton" name="apriori_button">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -1193,7 +1202,7 @@ color:red
            <property name="minimumSize">
             <size>
              <width>80</width>
-             <height>80</height>
+             <height>85</height>
             </size>
            </property>
            <property name="text">
@@ -1268,17 +1277,8 @@ color:red
    <property name="toolTip">
     <string>delete current selection</string>
    </property>
-  </action>
-  <action name="action_merge">
-   <property name="icon">
-    <iconset resource="resources.qrc">
-     <normaloff>:/res/Resources/Action_icons/merge.svg</normaloff>:/res/Resources/Action_icons/merge.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Merge</string>
-   </property>
-   <property name="toolTip">
-    <string>merges selected nodes into 1 node</string>
+   <property name="shortcut">
+    <string>Del</string>
    </property>
   </action>
   <action name="action_unmerge">
@@ -1294,33 +1294,78 @@ color:red
    </property>
   </action>
   <action name="actionNew_Scene">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/res/Resources/Action_icons/new_icon.png</normaloff>:/res/Resources/Action_icons/new_icon.png</iconset>
+   </property>
    <property name="text">
     <string>New Scene</string>
    </property>
+   <property name="font">
+    <font/>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
   </action>
   <action name="actionOpen_Scene">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/res/Resources/Action_icons/open_file.png</normaloff>:/res/Resources/Action_icons/open_file.png</iconset>
+   </property>
    <property name="text">
     <string>Open Scene</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
   </action>
   <action name="actionSave_2">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/res/Resources/Action_icons/save_file.png</normaloff>:/res/Resources/Action_icons/save_file.png</iconset>
+   </property>
    <property name="text">
     <string>Save</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
   </action>
   <action name="actionSave_As">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/res/Resources/Action_icons/save_as.png</normaloff>:/res/Resources/Action_icons/save_as.png</iconset>
+   </property>
    <property name="text">
     <string>Save As</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
+   </property>
   </action>
   <action name="actionUndo">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/res/Resources/Action_icons/undo.png</normaloff>:/res/Resources/Action_icons/undo.png</iconset>
+   </property>
    <property name="text">
     <string>Undo</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
   </action>
   <action name="actionRedo">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/res/Resources/Action_icons/redo.png</normaloff>:/res/Resources/Action_icons/redo.png</iconset>
+   </property>
    <property name="text">
     <string>Redo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
  </widget>

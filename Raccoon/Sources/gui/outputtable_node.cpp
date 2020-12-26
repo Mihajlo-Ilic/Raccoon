@@ -6,6 +6,8 @@ outputTable_node::outputTable_node(int width,int height) : node(width,height,1,0
 {
     header_text.setText("OUTPUT NODE");
 
+    file_browser_button.setIcon(QPixmap(":/res/Resources/Action_icons/save_file.png"));
+
     path_line.setParent(&body);
     path_line.setGeometry(geometry().x() + 10,geometry().y() + 20,180,30);
 

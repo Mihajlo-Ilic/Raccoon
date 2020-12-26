@@ -1,0 +1,26 @@
+
+
+QObject{
+    color:rgb(0, 0, 0);
+    font-size:13px;
+    font:bold large "Consolas";
+}
+
+
+QFrame#header{
+background-color: qlineargradient(spread:pad, x1:0.524092, y1:1, x2:0.518, y2:0, stop:0 rgba(14, 45, 74,255), stop:1 rgba(32, 107, 161,255));
+border-top-right-radius:5px;
+border-top-left-radius:5px;
+color:rgb(255,0,0);
+}
+
+QLabel#header_text{
+    color:white;
+}
+
+QFrame#body{
+border:1px solid blue;
+color:white;
+}
+
+

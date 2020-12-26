@@ -25,6 +25,7 @@ border-top-right-radius:5px;
 border-top-left-radius:5px;
 }
 
+
 QPushButton{
 background-color: qlineargradient(spread:pad, x1:0.524092, y1:1, x2:0.518, y2:0, stop:0 rgba(60, 60, 60, 255), stop:1 rgba(73, 73, 73, 255));
 border:1px solid black;
@@ -156,6 +157,6 @@ QMenu::item{
     color: rgb(255, 255, 255);
 }
 
-QMenu::item:selected{
-    color: orange;
+QAction{
+    color: rgb(255, 255, 255);
 }

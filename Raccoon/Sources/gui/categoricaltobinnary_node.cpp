@@ -15,7 +15,7 @@ categoricalToBinnary_node::categoricalToBinnary_node(int width,int height) : nod
 
     selectLabel.setGeometry(geometry().x() + 10,geometry().y() + 10,120,20);
     listWidget.setGeometry(geometry().x() + 10,geometry().y() + 40,230,150);
-    previewBtn.setGeometry(geometry().x() + 190,geometry().y() + 200,50,20);
+    previewBtn.setGeometry(geometry().x() + 170,geometry().y() + 200,70,20);
 
     connect(&previewBtn,SIGNAL(clicked()),this,SLOT(preview_b()));
     connect(&listWidget,SIGNAL(itemChanged(QListWidgetItem *)),this,SLOT(list_changed(QListWidgetItem *)));
@@ -94,8 +94,12 @@ packet categoricalToBinnary_node::get_msg()
     for(int i=0;i<listWidget.count();i++)
         if(listWidget.item(i)->checkState()==Qt::CheckState::Checked)
         {
-            msg.add_column("bin_"+listWidget.item(i)->text().toStdString(),column_role::INPUT_COLUMN,column_type::CONTINUOUS);
-        }
+                auto it = std::find_if(msg.packet_columns.begin(),msg.packet_columns.end(),[&](auto& x){return x.name==listWidget.item(i)->text().toStdString();});
+                {
+                    for(auto j:it->unique_values)
+                        msg.add_column(j,column_role::INPUT_COLUMN,column_type::CONTINUOUS);
+                }
+            }
     return msg;
 }
 
@@ -106,7 +110,11 @@ void categoricalToBinnary_node::list_changed(QListWidgetItem *item)
     for(int i=0;i<listWidget.count();i++)
         if(listWidget.item(i)->checkState()==Qt::CheckState::Checked)
         {
-            msg.add_column("bin_"+listWidget.item(i)->text().toStdString(),column_role::INPUT_COLUMN,column_type::CONTINUOUS);
+            auto it = std::find_if(msg.packet_columns.begin(),msg.packet_columns.end(),[&](auto& x){return x.name==listWidget.item(i)->text().toStdString();});
+            {
+                for(auto j:it->unique_values)
+                    msg.add_column(j,column_role::INPUT_COLUMN,column_type::CONTINUOUS);
+            }
         }
     outputs[0]->send_packet(msg);
 }

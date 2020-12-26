@@ -23,7 +23,7 @@ aproximation_node::aproximation_node(int width,int height) : node(width,height)
     aproximationCombo.setGeometry(geometry().x() + 10,geometry().y() + 40,110,20);
     editAprox.setGeometry(geometry().x() + 130,geometry().y() + 40,110,20);
     columns.setGeometry(geometry().x() + 10,geometry().y() + 70,230,120);
-    previewBtn.setGeometry(geometry().x() + 190,geometry().y() + 200,50,20);
+    previewBtn.setGeometry(geometry().x() + 170,geometry().y() + 200,70,20);
 
     connect(&previewBtn,SIGNAL(clicked()),this,SLOT(preview_b()));
     connect(&columns,SIGNAL(itemChanged(QListWidgetItem *)),this,SLOT(list_changed(QListWidgetItem *)));
