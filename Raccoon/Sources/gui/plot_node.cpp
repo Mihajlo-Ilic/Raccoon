@@ -57,7 +57,7 @@ void plot_node::plot_function(std::vector<std::string> attributes, std::string l
 
 void plot_node::plot_3D(std::vector<std::string> attributes, std::string label,std::vector<std::pair<entry,long>> classInRGB) {
     Q3DScatter *scatter = new Q3DScatter();
-    QWidget *container = QWidget::createWindowContainer(scatter);
+    QWidget *container = QWidget::createWindowContainer(scatter,nullptr,Qt::Dialog);
 
     QSize screenSize = scatter->screen()->size();
     container->setMinimumSize(QSize(screenSize.width() / 2, screenSize.height() / 1.5));
@@ -327,7 +327,7 @@ void plot_node::plot_2D(std::vector<std::string> attributes, std::string label,s
          }
     });
     dialog->resize(800,600);
-    dialog->exec();
+    dialog->show();
 }
 #include<iostream>
 bool plot_node::run()
