@@ -27,8 +27,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->agraphicsView->setAcceptDrops(true);
     ui->agraphicsView->setScene(globalScene);
 
-    QShortcut * undo_sct = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z), this, [] () {globalScene->undo_action();});
-    QShortcut * redo_sct = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_R), this, [] () {globalScene->redo_action();});
+ //   QShortcut * undo_sct = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z), this, [] () {globalScene->undo_action();});
+ //   QShortcut * redo_sct = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_R), this, [] () {globalScene->redo_action();});
 
     connect(ui->csv_button,SIGNAL(released()),this,SLOT(drop_action()));
     connect(ui->approximate_button,SIGNAL(released()),this,SLOT(drop_action()));
