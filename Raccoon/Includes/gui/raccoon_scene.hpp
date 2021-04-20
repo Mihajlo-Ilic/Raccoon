@@ -19,6 +19,7 @@ private:
     QPointF scene_pos;
 public:
     create_action(node * n, QPointF scene_pos);
+    ~create_action();
     void undo() override;
     void redo() override;
 
@@ -32,6 +33,7 @@ private:
     QPoint end_point;
 public:
     move_action(node *n, QPoint start_point, QPoint end_point);
+    ~move_action();
     void set_end_pt(QPoint pt);
     void undo() override;
     void redo() override;
@@ -44,6 +46,7 @@ private:
     node * n;
 public:
     delete_action(node * n);
+    ~delete_action();
     void undo() override;
     void redo() override;
     node * get_node() { return n; }

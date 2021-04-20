@@ -8,7 +8,7 @@
 #include<QFileSystemModel>
 #include <map>
 #include <stdlib.h>
-
+#include <string>
 
 std::string& ltrim(std::string& str, const std::string& chars = "\t\n\v\f\r ")
 {
@@ -45,6 +45,7 @@ std::vector<std::string> split (const std::string &line, char delim) {
 }
 
 table loadFromFile(std::string path) {
+
     table result{};
     std::ifstream inputFile;
     inputFile.open(path);
