@@ -61,7 +61,7 @@ void check_stack() {
 create_action::create_action(node * _n, QPointF _scene_pos) : n(_n), scene_pos(_scene_pos) {
 
 }
-
+create_action::~create_action(){delete n;}
 void create_action::undo() {
     auto node_ref = std::find(scene_nodes.begin(), scene_nodes.end(), n);
     if(node_ref != std::end(scene_nodes)) {
@@ -83,7 +83,7 @@ void create_action::redo() {
 move_action::move_action(node * _n, QPoint _start_point, QPoint _end_point) : n(_n), start_point(_start_point), end_point(_end_point) {
 
 }
-
+move_action::~move_action(){delete n;}
 void move_action::undo() {
     end_point = n->geometry().topLeft();
     n->set_position(start_point);
@@ -97,7 +97,7 @@ void move_action::redo() {
 delete_action::delete_action(node * _n) : n(_n){
 
 }
-
+delete_action::~delete_action(){delete n;}
 void delete_action::undo() {
     //restore the node
     n->show();

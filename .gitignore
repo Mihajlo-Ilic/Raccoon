@@ -1,2 +1,5 @@
 *.o
 Raccoon/Build
+*.user
+*.gcno
+*.gcda
